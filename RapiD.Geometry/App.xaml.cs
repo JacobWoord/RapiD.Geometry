@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using RapiD.Geometry.ViewModels;
 using RapiD.Geometry.Views;
+using RapiD.Geometry.Models;
 
 namespace RapiD.Geometry
 {
@@ -29,8 +30,17 @@ namespace RapiD.Geometry
 
             serviceDescriptors.AddSingleton<MainWindow>();
             serviceDescriptors.AddSingleton<MainViewModel>();
+            serviceDescriptors.AddSingleton<HomeViewModel>();
+            serviceDescriptors.AddSingleton<Canvas2DViewModel>();
+            serviceDescriptors.AddSingleton<Canvas3DViewModel>();
             
-            serviceDescriptors.AddTransient<RectangleProps>();
+            serviceDescriptors.AddTransient<HomeVIew>();
+            serviceDescriptors.AddTransient<CircleViewModel>();
+            //serviceDescriptors.AddTransient<Circle2D>();
+            //serviceDescriptors.AddTransient<Rectangle2D>();
+            //serviceDescriptors.AddTransient<GeometryBase>();
+            serviceDescriptors.AddSingleton<Canvas2DView>();
+            serviceDescriptors.AddSingleton<Canvas3DView>();
 
 
             serviceProvider = serviceDescriptors.BuildServiceProvider();

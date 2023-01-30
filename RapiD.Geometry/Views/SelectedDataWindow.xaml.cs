@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace RapiD.Geometry.Views
 {
     /// <summary>
-    /// Interaction logic for RectangleProps.xaml
+    /// Interaction logic for SelectedDataWindow.xaml
     /// </summary>
-    public partial class RectangleProps : UserControl
+    public partial class SelectedDataWindow : Window
     {
-        public RectangleProps()
+        public SelectedDataWindow()
         {
             InitializeComponent();
         }

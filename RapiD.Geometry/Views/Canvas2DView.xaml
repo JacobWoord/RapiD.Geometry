@@ -1,0 +1,213 @@
+﻿<UserControl x:Class="RapiD.Geometry.Views.Canvas2DView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RapiD.Geometry.Views"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+
+             xmlns:models="clr-namespace:RapiD.Geometry.Models"
+             xmlns:viewmodels="clr-namespace:RapiD.Geometry.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:Canvas2DViewModel}"
+             mc:Ignorable="d" 
+             PreviewKeyDown="canvas_KeyDown"
+             PreviewKeyUp="canvas_KeyUp"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+
+
+
+       
+        
+
+        <Grid       Background="Black"
+                    Height="80"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="3">
+
+            <Button     Grid.Column="0"
+                    Grid.Row="0"
+                    Margin="10 0"
+                    Command="{Binding GoHomeCommand}"    
+                    Background="Black"
+                    MinWidth="100"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Content="Home"></Button>
+
+            <StackPanel Orientation="Horizontal" 
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Center">
+
+                <Button Margin="5"
+                    Command="{Binding DrawCircleCommand}"    
+                    Background="Black"
+                    MinWidth="100"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Content="Add Circle"></Button>
+                <Button Margin="5"
+                    Command="{Binding DrawRectangleCommand}"    
+                    Background="Black"
+                    MinWidth="100"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Content="Add Rectangle"></Button>
+                <Button Margin="5"
+                    Background="Black"
+                    MinWidth="100"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Content="Add Polygon"></Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1"
+              Grid.ColumnSpan="3">
+            <ItemsControl Margin="5"
+                          BorderBrush="Black"
+                          BorderThickness="2"
+                          x:Name="canvas"
+                          ItemsSource="{Binding GeometryCollection}"
+                          >
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </DataTrigger>
+
+                            <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                                    <Setter Property="Opacity" Value="1"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+
+                
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas Width="{Binding ElementName=canvas,Path=ActualWidth}"
+                                Height="{Binding ElementName=canvas,Path=ActualHeight}"
+                                PreviewMouseLeftButtonDown="Canvas_PreviewMouseLeftButtonDown"
+                                PreviewMouseMove="Canvas_PreviewMouseMove"
+                    
+                              
+                                
+                                
+                                
+                                >
+                        </Canvas>
+                                
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.Resources>
+                    <DataTemplate DataType="{x:Type models:Circle2D}">
+                        <Ellipse Height="{Binding Radius}"
+                                 Width="{Binding RelativeSource={RelativeSource Self}, Path=Height}"
+                                 Fill="{Binding Color,Converter={StaticResource color2brush}}">
+                            <Ellipse.RenderTransform>
+                                <TranslateTransform X="{Binding Position.X}" Y="{Binding Position.Y}"></TranslateTransform>
+                            </Ellipse.RenderTransform>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseDown">
+                                    <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                                <!--<i:EventTrigger EventName="MouseUp">
+                                    <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>-->
+                            </i:Interaction.Triggers>
+                            </Ellipse>
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type models:Rectangle2D}">
+                        <Rectangle Height="{Binding Height }" 
+                                 Width="{Binding RelativeSource={RelativeSource Self}, Path=Height}"
+                                 Fill="{Binding Color,Converter={StaticResource color2brush}}">
+                            <Rectangle.RenderTransform>
+                                <TranslateTransform X="{Binding Position.X}" Y="{Binding Position.Y}"></TranslateTransform>
+                            </Rectangle.RenderTransform>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="MouseDown">
+                                    <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="MouseUp">
+                                    <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Rectangle>
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type models:Polygon2D}">
+                        <!--<Polygon 
+                                 Fill="{Binding Color,Converter={StaticResource color2brush}}">
+                            <Rectangle.RenderTransform>
+                                <TranslateTransform X="{Binding Position.X}" Y="{Binding Position.Y}"></TranslateTransform>
+                            </Rectangle.RenderTransform>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseClick">
+                                    <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="MouseDown">
+                                    <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                                <i:EventTrigger EventName="MouseUp">
+                                    <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Polygon>-->
+                    </DataTemplate>
+                </ItemsControl.Resources>
+               
+            </ItemsControl>
+            
+            
+                            
+                            
+        </Grid>
+            
+            
+
+       
+        
+        
+        
+        
+        <StackPanel Background="Black"
+                    Height="80"
+                    Grid.Row="2"
+                    Grid.ColumnSpan="3"></StackPanel>
+        
+        
+
+
+
+
+
+
+
+    </Grid>
+</UserControl>
