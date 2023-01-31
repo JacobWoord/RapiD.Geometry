@@ -18,35 +18,98 @@ namespace RapiD.Geometry.ViewModels
 
             camera = new OrthographicCamera()
             {
-                LookDirection = new System.Windows.Media.Media3D.Vector3D(1, 1, -1),
-                UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 0, -1),
-                Position = new System.Windows.Media.Media3D.Point3D(-500, -500, 500),
+                LookDirection = new System.Windows.Media.Media3D.Vector3D(10, 10, 10), /*(1, 20, -1)*/
+                UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 0, 60), /* (0, 0, -1)*/
+                Position = new System.Windows.Media.Media3D.Point3D(-500, -500, 500), /*(-500, -500, 500)*/
                 FarPlaneDistance = 10000,
                 NearPlaneDistance = -10000,
                 Width = 1000
             };
+
+            camera.CreateViewMatrix();
            
             geometry3DCollection = new ObservableCollection<GeometryBase3D>();
-            geometry3DCollection.Add(new Sphere3D());
+            
+           
 
-            testMaterial = PhongMaterials.Red;
 
-            var mesh = new MeshBuilder();
-            mesh.AddSphere(Vector3.Zero, 100);
-            testGeometry = mesh.ToMeshGeometry3D();
         }
 
         [ObservableProperty]
+        GeometryBase3D selectedGeometry;
+
+        [ObservableProperty]
+        Material material = PhongMaterials.Red;
+
+        
+        
+        [ObservableProperty]
         Camera camera;
 
-        [ObservableProperty]
-        MeshGeometry3D testGeometry;
-
-        [ObservableProperty]
-        Material testMaterial;
+       
 
         [ObservableProperty]
         ObservableCollection<GeometryBase3D> geometry3DCollection;
+
+
+        [RelayCommand]
+        void Select()
+        {
+           
+        }
+
+        [RelayCommand]
+        void DrawTorrus()
+        {
+
+            Random random = new Random();
+            double diameter = random.NextDouble(10, 300);
+            double TubeDiameter = random.NextDouble(10, 300);
+
+            geometry3DCollection.Add(new Torus3D(diameter,TubeDiameter));
+
+        }
+
+        [RelayCommand]
+        void DrawCillinder()
+        {
+
+            Random random = new Random();
+            float p11 = random.Next(10, 300);
+            float p12 = random.Next(10, 300);
+            float p13 = random.Next(10, 300);
+           
+            float p21 = random.Next(10, 300);
+            float p22 = random.Next(10, 300);
+            float p23 = random.Next(10, 300);
+            
+
+            geometry3DCollection.Add(new Cillinder3D(new Vector3(p11,p12,p13), new Vector3(p21,p23,p22)));
+
+        }
+
+        [RelayCommand]
+        void DrawTube()
+        {
+
+         
+            geometry3DCollection.Add(new Tube3D());
+
+        }
+
+        [RelayCommand]
+        void DrawSphere()
+        {
+
+            Random random = new Random();
+            double diameter = random.NextDouble(10, 300);
+            double TubeDiameter = random.NextDouble(10, 300);
+
+            geometry3DCollection.Add(new Torus3D(diameter, TubeDiameter));
+
+        }
+
+
 
 
         [RelayCommand]

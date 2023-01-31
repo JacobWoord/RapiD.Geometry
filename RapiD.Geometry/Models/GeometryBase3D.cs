@@ -13,6 +13,7 @@ namespace RapiD.Geometry.Models
 {
     public partial class GeometryBase3D : ObservableObject
     {
+        
 
         [ObservableProperty]
         int id;
@@ -24,21 +25,36 @@ namespace RapiD.Geometry.Models
         bool isSelected = false;
 
         [ObservableProperty]
-        Material material = PhongMaterials.Red;
+        Material currentMaterial = PhongMaterials.Red;
+
+        private Material originalMaterial; 
+        public Material OriginalMaterial
+        {
+            get { return originalMaterial; }
+            set {
+                originalMaterial = value;
+                CurrentMaterial = value; 
+            } 
+        }
 
         [ObservableProperty]
-        MeshGeometry3D meshGeometry;
+        MeshGeometry3D? meshGeometry;
 
         [ObservableProperty]
-        TransformGroup transform;
+        TransformGroup? transform;
 
-        
-        
-        
+    
+
+
         [RelayCommand]
         void Select()
         {
+            var o =this;
             IsSelected = !isSelected;
+            if (isSelected)
+                CurrentMaterial = PhongMaterials.Green;
+            else
+                CurrentMaterial = originalMaterial;
         }
     }
 }

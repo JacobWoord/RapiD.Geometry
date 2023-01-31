@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:hx="http://helix-toolkit.org/wpf/SharpDX" 
              xmlns:local="clr-namespace:RapiD.Geometry.Views" 
-             xmlns:viewmodels="clr-namespace:RapiD.Geometry.ViewModels"
+             xmlns:viewmodels="clr-namespace:RapiD.Geometry.ViewModels" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              d:DataContext="{d:DesignInstance Type=viewmodels:Canvas3DViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -23,11 +23,13 @@
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
 
-        <!--<Grid       Background="Black"
+        <Grid       Background="Black"
+                    
                     Height="40"
                     Grid.Row="0"
                     Grid.ColumnSpan="3">
-            <Button Margin="5"
+            <StackPanel Orientation="Horizontal">
+                <Button Margin="5"
                     Command="{Binding GoHomeCommand}"    
                     Background="Black"
                     MinWidth="100"
@@ -36,26 +38,61 @@
                     BorderThickness="2"
                     Content="Home"></Button>
 
-        </Grid>-->
+                <Button Margin="5"
+                    Command="{Binding DrawTorrusCommand}"    
+                    Background="Black"
+                    MinWidth="100"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Content="Draw Torrus"></Button>
+
+                <Button Margin="5"
+                    Command="{Binding DrawCillinderCommand}"    
+                    Background="Black"
+                    MinWidth="100"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Content="Draw Cillinder"></Button>
+
+                <Button Margin="5"
+                    Command="{Binding DrawTubeCommand}"    
+                    Background="Black"
+                    MinWidth="100"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Content="Draw Tube"></Button>
+
+
+
+            </StackPanel>
+
+        </Grid>
 
         <Grid Grid.Row="1"
               Grid.ColumnSpan="3">
 
             <hx:Viewport3DX 
+                
                 Loaded="Viewport3DX_Loaded"
                IsChangeFieldOfViewEnabled="True"
-          ZoomSensitivity="0.5"
+               ZoomSensitivity="0.9"
             CameraRotationMode="Trackball"
                 ShowCoordinateSystem="True"
                  Camera="{Binding Camera}"
+                
                 ShowCameraInfo="True"
+                ZoomExtentsWhenLoaded="True"
                 ShowFrameDetails="True"
                 BackgroundColor="Black"
                 ModelUpDirection="0,0,1"
                 InfoForeground="White"
-                CameraMode="WalkAround"
+                FixedRotationPointEnabled="True"
+                ShowTriangleCountInfo="True"
                 InfoBackground="Transparent"
-                EnableSwapChainRendering ="False">
+                EnableSwapChainRendering ="True">
                 <hx:Viewport3DX.InputBindings>
                     <KeyBinding Key="B" Command="hx:ViewportCommands.BackView"/>
                     <KeyBinding Key="F" Command="hx:ViewportCommands.FrontView"/>
@@ -68,24 +105,41 @@
                     <!--<MouseBinding Command="hx:ViewportCommands.Zoom" Gesture="MiddleClick"/>-->
                     <MouseBinding Command="hx:ViewportCommands.Pan" Gesture="LeftClick"/>
                 </hx:Viewport3DX.InputBindings>
+                
+                
+              
 
                 <!--Lighting-->
+                <hx:SpotLight3D Color="Yellow" ></hx:SpotLight3D>
                 <hx:AmbientLight3D Color="Gray" ></hx:AmbientLight3D>
                 <hx:DirectionalLight3D Color="LightYellow" Direction="0,0,-1" ></hx:DirectionalLight3D>
                 
                 <!--Models-->
-                <hx:ItemsModel3D ItemsSource="{Binding Geometry3DCollection}">
+                <hx:ItemsModel3D  ItemsSource="{Binding Geometry3DCollection}" >
+
+
+
                     <hx:ItemsModel3D.ItemTemplate>
                         <DataTemplate>
                             <hx:MeshGeometryModel3D 
+                                RenderWireframe="False"
                                 EnableViewFrustumCheck="False"
-                                CullMode="Back"
+                                CullMode="Back"                              
                                 Transform="{Binding Transform}"
                                 Geometry="{Binding MeshGeometry}"
-                                Material="{Binding Material}">
+                                Material="{Binding CurrentMaterial}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Mouse3DDown">
+                                        <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
                             </hx:MeshGeometryModel3D>
                         </DataTemplate>
+                           
                     </hx:ItemsModel3D.ItemTemplate>
+
+          
+
                 </hx:ItemsModel3D>
 
                 <hx:CoordinateSystemModel3D 

@@ -14,7 +14,7 @@ namespace RapiD.Geometry.Models
     {
 
         [ObservableProperty]
-        float radius=50;
+        float radius=20;
         public Sphere3D()
         {
             // Create transform
@@ -26,10 +26,10 @@ namespace RapiD.Geometry.Models
 
             // Assign mesh to model
             MeshGeometry=meshBuilder.ToMeshGeometry3D();
-          
+
 
             // Assing model material
-            Material = PhongMaterials.Green;
+            OriginalMaterial = PhongMaterials.Red;
         }
 
     }

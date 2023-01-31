@@ -1,5 +1,6 @@
 ﻿using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
+using RapiD.Geometry.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
@@ -22,6 +24,10 @@ namespace RapiD.Geometry.Views
     /// </summary>
     public partial class Canvas3DView : UserControl
     {
+
+        MeshGeometryModel3D? selectedGeometry;
+        
+
         public Canvas3DView()
         {
             InitializeComponent();
@@ -34,5 +40,7 @@ namespace RapiD.Geometry.Views
             (sender as Viewport3DX).EffectsManager = new DefaultEffectsManager();
 
         }
+
+
     }
 }
