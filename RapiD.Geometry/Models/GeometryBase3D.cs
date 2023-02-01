@@ -49,7 +49,6 @@ namespace RapiD.Geometry.Models
         [RelayCommand]
         void Select()
         {
-            var o =this;
             IsSelected = !isSelected;
             if (isSelected)
                 CurrentMaterial = PhongMaterials.Green;
