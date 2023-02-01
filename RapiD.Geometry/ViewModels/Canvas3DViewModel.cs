@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RapiD.Geometry.ViewModels
 {
@@ -51,11 +52,17 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         ObservableCollection<GeometryBase3D> geometry3DCollection;
 
+        [ObservableProperty]
+        double opacity;
 
         [RelayCommand]
-        void Select()
+        void OpenPropertyWindow()
         {
-           
+
+            var propWindow = new Window();
+            propWindow.DataContext = this;
+            propWindow.Show();
+
         }
 
         [RelayCommand]

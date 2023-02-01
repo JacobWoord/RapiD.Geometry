@@ -52,6 +52,12 @@ namespace RapiD.Geometry.Models
             IsSelected = !isSelected;
             if (isSelected)
                 CurrentMaterial = PhongMaterials.Green;
+                
+
+
+
+
+
             else
                 CurrentMaterial = originalMaterial;
         }

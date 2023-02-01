@@ -92,7 +92,7 @@
                     <Style TargetType="ContentPresenter">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter Property="{Binding}" Value="0.5"/>
+                                <Setter Property="Opacity" Value="0.5"/>
                             </DataTrigger>
 
                             <DataTrigger Binding="{Binding IsSelected}" Value="False">
