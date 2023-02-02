@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
 
 namespace RapiD.Geometry.Models
 {
@@ -14,22 +15,32 @@ namespace RapiD.Geometry.Models
     {
 
         [ObservableProperty]
-        float radius=20;
+        double radius=20;
         public Sphere3D()
         {
-            // Create transform
-            Transform = new System.Windows.Media.TransformGroup();
+           
+            // Assing model material
+            OriginalMaterial = PhongMaterials.Red;
+
+            DrawSphere();
+        }
+           
+            
+ 
+
+
+        public void DrawSphere()
+        {
+
 
             // Create triangle mesh for an 3d sphere
             MeshBuilder meshBuilder = new MeshBuilder();
             meshBuilder.AddSphere(Vector3.Zero, radius);
 
             // Assign mesh to model
-            MeshGeometry=meshBuilder.ToMeshGeometry3D();
+            MeshGeometry = meshBuilder.ToMeshGeometry3D();
 
 
-            // Assing model material
-            OriginalMaterial = PhongMaterials.Red;
         }
 
     }

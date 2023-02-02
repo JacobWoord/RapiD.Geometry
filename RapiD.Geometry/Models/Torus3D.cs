@@ -43,19 +43,26 @@ namespace RapiD.Geometry.Models
             this.diameter = diam;
             this.tubeDiameter = tubeDiam;
 
+            // Assing model material
+            OriginalMaterial = PhongMaterials.Green;
 
-            // Create transform
-            Transform = new System.Windows.Media.TransformGroup();
+            DrawTorus();
 
+        }
+
+
+         
+
+
+
+        public void DrawTorus()
+        {
             // Create triangle mesh for an 3d sphere
             MeshBuilder meshBuilder = new MeshBuilder();
-            meshBuilder.AddTorus(diameter, tubeDiameter,thetaDiv,phiDiv);
+            meshBuilder.AddTorus(diameter, tubeDiameter, thetaDiv, phiDiv);
             // Assign mesh to model
             MeshGeometry = meshBuilder.ToMeshGeometry3D();
 
-
-            // Assing model material
-            OriginalMaterial = PhongMaterials.Green;
 
         }
     }

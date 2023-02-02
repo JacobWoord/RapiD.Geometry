@@ -1,6 +1,7 @@
 ﻿using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
 using RapiD.Geometry.Models;
+using RapiD.Geometry.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +26,8 @@ namespace RapiD.Geometry.Views
     public partial class Canvas3DView : UserControl
     {
 
-        MeshGeometryModel3D? selectedGeometry;
-        
+        //MeshGeometryModel3D? selectedGeometry;
+
 
         public Canvas3DView()
         {
@@ -41,6 +42,23 @@ namespace RapiD.Geometry.Views
 
         }
 
+        private void Viewport3DX_MouseDown3D(object sender, RoutedEventArgs e)
+        {
+            var args = e as MouseDown3DEventArgs;
+            var vp = sender as Viewport3DX;
+            var hits = vp.FindHits(args.Position);
+            if (hits.Count == 0)
+                return;
 
+            var hit = hits.First();
+            MeshGeometryModel3D model = hit.ModelHit as MeshGeometryModel3D;
+            if(model == null) return;
+
+            var data = model.DataContext as GeometryBase3D;
+            
+
+            (this.DataContext as Canvas3DViewModel).SelectedGeometry = data;
+
+        }
     }
 }

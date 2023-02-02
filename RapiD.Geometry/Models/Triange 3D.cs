@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
 
 namespace RapiD.Geometry.Models
 {
@@ -31,7 +32,7 @@ namespace RapiD.Geometry.Models
             this.point2= p2;    
             this.point3= p3;    
 
-            Transform = new System.Windows.Media.TransformGroup();
+            Transform = new Transform3DGroup();
 
             MeshBuilder meshbuilder  = new MeshBuilder();
             meshbuilder.AddTriangle(point1, point2, point3);    
