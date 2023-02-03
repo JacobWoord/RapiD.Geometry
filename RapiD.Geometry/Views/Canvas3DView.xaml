@@ -105,7 +105,7 @@
                  Camera="{Binding Camera}"
                 MouseDown3D="Viewport3DX_MouseDown3D"
                 
-                ShowCameraInfo="False"
+                ShowCameraInfo="True"
                 ZoomExtentsWhenLoaded="True"
                 ShowFrameDetails="False"
                 BackgroundColor="Black"

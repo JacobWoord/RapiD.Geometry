@@ -24,12 +24,12 @@ namespace RapiD.Geometry.ViewModels
 
             camera = new HelixToolkit.Wpf.SharpDX.OrthographicCamera()
             {
-                LookDirection = new System.Windows.Media.Media3D.Vector3D(10, 10, 10), /*(1, 20, -1)*/
-                UpDirection = new System.Windows.Media.Media3D.Vector3D(0, 0, 60), /* (0, 0, -1)*/
-                Position = new System.Windows.Media.Media3D.Point3D(-500, -500, 500), /*(-500, -500, 500)*/
+                LookDirection = new System.Windows.Media.Media3D.Vector3D(2.5, 4.5, -3), /*(1, 20, -1)*/
+                UpDirection = new System.Windows.Media.Media3D.Vector3D(0.6, 0.6, 0.4), /* (0, 0, -1)*/
+                Position = new System.Windows.Media.Media3D.Point3D(-130, -200, 200), /*(-500, -500, 500)*/
                 FarPlaneDistance = 10000,
                 NearPlaneDistance = -10000,
-                Width = 1000
+                Width = 400
             };
 
             camera.CreateViewMatrix();
