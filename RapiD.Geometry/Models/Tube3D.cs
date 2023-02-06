@@ -136,7 +136,6 @@ namespace RapiD.Geometry.Models
                 float a = i * MathF.PI / 180;
                 float x = radius*MathF.Cos(a);
                 float y = radius *MathF.Sin(a);
-
                 single_chain_link.Add(new Vector3(x, y+yoffset, 0));
 
           
