@@ -56,7 +56,7 @@
                     BorderThickness="2"
                     Content="Draw Cillinder"></Button>
 
-                <Button Margin="5"
+                <Button Margin="0"
                     Command="{Binding DrawTubeCommand}"    
                     Background="Black"
                     MinWidth="100"
@@ -66,13 +66,13 @@
                     Content="Draw Tube"></Button>
 
                 <Button Margin="0"
-                    Command="{Binding DrawStructureCommand}"    
+                    Command="{Binding DrawSingleChainLinkCommand}"    
                     Background="Black"
                     MinWidth="100"
                     Foreground="White"
                     BorderBrush="White"
                     BorderThickness="2"
-                    Content="open window"></Button>
+                    Content="SingleChainLink"></Button>
 
                 <Button Margin="0"
                     Command="{Binding DrawSphereCommand}"    
@@ -82,6 +82,24 @@
                     BorderBrush="White"
                     BorderThickness="2"
                     Content="Draw Sphere"></Button>
+
+                <Button Margin="0"
+                    Command="{Binding CreateChainCommand}"    
+                    Background="Black"
+                    MinWidth="100"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Content="Create Chain"></Button>
+
+                <Button Margin="0"
+                    Command="{Binding RemoveCommand}"    
+                    Background="Black"
+                    MinWidth="100"
+                    Foreground="White"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    Content="Remove"></Button>
 
 
 
@@ -225,39 +243,39 @@
             </StackPanel>
 
             <StackPanel Grid.Row="1">
-                <Label Foreground="Black" HorizontalAlignment="Center">X axis</Label>
-                <Slider Margin="10 5" Maximum="50" Minimum="-50" TickFrequency="0.1" TickPlacement="BottomRight" Name="xValue" Value="{Binding XAxis,Mode=TwoWay}">
+                <Label Foreground="Black" HorizontalAlignment="Center">Width:</Label>
+                <Slider Margin="10 5" Maximum="100" Minimum="50" TickFrequency="1" TickPlacement="BottomRight" Name="WidthValue" Value="{Binding Width,Mode=TwoWay}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="ValueChanged">
-                            <i:InvokeCommandAction Command="{Binding UpdatePositionXCommand}"></i:InvokeCommandAction>
+                            <i:InvokeCommandAction Command="{Binding UpdateWidthCommand}"></i:InvokeCommandAction>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Slider>
-                <TextBlock Background="Black" Foreground="White" Text="{Binding ElementName=xValue,Path=Value}"/>
+                <TextBlock Background="Black" Foreground="White" Text="{Binding ElementName=WidthValue,Path=Value}"/>
             </StackPanel>
 
             <StackPanel Grid.Row="2">
-                <Label Foreground="Black" HorizontalAlignment="Center">Y Axis</Label>
-                <Slider Margin="10 5" Maximum="50" Minimum="-50" TickFrequency="0.1" TickPlacement="BottomRight" Name="yValue" Value="{Binding YAxis, Mode=TwoWay}">
+                <Label Foreground="Black" HorizontalAlignment="Center">Length</Label>
+                <Slider Margin="10 5" Maximum="100" Minimum="30" TickFrequency="1" TickPlacement="BottomRight" Name="LengthValue" Value="{Binding Length, Mode=TwoWay}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="ValueChanged">
-                            <i:InvokeCommandAction Command="{Binding UpdatePositionYCommand}"></i:InvokeCommandAction>
+                            <i:InvokeCommandAction Command="{Binding UpdateLengthCommand}"></i:InvokeCommandAction>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Slider>
-                <TextBlock Background="Black" Foreground="White" Text="{Binding ElementName=yValue,Path=Value}"/>
+                <TextBlock Background="Black" Foreground="White" Text="{Binding ElementName=LengthValue,Path=Value}"/>
             </StackPanel>
 
             <StackPanel Grid.Row="3">
-                <Label Foreground="Black" HorizontalAlignment="Center">Z Axis</Label>
-                <Slider Margin="10 5" Maximum="50" Minimum="-50" TickFrequency="0.1" TickPlacement="BottomRight" Name="zValue" Value="{Binding ZAxis, Mode=TwoWay}">
+                <Label Foreground="Black" HorizontalAlignment="Center">Number of ChainLinks</Label>
+                <Slider Margin="10 5" Maximum="50" Minimum="5" TickFrequency="1" TickPlacement="BottomRight" Name="CopiesValue" Value="{Binding NummberOfChainCopies, Mode=TwoWay}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="ValueChanged">
-                            <i:InvokeCommandAction Command="{Binding UpdatePositionZCommand}"></i:InvokeCommandAction>
+                            <i:InvokeCommandAction Command="{Binding UpdateNumberOfCopiesCommand}"></i:InvokeCommandAction>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </Slider>
-                <TextBlock Background="Black" Foreground="White" Text="{Binding ElementName=zValue,Path=Value}"/>
+                <TextBlock Background="Black" Foreground="White" Text="{Binding ElementName=CopiesValue,Path=Value}"/>
             </StackPanel>
 
 

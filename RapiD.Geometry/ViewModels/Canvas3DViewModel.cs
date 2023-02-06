@@ -58,7 +58,7 @@ namespace RapiD.Geometry.ViewModels
         ObservableCollection<GeometryBase3D> geometry3DCollection;
 
         [ObservableProperty]
-        double diameter;
+        float diameter;
 
         [ObservableProperty]
         double xAxis;
@@ -69,8 +69,33 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         double zAxis;
 
+        [ObservableProperty]
+        float width;
+
+        [ObservableProperty]
+        float length;
+
+        [ObservableProperty]
+        int numberOfChainCopies;
 
 
+
+        [RelayCommand]
+        void CreateChain() 
+        {
+
+            geometry3DCollection.Add(new ChainLink3D(15f,50,40f,5));
+
+        }
+
+
+       
+
+        [RelayCommand]
+        void Remove()
+        {
+            geometry3DCollection.Remove(selectedGeometry);
+        }
 
 
 
@@ -121,10 +146,65 @@ namespace RapiD.Geometry.ViewModels
         }
 
         [RelayCommand]
+        void UpdateWidth()
+        {
+            float width = this.width;
+
+            if(selectedGeometry == null)
+            {
+                return;
+            }
+            else if( selectedGeometry is ChainLink3D chain)
+            {
+                chain.Width = width;
+                chain.DrawChainLink();
+
+            }
+
+        }
+
+        [RelayCommand]
+        void UpdateNumberOfCopies()
+        {
+            int numberOfCopies = this.numberOfChainCopies;
+
+            if(selectedGeometry == null)
+            {
+                return;
+            }
+            else if(selectedGeometry is ChainLink3D chain)
+            {
+                chain.Copies = numberOfCopies;
+                chain.DrawChainLink();
+            }
+        }
+
+        [RelayCommand]
+        void UpdateLength()
+        {
+            float length = this.length; 
+            if (selectedGeometry == null)
+            {
+                return;
+            }
+            else if(selectedGeometry is ChainLink3D chain)
+            {
+                chain.Length = length; 
+                chain.DrawChainLink();
+            }
+        }
+
+        [RelayCommand]
+        void DrawSingleChainLink()
+        {
+            geometry3DCollection.Add(new ChainLink3D(10f, 40f, 65f, 1));
+        }
+
+        [RelayCommand]
         void UpdateDiameter()
         {
 
-            double diam = diameter;
+            float diam = diameter;
 
             if (selectedGeometry == null)
             {
@@ -142,6 +222,11 @@ namespace RapiD.Geometry.ViewModels
             {
                 sphere.Radius = diam;
                 sphere.DrawSphere();
+            }
+            else if(selectedGeometry is ChainLink3D chain)
+            {
+                chain.Diameter = diam;
+                chain.DrawChainLink();
             }
 
 

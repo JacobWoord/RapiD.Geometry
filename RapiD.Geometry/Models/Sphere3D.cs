@@ -15,7 +15,7 @@ namespace RapiD.Geometry.Models
     {
 
         [ObservableProperty]
-        double radius=20;
+        float radius=20;
         public Sphere3D()
         {
            

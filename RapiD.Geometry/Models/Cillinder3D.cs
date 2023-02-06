@@ -14,7 +14,7 @@ namespace RapiD.Geometry.Models
     {
 
         [ObservableProperty]
-        double diameter = 30;
+        float diameter = 30;
 
 
         [ObservableProperty]
