@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -10,12 +11,34 @@ namespace RapiD.Geometry.Models
 {
     public partial class Element3D : GeometryBase3D
     {
+        [ObservableProperty]
+        Vector3 startPoint;
 
-        Vector3D startPoint;
-        Vector3D endPoint;  
+        [ObservableProperty]
+        Vector3 endPoint;
 
+        [ObservableProperty]
+        Color4 color;
+
+        public ElementType ElementType { get; set; }
         
-        
-       
+
+
+
+
+
+
+        public Element3D(Vector3 startPoint , Vector3 endPoint)
+        {
+
+            this.startPoint = startPoint;
+            this.endPoint = endPoint;
+            
+        }
+
+
+
+
+
     }
 }

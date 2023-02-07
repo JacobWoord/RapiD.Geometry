@@ -1,5 +1,6 @@
 ﻿using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
+using RapiD.Geometry;
 using RapiD.Geometry.Models;
 using SharpDX;
 using System;
@@ -38,6 +39,12 @@ namespace RapiD.Geometry.ViewModels
 
 
         }
+
+
+
+        public ElementType SelectedElementType { get; set; }
+        public IEnumerable<ElementType> ElementTypes => Enum.GetValues(typeof(ElementType)).Cast<ElementType>();
+
 
 
         [ObservableProperty]
