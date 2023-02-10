@@ -54,6 +54,11 @@ namespace RapiD.Geometry.Models
             transform = new Transform3DGroup();
 
         }
+        public override string ToString()
+        {
+            return $"{this.GetType()}";
+        }
+
 
 
 
@@ -81,23 +86,33 @@ namespace RapiD.Geometry.Models
 
         }
 
+        public void Deselect()
+        {
+            IsSelected= false;
+            CurrentMaterial = originalMaterial;
+        }
 
 
 
-        [RelayCommand]
-        void Select()
+        public void Select()
         {
             IsSelected = !isSelected;
 
             if (isSelected)
+            {
+
+
                 CurrentMaterial = PhongMaterials.Green;
+
+
+            }
 
             else
                 CurrentMaterial = originalMaterial;
         }
 
 
-    
+
     }
 }
 

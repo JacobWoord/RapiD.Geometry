@@ -6,7 +6,9 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -50,6 +52,7 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         GeometryBase3D selectedGeometry;
 
+    
 
         [ObservableProperty]
         Material material = PhongMaterials.Red;
@@ -86,17 +89,55 @@ namespace RapiD.Geometry.ViewModels
         int numberOfChainCopies;
 
 
+        public void ShowProperties()
+        {
+            
+        }
+
+
+
+        public void DeselectAll()
+        {
+            // Removes all infobuttons
+            geometry3DCollection
+              .OfType<InfoButton3D>()
+              .ToList()
+              .ForEach(x => geometry3DCollection
+              .Remove(x));
+
+            // Deselects all models
+            geometry3DCollection.ToList().ForEach(x => x.Deselect());
+        }
+
+        public void Select(GeometryBase3D geometry)
+        {
+            geometry.Select();
+            ShowButtonIfSelected(geometry);
+        }
+        void ShowButtonIfSelected(GeometryBase3D geometry)
+        {
+            if (geometry is not InfoButton3D)
+            {
+                Geometry3DCollection.Add(new InfoButton3D(geometry.Position));
+            }
+        }
+
+
+
+
+
+
 
         [RelayCommand]
-        void CreateChain() 
+        void CreateChain()
         {
 
-            geometry3DCollection.Add(new ChainLink3D(15f,50,40f,5));
+            geometry3DCollection.Add(new ChainLink3D(15f, 50, 40f, 5));
 
         }
 
 
-       
+
 
         [RelayCommand]
         void Remove()
@@ -157,11 +198,11 @@ namespace RapiD.Geometry.ViewModels
         {
             float width = this.width;
 
-            if(selectedGeometry == null)
+            if (selectedGeometry == null)
             {
                 return;
             }
-            else if( selectedGeometry is ChainLink3D chain)
+            else if (selectedGeometry is ChainLink3D chain)
             {
                 chain.Width = width;
                 chain.DrawChainLink();
@@ -175,11 +216,11 @@ namespace RapiD.Geometry.ViewModels
         {
             int numberOfCopies = this.numberOfChainCopies;
 
-            if(selectedGeometry == null)
+            if (selectedGeometry == null)
             {
                 return;
             }
-            else if(selectedGeometry is ChainLink3D chain)
+            else if (selectedGeometry is ChainLink3D chain)
             {
                 chain.Copies = numberOfCopies;
                 chain.DrawChainLink();
@@ -189,22 +230,29 @@ namespace RapiD.Geometry.ViewModels
         [RelayCommand]
         void UpdateLength()
         {
-            float length = this.length; 
+            float length = this.length;
             if (selectedGeometry == null)
             {
                 return;
             }
-            else if(selectedGeometry is ChainLink3D chain)
+            else if (selectedGeometry is ChainLink3D chain)
             {
-                chain.Length = length; 
+                chain.Length = length;
                 chain.DrawChainLink();
             }
         }
+
+
+
+
 
         [RelayCommand]
         void DrawSingleChainLink()
         {
             geometry3DCollection.Add(new ChainLink3D(10f, 40f, 65f, 1));
+
+
+
         }
 
         [RelayCommand]
@@ -230,7 +278,7 @@ namespace RapiD.Geometry.ViewModels
                 sphere.Radius = diam;
                 sphere.DrawSphere();
             }
-            else if(selectedGeometry is ChainLink3D chain)
+            else if (selectedGeometry is ChainLink3D chain)
             {
                 chain.Diameter = diam;
                 chain.DrawChainLink();
@@ -310,7 +358,7 @@ namespace RapiD.Geometry.ViewModels
             MainViewModel.Navigate(Ioc.Default.GetService<HomeViewModel>());
         }
 
-
+       
     }
 
 

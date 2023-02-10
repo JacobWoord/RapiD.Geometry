@@ -4,6 +4,7 @@ using RapiD.Geometry.Models;
 using RapiD.Geometry.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,16 +49,31 @@ namespace RapiD.Geometry.Views
             var vp = sender as Viewport3DX;
             var hits = vp.FindHits(args.Position);
             if (hits.Count == 0)
+            {
+                (this.DataContext as Canvas3DViewModel).DeselectAll();
                 return;
-
+            }
             var hit = hits.First();
             MeshGeometryModel3D model = hit.ModelHit as MeshGeometryModel3D;
-            if(model == null) return;
+
+            if(model == null)
+                return;
 
             var data = model.DataContext as GeometryBase3D;
+
+            if (data is InfoButton3D b)
+            {
+                (this.DataContext as Canvas3DViewModel).ShowProperties();
+            }   
+
+            (this.DataContext as Canvas3DViewModel).Select(data);
+            (this.DataContext as Canvas3DViewModel).SelectedGeometry = data ;
+
+            
+            
+            
             
 
-            (this.DataContext as Canvas3DViewModel).SelectedGeometry = data;
 
         }
     }

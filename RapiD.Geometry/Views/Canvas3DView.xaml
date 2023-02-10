@@ -57,13 +57,13 @@
                     Content="Draw Cillinder"></Button>
 
                 <Button Margin="0"
-                    Command="{Binding DrawTubeCommand}"    
+                    Command="{Binding DrawButtonSphereCommand}"    
                     Background="Black"
                     MinWidth="100"
                     Foreground="White"
                     BorderBrush="White"
                     BorderThickness="2"
-                    Content="Draw Tube"></Button>
+                    Content="Draw Button"></Button>
 
                 <Button Margin="0"
                     Command="{Binding DrawSingleChainLinkCommand}"    
@@ -173,11 +173,12 @@
                                 Transform="{Binding Transform}"
                                 Geometry="{Binding MeshGeometry}"
                                 Material="{Binding CurrentMaterial}">
-                                <i:Interaction.Triggers>
+                                <!--<i:Interaction.Triggers>
                                     <i:EventTrigger EventName="Mouse3DDown">
                                         <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
                                     </i:EventTrigger>
-                                </i:Interaction.Triggers>
+                                </i:Interaction.Triggers>-->
+                                
                             </hx:MeshGeometryModel3D>
                         </DataTemplate>
                     </hx:ItemsModel3D.ItemTemplate>

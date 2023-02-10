@@ -1,5 +1,4 @@
-﻿using SharpDX;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,23 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RapiD.Geometry
+namespace RapiD.Geometry.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for PropertiesWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class PropertiesWindow : Window
     {
-        public MainWindow()
+        public PropertiesWindow()
         {
             InitializeComponent();
-
-            
-
-          
         }
     }
 }
