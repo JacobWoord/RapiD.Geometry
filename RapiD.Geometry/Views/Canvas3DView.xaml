@@ -232,6 +232,9 @@
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
 
            
@@ -250,7 +253,7 @@
 
             <StackPanel Grid.Row="1">
                 <Label Foreground="Black" HorizontalAlignment="Center">Width:</Label>
-                <Slider Margin="10 5" Maximum="100" Minimum="50" TickFrequency="1" TickPlacement="BottomRight" Name="WidthValue" Value="{Binding Width,Mode=TwoWay}">
+                <Slider Margin="10 0" Maximum="100" Minimum="50" TickFrequency="1" TickPlacement="BottomRight" Name="WidthValue" Value="{Binding Width,Mode=TwoWay}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="ValueChanged">
                             <i:InvokeCommandAction Command="{Binding UpdateWidthCommand}"></i:InvokeCommandAction>
@@ -272,17 +275,9 @@
                 <TextBlock Background="Black" Foreground="White" Text="{Binding ElementName=LengthValue,Path=Value}"/>
             </StackPanel>
 
-            <StackPanel Grid.Row="3">
-                <Label Foreground="Black" HorizontalAlignment="Center">Number of ChainLinks</Label>
-                <Slider Margin="10 5" Maximum="50" Minimum="5" TickFrequency="1" TickPlacement="BottomRight" Name="CopiesValue" Value="{Binding NummberOfChainCopies, Mode=TwoWay}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="ValueChanged">
-                            <i:InvokeCommandAction Command="{Binding UpdateNumberOfCopiesCommand}"></i:InvokeCommandAction>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </Slider>
-                <TextBlock Background="Black" Foreground="White" Text="{Binding ElementName=CopiesValue,Path=Value}"/>
-            </StackPanel>
+            <TextBlock Text="{Binding NumberOfChainCopies}"/>
+
+
 
 
 

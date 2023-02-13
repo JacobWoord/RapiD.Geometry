@@ -64,7 +64,12 @@ namespace RapiD.Geometry.Views
             if (data is InfoButton3D b)
             {
                 (this.DataContext as Canvas3DViewModel).ShowProperties();
-            }   
+            }
+
+            if (data is ChainLink3D c)
+            {
+                
+            }
 
             (this.DataContext as Canvas3DViewModel).Select(data);
             (this.DataContext as Canvas3DViewModel).SelectedGeometry = data ;
