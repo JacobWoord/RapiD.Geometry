@@ -9,11 +9,11 @@ namespace RapiD.Geometry.Models
     public partial class Rectangle2D : GeometryBase
     {
 
-        public Rectangle2D(int height, System.Windows.Point postion, int id)
+        public Rectangle2D(int height, System.Windows.Point postion)
         {
             this.Height = height;
             this.Position = postion;
-            this.Id = id;   
+              
 
         }
 

@@ -46,7 +46,7 @@ namespace RapiD.Geometry.Models
             // Assing model material
             OriginalMaterial = PhongMaterials.Green;
 
-            DrawTorus();
+            Draw();
 
         }
 
@@ -55,7 +55,7 @@ namespace RapiD.Geometry.Models
 
 
 
-        public void DrawTorus()
+        public override void Draw()
         {
             // Create triangle mesh for an 3d sphere
             MeshBuilder meshBuilder = new MeshBuilder();

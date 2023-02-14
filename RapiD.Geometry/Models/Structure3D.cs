@@ -23,10 +23,10 @@ namespace RapiD.Geometry.Models
         public Structure3D()
         {
             OriginalMaterial = PhongMaterials.Chrome;
-            DrawStructure();
+            Draw();
         }
 
-        public void DrawStructure()
+        public override void Draw()
         {
 
 

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
+
 
 namespace RapiD.Geometry.ViewModels
 {
@@ -15,6 +12,7 @@ namespace RapiD.Geometry.ViewModels
         {
             CurrentViewModel = Ioc.Default.GetService<HomeViewModel>();
         }
+
 
 
 

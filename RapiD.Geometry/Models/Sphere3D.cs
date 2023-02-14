@@ -22,14 +22,15 @@ namespace RapiD.Geometry.Models
             // Assing model material
             OriginalMaterial = PhongMaterials.Red;
 
-            DrawSphere();
+            Draw();
+ 
         }
            
             
  
 
 
-        public void DrawSphere()
+        public void Draw()
         {
 
 

@@ -53,7 +53,7 @@ namespace RapiD.Geometry.ViewModels
           Point randomPos= new Point(randomPosX, randomPosY);
           int idCount = geometryCollection.Count;
 
-          geometryCollection.Add(new Circle2D(randomRadius,new Point(randomPosX,randomPosY),idCount+1));
+          geometryCollection.Add(new Circle2D(randomRadius,new Point(randomPosX,randomPosY)));
 
         }
 
@@ -68,7 +68,7 @@ namespace RapiD.Geometry.ViewModels
             Point randomPos = new Point(randomPosX, randomPosY);
             int idCount = geometryCollection.Count;
 
-            geometryCollection.Add(new Rectangle2D(randomDimension, new Point(randomPosX, randomPosY), idCount + 1));
+            geometryCollection.Add(new Rectangle2D(randomDimension, new Point(randomPosX, randomPosY)));
 
         }
 

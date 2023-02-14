@@ -42,7 +42,7 @@ namespace RapiD.Geometry.Models
             OriginalMaterial = PhongMaterials.Yellow;
 
 
-            DrawTube();
+            Draw();
 
 
         }
@@ -68,7 +68,7 @@ namespace RapiD.Geometry.Models
         }
 
 
-        public void DrawTube()
+        public override void Draw()
         {
 
 

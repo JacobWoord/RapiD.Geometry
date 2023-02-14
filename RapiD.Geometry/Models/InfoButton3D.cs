@@ -19,10 +19,10 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         Vector3 position;
 
-        public InfoButton3D(Vector3 position)
+        public InfoButton3D(Vector3 position, string linkedGuid)
         {
-
-            
+            Name = "InfoButton";
+            ID = linkedGuid.ToString();
             this.position = position;
             OriginalMaterial= PhongMaterials.Blue;
             DrawButtonOnGeometry(position);

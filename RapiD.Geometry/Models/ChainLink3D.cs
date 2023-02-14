@@ -39,6 +39,7 @@ namespace RapiD.Geometry.Models
 
         public ChainLink3D(float diameter, float width,float length, Vector3 startPointVector, Vector3 endPointVector)
         {
+            this.ID=Guid.NewGuid().ToString();
             this.width = width;
             this.length = length;
             this.diameter = diameter;
@@ -48,7 +49,7 @@ namespace RapiD.Geometry.Models
             this.endPointVector = endPointVector;
 
             OriginalMaterial = PhongMaterials.Chrome;
-            DrawChainLink();
+            Draw();
         }
 
 
@@ -87,7 +88,7 @@ namespace RapiD.Geometry.Models
 
 
 
-        public void DrawChainLink()
+        public override void Draw()
         {
             MeshBuilder meshBuilder = new MeshBuilder();
             float radius = (width - diameter) / 2;
@@ -123,6 +124,7 @@ namespace RapiD.Geometry.Models
 
             Debug.WriteLine($"distance:{distanceBetweenTwoPoints}");
             Position = startVector + buttonOffset;
+            Name = "ChainStructure";
             //The for loop is drawing the chainlink 
 
             for (int j = 0; j < numOfCopies; j++)

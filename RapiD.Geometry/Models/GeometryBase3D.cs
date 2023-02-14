@@ -4,6 +4,7 @@ using SharpDX;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,16 +15,13 @@ using Material = HelixToolkit.Wpf.SharpDX.Material;
 
 namespace RapiD.Geometry.Models
 {
-    public partial class GeometryBase3D : ObservableObject
+    public partial class GeometryBase3D : ObservableObject,IModel
     {
 
 
         [ObservableProperty]
-        int id;
-
-        [ObservableProperty]
-        Vector3 position;
-
+        string fileName;
+               
         [ObservableProperty]
         bool isSelected = false;
 
@@ -31,6 +29,10 @@ namespace RapiD.Geometry.Models
         HelixToolkit.Wpf.SharpDX.Material currentMaterial = PhongMaterials.Red;
 
         private HelixToolkit.Wpf.SharpDX.Material originalMaterial;
+
+        public bool linkedButton = false;
+
+    
 
 
         public Material OriginalMaterial
@@ -42,6 +44,9 @@ namespace RapiD.Geometry.Models
             }
         }
 
+        public string ID { get ; set; }
+        public string Name { get; set; }
+        public Vector3 Position { get; set; }
 
         [ObservableProperty]
         HelixToolkit.SharpDX.Core.MeshGeometry3D meshGeometry;
@@ -52,36 +57,39 @@ namespace RapiD.Geometry.Models
         public GeometryBase3D()
         {
             transform = new Transform3DGroup();
+            
 
         }
+       
+        
         public override string ToString()
         {
-            return $"{this.GetType()}";
+            return Name;  //$"{this.GetType()}";
         }
 
 
 
 
 
-        public void Draw(GeometryBase3D model)
+        public virtual void Draw()
         {
 
-            if (model is Cillinder3D c)
-            {
-                c.DrawCilinder();
-            }
-            else if (model is Sphere3D s)
-            {
-                s.DrawSphere();
-            }
-            else if (model is Torus3D t)
-            {
-                t.DrawTorus();
-            }
-            else if (model is Tube3D u)
-            {
-                u.DrawTube();
-            }
+            //if (model is Cillinder3D c)
+            //{
+            //    c.DrawCilinder();
+            //}
+            //else if (model is Sphere3D s)
+            //{
+            //    s.DrawSphere();
+            //}
+            //else if (model is Torus3D t)
+            //{
+            //    t.DrawTorus();
+            //}
+            //else if (model is Tube3D u)
+            //{
+            //    u.DrawTube();
+            //}
 
 
         }

@@ -1,5 +1,6 @@
 ﻿using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
+using Microsoft.Win32;
 using RapiD.Geometry;
 using RapiD.Geometry.Models;
 using SharpDX;
@@ -12,6 +13,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -20,6 +22,7 @@ using Material = HelixToolkit.Wpf.SharpDX.Material;
 
 namespace RapiD.Geometry.ViewModels
 {
+    
     public partial class Canvas3DViewModel : ObservableObject
     {
         public Canvas3DViewModel()
@@ -36,13 +39,18 @@ namespace RapiD.Geometry.ViewModels
             };
 
             camera.CreateViewMatrix();
+            //geometry3DCollection = new ObservableCollection<GeometryBase3D>();
+            //batchedModelCollection = new ObservableCollection<BatchedModel>();
+            modelCollection = new ObservableCollection<IModel>();
 
-            geometry3DCollection = new ObservableCollection<GeometryBase3D>();
+
+            string basefolder = Utils2D.GetAppDataFolder();
+            string doorfile = basefolder + @"3DModels\FISHINGBOARD_BB.obj";
+            var door = new Door(doorfile);
+            modelCollection.Add(door);
 
 
         }
-
-
 
         public ElementType SelectedElementType { get; set; }
         public IEnumerable<ElementType> ElementTypes => Enum.GetValues(typeof(ElementType)).Cast<ElementType>();
@@ -50,9 +58,10 @@ namespace RapiD.Geometry.ViewModels
 
 
         [ObservableProperty]
-        GeometryBase3D selectedGeometry;
+        IModel selectedModel;
 
-    
+
+
 
         [ObservableProperty]
         Material material = PhongMaterials.Red;
@@ -62,10 +71,14 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         HelixToolkit.Wpf.SharpDX.Camera camera;
 
-
-
         [ObservableProperty]
-        ObservableCollection<GeometryBase3D> geometry3DCollection;
+        ObservableCollection<IModel> modelCollection;
+
+        //[ObservableProperty]
+        //ObservableCollection<BatchedModel> batchedModelCollection;
+
+        //[ObservableProperty]
+        //ObservableCollection<GeometryBase3D> geometry3DCollection;
 
         [ObservableProperty]
         float diameter;
@@ -86,41 +99,81 @@ namespace RapiD.Geometry.ViewModels
         float length;
 
         [ObservableProperty]
-        int numberOfChainCopies;
+        float numberOfChainCopies;
+
+
+
+
+
+
+        [RelayCommand]
+        async Task OpenFileExplorer()
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            if (dialog.ShowDialog() == true)
+            {
+
+            }
+        }
+
 
 
         public void ShowProperties()
         {
-            
+
+
         }
 
 
 
         public void DeselectAll()
         {
-            // Removes all infobuttons
-            geometry3DCollection
-              .OfType<InfoButton3D>()
-              .ToList()
-              .ForEach(x => geometry3DCollection
-              .Remove(x));
+            if (modelCollection != null)
+            {
+                // Removes all infobuttons
+                modelCollection
+                  .OfType<InfoButton3D>()
+                  .ToList()
+                  .ForEach(x => modelCollection
+                  .Remove(x));
 
-            // Deselects all models
-            geometry3DCollection.ToList().ForEach(x => x.Deselect());
+                // Deselects all models
+                modelCollection.ToList().ForEach(x => x.Deselect());
+            }
+
+            return;
         }
 
-        public void Select(GeometryBase3D geometry)
+        public void Select(IModel geometry)
         {
             geometry.Select();
+
+            if (geometry.IsSelected == false)
+            {
+
+                modelCollection
+                    .OfType<InfoButton3D>()
+                    .ToList()
+                    .ForEach(x => modelCollection.Remove(x));
+
+
+            }
             ShowButtonIfSelected(geometry);
         }
-        void ShowButtonIfSelected(GeometryBase3D geometry)
+
+
+        void ShowButtonIfSelected(IModel geometry)
         {
             if (geometry is not InfoButton3D)
             {
-                Geometry3DCollection.Add(new InfoButton3D(geometry.Position));
+                modelCollection.Add(new InfoButton3D(geometry.Position, geometry.ID));
             }
         }
+
+
+
+
+
 
 
 
@@ -132,7 +185,7 @@ namespace RapiD.Geometry.ViewModels
         void CreateChain()
         {
 
-            geometry3DCollection.Add(new ChainLink3D(15f, 50, 40f, 5));
+            modelCollection.Add(new ChainLink3D(15f, 50, 40f, new Vector3(-100, -500, 100), new Vector3(-100, 7000, 30)));
 
         }
 
@@ -142,7 +195,7 @@ namespace RapiD.Geometry.ViewModels
         [RelayCommand]
         void Remove()
         {
-            geometry3DCollection.Remove(selectedGeometry);
+            modelCollection.Remove(selectedModel);
         }
 
 
@@ -150,46 +203,56 @@ namespace RapiD.Geometry.ViewModels
         [RelayCommand]
         void UpdatePositionX()
         {
-            if (selectedGeometry != null)
+            if (selectedModel != null)
             {
                 Matrix3D matrix = new Matrix3D();
                 matrix.Translate(new Vector3D(xAxis, 0d, 0d));
                 MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
 
                 // Add the MatrixTransform3D to the TransformGroup
-                SelectedGeometry.Transform.Children.Add(matrixTransform);
-                SelectedGeometry.Draw(selectedGeometry);
-
+                if (selectedModel is GeometryBase3D g)
+                {
+                    g.Transform.Children.Add(matrixTransform);
+                    g.Draw();
+                }
             }
         }
 
         [RelayCommand]
         void UpdatePositionY()
         {
-            if (selectedGeometry != null)
+            if (selectedModel != null)
             {
                 Matrix3D matrix = new Matrix3D();
                 matrix.Translate(new Vector3D(0d, yAxis, 0d));
                 MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
 
                 // Add the MatrixTransform3D to the TransformGroup
-                SelectedGeometry.Transform.Children.Add(matrixTransform);
-                SelectedGeometry.Draw(selectedGeometry);
+                if (selectedModel is GeometryBase3D g)
+                {
+                    g.Transform.Children.Add(matrixTransform);
+                    g.Draw();
+                }
+                //SelectedModel.Transform.Children.Add(matrixTransform);
+                //SelectedGeometry.Draw(selectedModel);
             }
         }
 
         [RelayCommand]
         void UpdatePositionZ()
         {
-            if (selectedGeometry != null)
+            if (selectedModel != null)
             {
                 Matrix3D matrix = new Matrix3D();
                 matrix.Translate(new Vector3D(0d, 0d, zAxis));
                 MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
 
                 // Add the MatrixTransform3D to the TransformGroup
-                selectedGeometry.Transform.Children.Add(matrixTransform);
-                SelectedGeometry.Draw(selectedGeometry);
+                if (selectedModel is GeometryBase3D g)
+                {
+                    g.Transform.Children.Add(matrixTransform);
+                    g.Draw();
+                }
             }
         }
 
@@ -198,47 +261,33 @@ namespace RapiD.Geometry.ViewModels
         {
             float width = this.width;
 
-            if (selectedGeometry == null)
+            if (selectedModel == null)
             {
                 return;
             }
-            else if (selectedGeometry is ChainLink3D chain)
+            else if (selectedModel is ChainLink3D chain)
             {
                 chain.Width = width;
-                chain.DrawChainLink();
+                chain.Draw();
 
             }
 
         }
 
-        [RelayCommand]
-        void UpdateNumberOfCopies()
-        {
-            int numberOfCopies = this.numberOfChainCopies;
-
-            if (selectedGeometry == null)
-            {
-                return;
-            }
-            else if (selectedGeometry is ChainLink3D chain)
-            {
-                chain.Copies = numberOfCopies;
-                chain.DrawChainLink();
-            }
-        }
+      
 
         [RelayCommand]
         void UpdateLength()
         {
             float length = this.length;
-            if (selectedGeometry == null)
+            if (selectedModel == null)
             {
                 return;
             }
-            else if (selectedGeometry is ChainLink3D chain)
+            else if (selectedModel is ChainLink3D chain)
             {
                 chain.Length = length;
-                chain.DrawChainLink();
+                chain.Draw();
             }
         }
 
@@ -249,7 +298,7 @@ namespace RapiD.Geometry.ViewModels
         [RelayCommand]
         void DrawSingleChainLink()
         {
-            geometry3DCollection.Add(new ChainLink3D(10f, 40f, 65f, 1));
+            //geometry3DCollection.Add(new ChainLink3D(10f, 40f, 65f, 1));
 
 
 
@@ -261,27 +310,27 @@ namespace RapiD.Geometry.ViewModels
 
             float diam = diameter;
 
-            if (selectedGeometry == null)
+            if (selectedModel == null)
             {
 
                 return;
 
             }
-            else if (selectedGeometry is Cillinder3D c)
+            else if (selectedModel is Cillinder3D c)
             {
                 c.Diameter = diam;
 
-                c.DrawCilinder();
+                c.Draw();
             }
-            else if (selectedGeometry is Sphere3D sphere)
+            else if (selectedModel is Sphere3D sphere)
             {
                 sphere.Radius = diam;
-                sphere.DrawSphere();
+                sphere.Draw();
             }
-            else if (selectedGeometry is ChainLink3D chain)
+            else if (selectedModel is ChainLink3D chain)
             {
                 chain.Diameter = diam;
-                chain.DrawChainLink();
+                chain.Draw();
             }
 
 
@@ -299,7 +348,7 @@ namespace RapiD.Geometry.ViewModels
             double diameter = random.NextDouble(10, 300);
             double TubeDiameter = random.NextDouble(10, 300);
 
-            geometry3DCollection.Add(new Torus3D(diameter, TubeDiameter));
+            modelCollection.Add(new Torus3D(diameter, TubeDiameter));
 
         }
 
@@ -317,7 +366,7 @@ namespace RapiD.Geometry.ViewModels
             float p23 = random.Next(10, 30);
 
 
-            geometry3DCollection.Add(new Cillinder3D(new Vector3(p11, p12, p13), new Vector3(p21, p23, p22)));
+            modelCollection.Add(new Cillinder3D(new Vector3(p11, p12, p13), new Vector3(p21, p23, p22)));
 
         }
 
@@ -325,13 +374,13 @@ namespace RapiD.Geometry.ViewModels
         [RelayCommand]
         void DrawStructure()
         {
-            geometry3DCollection.Add(new Structure3D());
+            modelCollection.Add(new Structure3D());
         }
 
         [RelayCommand]
         void DrawTube()
         {
-            geometry3DCollection.Add(new Tube3D());
+            modelCollection.Add(new Tube3D());
         }
 
 
@@ -345,7 +394,7 @@ namespace RapiD.Geometry.ViewModels
             double diameter = random.NextDouble(10, 300);
             double TubeDiameter = random.NextDouble(10, 300);
 
-            geometry3DCollection.Add(new Sphere3D());
+            modelCollection.Add(new Sphere3D());
 
         }
 
@@ -358,7 +407,7 @@ namespace RapiD.Geometry.ViewModels
             MainViewModel.Navigate(Ioc.Default.GetService<HomeViewModel>());
         }
 
-       
+
     }
 
 

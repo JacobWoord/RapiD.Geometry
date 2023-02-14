@@ -33,11 +33,13 @@ namespace RapiD.Geometry.Models
             // Assing model material
             OriginalMaterial = PhongMaterials.Blue;
 
-            DrawCilinder();
+            Draw();
         }
 
-        public void DrawCilinder()
+        public override void Draw()
         {
+
+            Name = "Cilinder";
             // Create triangle mesh for an 3d Cillinder
             MeshBuilder meshBuilder = new MeshBuilder();
             meshBuilder.AddCylinder(p1, p2, diameter);

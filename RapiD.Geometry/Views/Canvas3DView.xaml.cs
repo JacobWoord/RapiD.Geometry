@@ -57,9 +57,10 @@ namespace RapiD.Geometry.Views
             MeshGeometryModel3D model = hit.ModelHit as MeshGeometryModel3D;
 
             if(model == null)
+                
                 return;
 
-            var data = model.DataContext as GeometryBase3D;
+            var data = model.DataContext as IModel;
 
             if (data is InfoButton3D b)
             {
@@ -72,7 +73,7 @@ namespace RapiD.Geometry.Views
             }
 
             (this.DataContext as Canvas3DViewModel).Select(data);
-            (this.DataContext as Canvas3DViewModel).SelectedGeometry = data ;
+            (this.DataContext as Canvas3DViewModel).SelectedModel = data ;
 
             
             

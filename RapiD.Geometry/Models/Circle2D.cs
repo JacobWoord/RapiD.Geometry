@@ -11,11 +11,11 @@ namespace RapiD.Geometry.Models
    public partial class Circle2D : GeometryBase
     {
 
-        public Circle2D(int radius, System.Windows.Point postion , int id)
+        public Circle2D(int radius, System.Windows.Point postion )
         {
             this.radius = radius;
             this.Position = postion;
-            this.Id = id;
+           
            
         }
 

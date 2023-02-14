@@ -12,7 +12,7 @@ namespace RapiD.Geometry.Models
     {
 
         [ObservableProperty]
-        int id;
+        Guid id = Guid.NewGuid();
 
         [ObservableProperty]
         Point position;
@@ -23,6 +23,9 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         bool isSelected = false;
 
+       
+        
+
         
         
         
@@ -32,4 +35,6 @@ namespace RapiD.Geometry.Models
             IsSelected = !isSelected;
         }
     }
+
+   
 }
