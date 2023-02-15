@@ -28,9 +28,14 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         HelixToolkit.Wpf.SharpDX.Material currentMaterial = PhongMaterials.Red;
 
+        [ObservableProperty]
+        bool isOpenMenu = false;
+
         private HelixToolkit.Wpf.SharpDX.Material originalMaterial;
 
         public bool linkedButton = false;
+
+        public bool GetMenuState() { return isOpenMenu; }
 
     
 
@@ -72,31 +77,15 @@ namespace RapiD.Geometry.Models
 
 
         public virtual void Draw()
-        {
-
-            //if (model is Cillinder3D c)
-            //{
-            //    c.DrawCilinder();
-            //}
-            //else if (model is Sphere3D s)
-            //{
-            //    s.DrawSphere();
-            //}
-            //else if (model is Torus3D t)
-            //{
-            //    t.DrawTorus();
-            //}
-            //else if (model is Tube3D u)
-            //{
-            //    u.DrawTube();
-            //}
-
+        { 
 
         }
 
         public void Deselect()
         {
-            IsSelected= false;
+            IsOpenMenu = false;
+
+            IsSelected = false;
             CurrentMaterial = originalMaterial;
         }
 
@@ -104,6 +93,8 @@ namespace RapiD.Geometry.Models
 
         public void Select()
         {
+            IsOpenMenu = !isOpenMenu;
+
             IsSelected = !isSelected;
 
             if (isSelected)
@@ -119,8 +110,7 @@ namespace RapiD.Geometry.Models
                 CurrentMaterial = originalMaterial;
         }
 
-
-
+       
     }
 }
 

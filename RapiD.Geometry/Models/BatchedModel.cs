@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace RapiD.Geometry.Models
 {
-    public abstract partial class BatchedModel : ObservableObject,IModel
+    public abstract partial class BatchedModel : ObservableObject, IModel
     {
 
         [ObservableProperty]
@@ -23,13 +23,25 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         Material baseMaterial = PhongMaterials.Red;
 
+        [ObservableProperty]
+        List<Vector3> nodeList = new();
+
+        [ObservableProperty]
+        bool isSelected = false;
+
+        [ObservableProperty]
+        bool isOpenMenu = false;
+
+
+
+        public List<Vector3> GetNodeList() { return nodeList; }
 
 
         public System.Windows.Media.Media3D.Transform3DGroup Transform3DGroup { get; set; }
         public string Name { get; set; }
         public string FileName { get; set; }
         public string ID { get; set; }
-        public bool IsSelected { get; set; }
+      //  public bool IsSelected { get; set; }
 
         public Vector3 Position { get; set; }
 
@@ -56,24 +68,43 @@ namespace RapiD.Geometry.Models
 
             var anchors = configs.Where(x => x.Name.Contains("anchor") == true);
 
+           
+            
+            //positions of nodes in door addes to vector3 List
+            foreach (var item in anchors)
+            {
+                nodeList.Add(item.Location);
+            }
+
+
+
+
                 
 
          }
 
         public void Deselect()
         {
+            IsSelected = false;
+            IsOpenMenu = false;
 
         }
 
         public void Select()
         {
-
-            //IsSelected = !isSelected;
+            
+            IsOpenMenu=  !isOpenMenu;
+            IsSelected = !isSelected;
 
           
         }
 
+     
 
+        public bool GetMenuState()
+        {
+            return IsOpenMenu;
+        }
     }
 
 }

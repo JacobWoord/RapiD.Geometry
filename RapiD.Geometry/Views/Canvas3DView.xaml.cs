@@ -54,33 +54,68 @@ namespace RapiD.Geometry.Views
                 return;
             }
             var hit = hits.First();
+
+
+           
+            BatchedMeshGeometryModel3D batchedModel = hit.ModelHit as BatchedMeshGeometryModel3D;
             MeshGeometryModel3D model = hit.ModelHit as MeshGeometryModel3D;
+            
 
-            if(model == null)
-                
-                return;
-
-            var data = model.DataContext as IModel;
-
-            if (data is InfoButton3D b)
+            if(batchedModel != null)
             {
-                (this.DataContext as Canvas3DViewModel).ShowProperties();
+                var doorData = batchedModel.DataContext as IModel;
+
+                (this.DataContext as Canvas3DViewModel).Select(doorData);
+                (this.DataContext as Canvas3DViewModel).SelectedModel = doorData;
             }
 
-            if (data is ChainLink3D c)
+
+
+            if (model != null)
             {
-                
+                var modeldata = model.DataContext as IModel;
+
+                if (modeldata is InfoButton3D b)
+                {
+                    (this.DataContext as Canvas3DViewModel).ShowProperties();
+                }
+
+                (this.DataContext as Canvas3DViewModel).Select(modeldata);
+                (this.DataContext as Canvas3DViewModel).SelectedModel = modeldata;
             }
 
-            (this.DataContext as Canvas3DViewModel).Select(data);
-            (this.DataContext as Canvas3DViewModel).SelectedModel = data ;
+        }
+
+
+
+
+     
+
+
 
             
             
-            
-            
+           
 
 
+
+
+
+
+
+        private void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+
+            // Get the row that was clicked on
+            var row = ItemsControl.ContainerFromElement((DataGrid)sender, e.OriginalSource as DependencyObject) as DataGridRow;
+
+            // If a row was clicked, raise an event
+            if (row != null)
+            {
+                // Raise a custom event or do something else here
+                // ...
+
+            }
         }
     }
 }

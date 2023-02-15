@@ -24,102 +24,125 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="0.2*" />
         </Grid.ColumnDefinitions>
 
         <Grid
             Grid.Row="0"
             Grid.ColumnSpan="3"
-            Height="40"
-            Background="Black">
+            Height="60"
+            HorizontalAlignment="Center"
+            Background="White">
             <StackPanel Orientation="Horizontal">
                 <Button
                     MinWidth="100"
-                    Margin="5"
-                    Background="Black"
-                    BorderBrush="White"
+                    Margin="5 2"
+                    Background="White"
+                    BorderBrush="black"
+                    Foreground="black" 
+                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding GoHomeCommand}"
                     Content="Home"
-                    Foreground="White" />
+                    />
 
                 <Button
-                    MinWidth="100"
-                    Margin="5"
-                    Background="Black"
-                    BorderBrush="White"
+                    MinWidth="120"
+                    Margin="5 2"
+                    Background="White"
+                    BorderBrush="black"
+                    Foreground="black" 
+                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding DrawTorrusCommand}"
                     Content="Draw Torrus"
-                    Foreground="White" />
+                    />
 
                 <Button
-                    MinWidth="100"
-                    Margin="5"
-                    Background="Black"
-                    BorderBrush="White"
+                    MinWidth="120"
+                    Margin="5 2"
+                     Background="White"
+                    BorderBrush="black"
+                    Foreground="black" 
+                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding DrawCillinderCommand}"
                     Content="Draw Cillinder"
-                    Foreground="White" />
+                     />
 
                 <Button
-                    MinWidth="100"
-                    Margin="0"
-                    Background="Black"
-                    BorderBrush="White"
+                    MinWidth="120"
+                    Margin="5 2"
+                    Background="White"
+                    BorderBrush="black"
+                    Foreground="black" 
+                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding DrawButtonSphereCommand}"
                     Content="Draw Button"
-                    Foreground="White" />
+                     />
 
                 <Button
-                    MinWidth="100"
-                    Margin="0"
-                    Background="Black"
-                    BorderBrush="White"
+                    MinWidth="120"
+                    Margin="5 2"
+                    Background="White"
+                    BorderBrush="black"
+                    Foreground="black" 
+                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding DrawSingleChainLinkCommand}"
                     Content="SingleChainLink"
-                    Foreground="White" />
+                     />
 
                 <Button
-                    MinWidth="100"
-                    Margin="0"
-                    Background="Black"
-                    BorderBrush="White"
+                    MinWidth="120"
+                    Margin="5 2"
+                    Background="White"
+                    BorderBrush="black"
+                    Foreground="black" 
+                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding DrawSphereCommand}"
                     Content="Draw Sphere"
-                    Foreground="White" />
+                    
+                    />
 
                 <Button
-                    MinWidth="100"
-                    Margin="0"
-                    Background="Black"
-                    BorderBrush="White"
+                    MinWidth="120"
+                    Margin="5 2"
+                     Background="White"
+                    BorderBrush="black"
+                    Foreground="black" 
+                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding CreateChainCommand}"
                     Content="Create Chain"
-                    Foreground="White" />
+                     />
 
                 <Button
-                    MinWidth="100"
-                    Margin="0"
-                    Background="Black"
-                    BorderBrush="White"
+                    Margin="5 2"
+                    MinWidth="120"
+                    Background="White"
+                    BorderBrush="black"
+                    Foreground="black" 
+                    FontWeight="SemiBold"
+                    BorderThickness="2"
+                    Command="{Binding AddDoorToViewPortCommand}"
+                    Content="Add Door"
+                    />
+
+                <Button
+                    MinWidth="120"
+                    Margin="5 2"
+                     Background="White"
+                    BorderBrush="Red"
+                    Foreground="Red" 
+                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding RemoveCommand}"
                     Content="Remove"
-                    Foreground="White" />
-                <Button
-                    MinWidth="100"
-                    Background="Black"
-                    BorderBrush="White"
-                    BorderThickness="2"
-                    Command="{Binding OpenFileExplorerCommand}"
-                    Content="Import file"
-                    Foreground="White" />
+                     />
+            
 
             </StackPanel>
 
@@ -248,9 +271,12 @@
             Text="Properties" />
 
         <Grid
+            Visibility="{Binding IsOpenMenu,Converter={StaticResource Bool2Vis}}"
+            Name="props"
             Grid.Row="1"
             Grid.Column="2"
             Margin="5"
+            
             Background="White"
             Opacity="0.9">
             <Grid.RowDefinitions>
@@ -331,6 +357,11 @@
                     Text="{Binding ElementName=LengthValue, Path=Value}" />
             </StackPanel>
 
+            <ComboBox Grid.Row="3"
+                      MinHeight="40"
+                      MinWidth="200"
+                      ItemsSource="{Binding ChainsCollection}"/>
+
 
 
 
@@ -339,13 +370,31 @@
 
         <DataGrid
             Grid.Row="3"
+            SelectionMode="Extended"
+            SelectionUnit="FullRow"
             Grid.ColumnSpan="3"
             AutoGenerateColumns="True"
             CanUserAddRows="False"
             IsReadOnly="true"
             ItemsSource="{Binding ModelCollection}"
-            SelectedItem="{Binding SelectedGeometry}">
+            SelectedItem="{Binding SelectedModel}"
+            >
+           
+            <i:Interaction.Triggers>
+            <i:EventTrigger EventName="PreviewMouseButtonDown">
+                <i:InvokeCommandAction Command="{Binding SelectFromGridCommand}">
+                    
+                </i:InvokeCommandAction>
+            </i:EventTrigger>
+            </i:Interaction.Triggers>
+            
+            
+          
+           
             <DataGrid.Columns>
+               
+                
+               
                 <DataGridTextColumn
                     Binding="{Binding Id}"
                     Header="Id"
@@ -376,6 +425,8 @@
 
                 </Style>
             </DataGrid.ColumnHeaderStyle>
+            
+           
 
 
 

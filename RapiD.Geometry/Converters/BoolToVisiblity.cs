@@ -1,24 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace RapiD.Geometry.Converters
 {
-    public class ColorToBrushConverter : IValueConverter
+    public class BoolToVisiblity : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is Color c)
+            if (value is true)
             {
-                return new SolidColorBrush(c);
+                return Visibility.Visible;
             }
-            return null;
+            return Visibility.Collapsed; 
+
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }

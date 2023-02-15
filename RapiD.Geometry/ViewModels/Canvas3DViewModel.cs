@@ -22,9 +22,12 @@ using Material = HelixToolkit.Wpf.SharpDX.Material;
 
 namespace RapiD.Geometry.ViewModels
 {
-    
+
     public partial class Canvas3DViewModel : ObservableObject
     {
+
+        public string Doorfile;
+
         public Canvas3DViewModel()
         {
 
@@ -42,12 +45,11 @@ namespace RapiD.Geometry.ViewModels
             //geometry3DCollection = new ObservableCollection<GeometryBase3D>();
             //batchedModelCollection = new ObservableCollection<BatchedModel>();
             modelCollection = new ObservableCollection<IModel>();
-
-
             string basefolder = Utils2D.GetAppDataFolder();
-            string doorfile = basefolder + @"3DModels\FISHINGBOARD_BB.obj";
-            var door = new Door(doorfile);
-            modelCollection.Add(door);
+            Doorfile = basefolder + @"3DModels\FISHINGBOARD_BB.obj";
+
+            this.myDoor = new Door(Doorfile);
+            modelCollection.Add(myDoor);
 
 
         }
@@ -60,7 +62,8 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         IModel selectedModel;
 
-
+        [ObservableProperty]
+        Door myDoor;
 
 
         [ObservableProperty]
@@ -73,6 +76,10 @@ namespace RapiD.Geometry.ViewModels
 
         [ObservableProperty]
         ObservableCollection<IModel> modelCollection;
+
+
+        [ObservableProperty]
+        ObservableCollection<ChainLink3D> chainsCollection = new();
 
         //[ObservableProperty]
         //ObservableCollection<BatchedModel> batchedModelCollection;
@@ -101,7 +108,13 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         float numberOfChainCopies;
 
+        [ObservableProperty]
+        bool isOpenMenu = false;
 
+
+
+
+      
 
 
 
@@ -144,10 +157,33 @@ namespace RapiD.Geometry.ViewModels
             return;
         }
 
+        [ObservableProperty]
+        string showOrNOtShowField;
+
+
+
+
+
+
+        [RelayCommand]
+        void SelectFromGrid()
+        {
+            selectedModel.Select();
+
+        }
+
+
         public void Select(IModel geometry)
         {
             geometry.Select();
+            bool menuState = geometry.GetMenuState();
+            IsOpenMenu = menuState;
 
+            modelCollection
+                .OfType<ChainLink3D>()
+                .ToList()
+                .ForEach(x => chainsCollection.Add(x));
+           
             if (geometry.IsSelected == false)
             {
 
@@ -185,7 +221,16 @@ namespace RapiD.Geometry.ViewModels
         void CreateChain()
         {
 
-            modelCollection.Add(new ChainLink3D(15f, 50, 40f, new Vector3(-100, -500, 100), new Vector3(-100, 7000, 30)));
+            var nodeList = myDoor.GetNodeList();
+            var indexOfList = nodeList;
+
+
+
+
+            modelCollection.Add(new ChainLink3D(15f, 50, 40f, indexOfList[4], new Vector3(-8000, -800, -200)));
+            modelCollection.Add(new ChainLink3D(15f, 50, 40f, indexOfList[0], new Vector3(-8000, -800, -200)));
+
+
 
         }
 
@@ -274,7 +319,7 @@ namespace RapiD.Geometry.ViewModels
 
         }
 
-      
+
 
         [RelayCommand]
         void UpdateLength()
@@ -411,12 +456,7 @@ namespace RapiD.Geometry.ViewModels
     }
 
 
-
-
 }
-
-
-
 
 
 

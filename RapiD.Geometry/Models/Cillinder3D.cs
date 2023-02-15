@@ -38,7 +38,7 @@ namespace RapiD.Geometry.Models
 
         public override void Draw()
         {
-
+        
             Name = "Cilinder";
             // Create triangle mesh for an 3d Cillinder
             MeshBuilder meshBuilder = new MeshBuilder();

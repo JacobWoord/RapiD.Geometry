@@ -48,7 +48,7 @@ namespace RapiD.Geometry.Models
             this.startPointVector = startPointVector;
             this.endPointVector = endPointVector;
 
-            OriginalMaterial = PhongMaterials.Chrome;
+            OriginalMaterial = PhongMaterials.Yellow;
             Draw();
         }
 
@@ -95,7 +95,7 @@ namespace RapiD.Geometry.Models
             float trans = 0f;
             float translate = length + (radius * 2) - diameter;
             float yoffset = 0;
-            int segments = 6;
+            int segments = 10;
             float interval = 180 / segments;
            
 
@@ -119,7 +119,7 @@ namespace RapiD.Geometry.Models
 
             meshBuilder.AddSphere(Vector3.Zero, 5, 10, 10);
             meshBuilder.AddSphere(startVector, 30, 10, 10);
-            meshBuilder.AddSphere(endVector, 30, 10, 10);
+            meshBuilder.AddSphere(endVector, 100, 10, 10);
 
 
             Debug.WriteLine($"distance:{distanceBetweenTwoPoints}");
