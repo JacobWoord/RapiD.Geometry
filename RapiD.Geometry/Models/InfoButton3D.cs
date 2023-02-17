@@ -20,12 +20,13 @@ namespace RapiD.Geometry.Models
         Vector3 position2;
 
         [ObservableProperty]
-        int idNumber;
+        string idNumber;
 
-        public InfoButton3D(Vector3 position, int linkedGuid)
+        public InfoButton3D(Vector3 position, string linkedGuid)
         {
             Name = "InfoButton";
-            this.idNumber= linkedGuid;
+            ID= linkedGuid;
+            this.idNumber= linkedGuid.ToString();
             this.position2 = position;
             OriginalMaterial= PhongMaterials.Red;
             DrawButtonOnGeometry(position);

@@ -1,5 +1,6 @@
-﻿using HelixToolkit.SharpDX.Core;
-using HelixToolkit.SharpDX.Core.Assimp;
+﻿using Assimp;
+using HelixToolkit.SharpDX.Core;
+
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
 using System;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 using Material = HelixToolkit.Wpf.SharpDX.Material;
+
 
 namespace RapiD.Geometry.Models
 {
@@ -66,7 +68,7 @@ namespace RapiD.Geometry.Models
 
         public void RotateTranform(IModel door)
         {
-            RotateTransform3D rotateTransform3D = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), -180d));
+            RotateTransform3D rotateTransform3D = new RotateTransform3D(new AxisAngleRotation3D(new System.Windows.Media.Media3D.Vector3D(0, 1, 0), -180d));
             (door as BatchedModel).Transform.Children.Add(rotateTransform3D);
 
 
@@ -76,7 +78,7 @@ namespace RapiD.Geometry.Models
         public void UpdatePositionDoor(IModel door)
         {
             Matrix3D matrix = new Matrix3D();
-            matrix.Translate(new Vector3D(8000f, 0f, 0f));
+            matrix.Translate(new System.Windows.Media.Media3D.Vector3D(8000f, 0f, 0f));
             MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
             (door as BatchedModel).Transform.Children.Add(matrixTransform);
         }
@@ -105,42 +107,40 @@ namespace RapiD.Geometry.Models
                 return;
             }
 
-            var configs = Importer3D.OpenFile(FileName);
+            var configs = await Task.Run(() => Importer3D.OpenFile(FileName));
             var models = configs.Where(x => x.Name.Contains("anchor") == false);
             foreach (var m in models)
             {
-                //var test = m.BatchedMeshGeometryConfig;
-                //m.Location = new Vector3(-200, 200, 200);
-                //Debug.WriteLine(m.Location.ToString());
-
                 BatchedMeshes.Add(m.BatchedMeshGeometryConfig);
-           
                 ModelMaterials.Add(m.MaterialCore.ConvertToMaterial());
-
-              
             }
 
             var anchors = configs.Where(x => x.Name.Contains("anchor") == true);
-            //put all node in list
-            foreach (var item in models)
-            {
-                allNodes.Add(item.Location);
-            }
 
-            //positions of nodes in door addes to vector3 List
+            //positions of nodes in door added to vector3 List
             foreach (var item in anchors)
             {
                 nodeList.Add(item.Location);
             }
-
         }
 
 
-       
 
 
 
-                
+        public void UpdateNodeList()
+        {
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                nodeList[i] = (Vector3)Vector3.Transform(nodeList[i], Transform.Value.ToMatrix());
+            }
+        }
+
+
+
+
+
+
 
 
         public void Deselect()

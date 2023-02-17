@@ -1,5 +1,6 @@
 ﻿using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,9 +37,9 @@ namespace RapiD.Geometry.Models
 
 
 
-        public Torus3D(double diam, double tubeDiam)
+        public Torus3D(double diam, double tubeDiam,Vector3 pos)
         {
-
+            Position = pos;
 
             this.diameter = diam;
             this.tubeDiameter = tubeDiam;

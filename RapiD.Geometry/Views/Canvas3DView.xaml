@@ -102,8 +102,8 @@
                     Foreground="black" 
                     FontWeight="SemiBold"
                     BorderThickness="2"
-                    Command="{Binding DrawSphereCommand}"
-                    Content="Draw Sphere"
+                    Command="{Binding UpdatePositionDoorAndNodesCommand}"
+                    Content="place nodes an door"
                     
                     />
 
@@ -127,7 +127,7 @@
                     Foreground="black" 
                     FontWeight="SemiBold"
                     BorderThickness="2"
-                    Command="{Binding UpdatePositionDoorCommand}"
+                    Command="{Binding DrawTranslatedNodesCommand}"
                     Content="Add Door"
                     />
 

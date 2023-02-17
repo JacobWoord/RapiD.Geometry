@@ -48,17 +48,17 @@ namespace RapiD.Geometry.ViewModels
             string basefolder = Utils2D.GetAppDataFolder();
             Doorfile = basefolder + @"3DModels\FISHINGBOARD_BB.obj";
 
-            this.myDoor = new Door(Doorfile);
-            modelCollection.Add(myDoor);
+            //this.myDoor = new Door(Doorfile);
+            //modelCollection.Add(myDoor);
 
-            this.myDoor = new Door(Doorfile);
-            modelCollection.Add(myDoor);
+            this.myDoor2 = new Door(Doorfile);
+            modelCollection.Add(myDoor2);
 
 
-            myDoor.UpdatePositionDoor(myDoor);
-            myDoor.RotateTranform(myDoor);
-            myDoor.Mirror(MirrorAxis.Z);
-         
+            //myDoor2.UpdatePositionDoor(myDoor2);
+            //myDoor2.RotateTranform(myDoor2);
+            //myDoor2.Mirror(MirrorAxis.Z);
+
         }  
 
 
@@ -75,6 +75,10 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         Door myDoor;
 
+        [ObservableProperty]
+        Door myDoor2;
+
+
 
         [ObservableProperty]
         Material material = PhongMaterials.Red;
@@ -86,6 +90,8 @@ namespace RapiD.Geometry.ViewModels
 
         [ObservableProperty]
         ObservableCollection<IModel> modelCollection;
+
+        ObservableCollection<Vector3> nodePositions = new();
 
 
         [ObservableProperty]
@@ -124,6 +130,66 @@ namespace RapiD.Geometry.ViewModels
 
 
 
+        [RelayCommand]
+        void newDoor()
+        {
+            this.myDoor2 = new Door(Doorfile);
+            modelCollection.Add(myDoor2);
+
+
+        }
+
+        [RelayCommand]
+        public void UpdatePositionDoorAndNodes()
+        {
+            Matrix3D matrix = new Matrix3D();
+            matrix.Translate(new Vector3D(8000f, 0f, 0f));
+            MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
+            (myDoor2 as BatchedModel).Transform.Children.Add(matrixTransform);
+            (myDoor2 as BatchedModel).UpdateNodeList();
+
+
+
+
+        }
+
+
+//           foreach(var model in modelCollection)
+//            {
+//                if (model is InfoButton3D b)
+//                {
+//                    b.Transform.Children.Add(matrixTransform);
+//                    nodePositions.Add(b.Position);
+//                }
+//}
+
+//DrawTorrus(nodePositions[1]);
+
+
+[RelayCommand]
+        void DrawTorrus(Vector3 Pos)
+        {
+
+            Random random = new Random();
+            double diameter = random.NextDouble(10, 300);
+            double TubeDiameter = random.NextDouble(10, 300);
+
+            modelCollection.Add(new Torus3D(diameter, TubeDiameter,Pos));
+
+        }
+
+
+        [RelayCommand]
+        void DrawTranslatedNodes()
+        {
+
+            var nodelist = myDoor2.GetNodeList();
+
+            foreach (var node in nodelist)
+            {
+                modelCollection.Add(new InfoButton3D(node, myDoor2.ID));
+            }
+        }
 
 
         public void UpdateChainStartPoint(IModel Node)
@@ -152,16 +218,7 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-        [RelayCommand]
-        async Task OpenFileExplorer()
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            if (dialog.ShowDialog() == true)
-            {
-
-            }
-        }
-
+     
 
 
 
@@ -220,12 +277,12 @@ namespace RapiD.Geometry.ViewModels
         void ShowButtonIfSelected(IModel geometry)
         {
             int count = 0;
-            var nodeList = myDoor.GetNodeList();
+            var nodeList = myDoor2.GetNodeList();
             int indexOfNodeList = 0;
             if (geometry is ChainLink3D)
                 foreach (var node in nodeList)
                 {
-                    modelCollection.Add(new InfoButton3D(node, count));
+                    modelCollection.Add(new InfoButton3D(node, count.ToString()));
                     count++;
                 }
 
@@ -237,7 +294,7 @@ namespace RapiD.Geometry.ViewModels
         void CreateChain()
         {
 
-            var nodeList = myDoor.GetNodeList();
+            var nodeList = myDoor2.GetNodeList();
             var indexOfList = nodeList;
 
 
@@ -394,17 +451,6 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-            [RelayCommand]
-            void DrawTorrus()
-            {
-
-                Random random = new Random();
-                double diameter = random.NextDouble(10, 300);
-                double TubeDiameter = random.NextDouble(10, 300);
-
-                modelCollection.Add(new Torus3D(diameter, TubeDiameter));
-
-            }
 
             [RelayCommand]
             void DrawCillinder()
