@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using Material = HelixToolkit.Wpf.SharpDX.Material;
 
 namespace RapiD.Geometry.Models
 {
@@ -36,13 +37,17 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         bool isOpenMenu = false;
 
+        [ObservableProperty]
+        System.Windows.Media.Media3D.Transform3DGroup transform = new();
+
 
 
 
         public List<Vector3> GetNodeList() { return nodeList; }
 
 
-        public System.Windows.Media.Media3D.Transform3DGroup Transform3DGroup { get; set; }
+
+
         public string Name { get; set; }
         public string FileName { get; set; }
         public string ID { get; set; }

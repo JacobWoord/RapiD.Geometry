@@ -55,6 +55,7 @@ namespace RapiD.Geometry.Views
                 (this.DataContext as Canvas3DViewModel).DeselectAll();
                 return;
             }
+            else if (hits.Count == 1) { }
             var hit = hits.First();
 
 
@@ -66,7 +67,7 @@ namespace RapiD.Geometry.Views
             if(batchedModel != null)
             {
                 var doorData = batchedModel.DataContext as IModel;
-
+                (this.DataContext as Canvas3DViewModel).DeselectAll();
                 (this.DataContext as Canvas3DViewModel).Select(doorData);
                 (this.DataContext as Canvas3DViewModel).SelectedModel = doorData;
             }
@@ -85,6 +86,8 @@ namespace RapiD.Geometry.Views
                 }
                 else
                 {
+                    (this.DataContext as Canvas3DViewModel).DeselectAll();
+
                     (this.DataContext as Canvas3DViewModel).Select(modeldata);
                     (this.DataContext as Canvas3DViewModel).SelectedModel = modeldata;
                 }               

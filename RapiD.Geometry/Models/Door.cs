@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
 
 namespace RapiD.Geometry.Models
 {
@@ -14,7 +15,8 @@ namespace RapiD.Geometry.Models
     {
 
         [ObservableProperty]
-        List<Vector3> nodeList = new();
+        Transform3DGroup transform3DGroup = new();
+        
         public Door(string filename)
         {
 
@@ -25,6 +27,13 @@ namespace RapiD.Geometry.Models
             FileName= filename;
 
             Task.Factory.StartNew(OpenFile);
+        }
+
+
+        public void ChangePosition()
+        {
+
+
         }
 
 

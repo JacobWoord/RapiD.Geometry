@@ -78,7 +78,7 @@
                     Foreground="black" 
                     FontWeight="SemiBold"
                     BorderThickness="2"
-                    Command="{Binding DrawButtonSphereCommand}"
+                    Command="{Binding ReplaceCommand}"
                     Content="Draw Button"
                      />
 
@@ -90,8 +90,8 @@
                     Foreground="black" 
                     FontWeight="SemiBold"
                     BorderThickness="2"
-                    Command="{Binding DrawSingleChainLinkCommand}"
-                    Content="SingleChainLink"
+                    Command="{Binding ReplaceCommand}"
+                    Content="Replace cillinder"
                      />
 
                 <Button
@@ -127,7 +127,7 @@
                     Foreground="black" 
                     FontWeight="SemiBold"
                     BorderThickness="2"
-                    Command="{Binding AddDoorToViewPortCommand}"
+                    Command="{Binding UpdatePositionDoorCommand}"
                     Content="Add Door"
                     />
 

@@ -39,7 +39,7 @@ namespace RapiD.Geometry.Models
         Vector3 endPointVector;
 
 
-
+        
         public ChainLink3D(float diameter, float width,float length, Vector3 startPointVector, Vector3 endPointVector)
         {
             this.ID=Guid.NewGuid().ToString();
@@ -56,7 +56,10 @@ namespace RapiD.Geometry.Models
         }
 
 
-     
+        public void SetNewStartPosition(Vector3 newStartPos)
+        {
+            this.StartPointVector = newStartPos;
+        }
 
         public Matrix RotationMatrix(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2)
         {
