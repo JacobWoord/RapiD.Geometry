@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 namespace RapiD.Geometry
 {
 
+
+    public enum MirrorAxis { X, Y, Z }
+
     public enum MenuType
     {
         Door,

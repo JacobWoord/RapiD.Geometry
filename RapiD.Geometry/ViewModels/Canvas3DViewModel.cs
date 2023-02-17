@@ -54,10 +54,12 @@ namespace RapiD.Geometry.ViewModels
             this.myDoor = new Door(Doorfile);
             modelCollection.Add(myDoor);
 
-            UpdatePositionDoor(myDoor);
-            RotateTranform(myDoor);
 
-        }
+            myDoor.UpdatePositionDoor(myDoor);
+            myDoor.RotateTranform(myDoor);
+            myDoor.Mirror(MirrorAxis.Z);
+         
+        }  
 
 
 
@@ -143,41 +145,14 @@ namespace RapiD.Geometry.ViewModels
         }
 
 
-        public void UpdatePositionDoor(IModel door)
-        {
-            Matrix3D matrix = new Matrix3D();
-            matrix.Translate(new Vector3D(-14000f, 1000f, 0f));
-            MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
-            (door as BatchedModel).Transform.Children.Add(matrixTransform);
-        }
+ 
 
-        public void RotateTranform(IModel door)
-        {
-            RotateTransform3D rotateTransform3D = new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0,1,0),-180d));
-            (door as BatchedModel).Transform.Children.Add(rotateTransform3D);
-
-
-        }
-
-        //public void Mirror(MirrorAxis mirrorAxis)
-        //{
-        //    var scale = new Media3D.ScaleTransform3D();
-        //    if (mirrorAxis == MirrorAxis.X)
-        //        scale.ScaleX = -1;
-        //    else if (mirrorAxis == MirrorAxis.Y)
-        //        scale.ScaleY = -1;
-        //    else if (mirrorAxis == MirrorAxis.Z)
-        //        scale.ScaleZ = -1;
-
-        //    Transform3DGroup.Children.Add(scale);
-        //    Nodes?.Where(x => x.CanTranslate).ToList().ForEach(x => x.Transform3DGroup.Children.Add(scale));
-
-        //}
+  
 
 
 
 
-            [RelayCommand]
+        [RelayCommand]
         async Task OpenFileExplorer()
         {
             OpenFileDialog dialog = new OpenFileDialog();
