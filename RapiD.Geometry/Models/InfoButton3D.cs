@@ -17,14 +17,17 @@ namespace RapiD.Geometry.Models
 
 
         [ObservableProperty]
-        Vector3 position;
+        Vector3 position2;
 
-        public InfoButton3D(Vector3 position, string linkedGuid)
+        [ObservableProperty]
+        int idNumber;
+
+        public InfoButton3D(Vector3 position, int linkedGuid)
         {
             Name = "InfoButton";
-            ID = linkedGuid.ToString();
-            this.position = position;
-            OriginalMaterial= PhongMaterials.Blue;
+            this.idNumber= linkedGuid;
+            this.position2 = position;
+            OriginalMaterial= PhongMaterials.Red;
             DrawButtonOnGeometry(position);
             
 
@@ -36,7 +39,7 @@ namespace RapiD.Geometry.Models
         {
             MeshBuilder meshbuilder = new MeshBuilder();
             //meshbuilder.AddSphere(position,Radius);
-            meshbuilder.AddPyramid(position, 50d, 40d, true);
+            meshbuilder.AddSphere(position, 20d);
             MeshGeometry = meshbuilder.ToMeshGeometry3D();
 
 

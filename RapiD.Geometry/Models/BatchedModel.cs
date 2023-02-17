@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,10 +28,14 @@ namespace RapiD.Geometry.Models
         List<Vector3> nodeList = new();
 
         [ObservableProperty]
+        List<Vector3> allNodes = new();
+
+        [ObservableProperty]
         bool isSelected = false;
 
         [ObservableProperty]
         bool isOpenMenu = false;
+
 
 
 
@@ -41,18 +46,24 @@ namespace RapiD.Geometry.Models
         public string Name { get; set; }
         public string FileName { get; set; }
         public string ID { get; set; }
-      //  public bool IsSelected { get; set; }
+        //  public bool IsSelected { get; set; }
 
         public Vector3 Position { get; set; }
 
         public BatchedModel()
         {
-            batchedMeshes= new List<BatchedMeshGeometryConfig>();
-            modelMaterials= new List<Material>();
+            batchedMeshes = new List<BatchedMeshGeometryConfig>();
+            modelMaterials = new List<Material>();
         }
+
+
+
+     
+
+
         public async Task OpenFile()
         {
-            if(string.IsNullOrEmpty(FileName))
+            if (string.IsNullOrEmpty(FileName))
             {
                 Debug.WriteLine("No file specified");
                 return;
@@ -62,26 +73,39 @@ namespace RapiD.Geometry.Models
             var models = configs.Where(x => x.Name.Contains("anchor") == false);
             foreach (var m in models)
             {
+                //var test = m.BatchedMeshGeometryConfig;
+                //m.Location = new Vector3(-200, 200, 200);
+                //Debug.WriteLine(m.Location.ToString());
+
                 BatchedMeshes.Add(m.BatchedMeshGeometryConfig);
+           
                 ModelMaterials.Add(m.MaterialCore.ConvertToMaterial());
+
+              
             }
 
             var anchors = configs.Where(x => x.Name.Contains("anchor") == true);
+            //put all node in list
+            foreach (var item in models)
+            {
+                allNodes.Add(item.Location);
+            }
 
-           
-            
             //positions of nodes in door addes to vector3 List
             foreach (var item in anchors)
             {
                 nodeList.Add(item.Location);
             }
 
+        }
+
+
+       
 
 
 
                 
 
-         }
 
         public void Deselect()
         {

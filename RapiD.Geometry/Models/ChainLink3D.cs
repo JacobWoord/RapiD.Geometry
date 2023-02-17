@@ -32,8 +32,11 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         float count;
 
-        private Vector3 startPointVector;
-        private Vector3 endPointVector;
+        [ObservableProperty]
+        Vector3 startPointVector;
+
+        [ObservableProperty]
+        Vector3 endPointVector;
 
 
 

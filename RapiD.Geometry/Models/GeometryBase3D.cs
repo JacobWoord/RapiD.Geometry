@@ -35,6 +35,9 @@ namespace RapiD.Geometry.Models
 
         public bool linkedButton = false;
 
+
+
+
         public bool GetMenuState() { return isOpenMenu; }
 
     
@@ -87,12 +90,17 @@ namespace RapiD.Geometry.Models
 
             IsSelected = false;
             CurrentMaterial = originalMaterial;
+
         }
 
 
 
         public void Select()
         {
+
+           
+
+
             IsOpenMenu = !isOpenMenu;
 
             IsSelected = !isSelected;

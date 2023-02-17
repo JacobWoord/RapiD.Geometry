@@ -3,37 +3,31 @@ using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RapiD.Geometry.Models
 {
-    public partial class Door : BatchedModel
+    public partial class SecondDoor : GeometryBase3D
     {
 
+    
         [ObservableProperty]
         List<Vector3> nodeList = new();
-        public Door(string filename)
-        {
-
-            
-            Name = "Bord";
-            ID = Guid.NewGuid().ToString();
-
-            FileName= filename;
-
-            Task.Factory.StartNew(OpenFile);
-        }
-
-
-        public void Draw()
-        {
-
-
-        }
        
+        
+        
+        
+        public SecondDoor(string filename)
+        {
+            MeshBuilder meshBuilder = new MeshBuilder();
+         
+            OriginalMaterial = PhongMaterials.Yellow;
+
+        }
+
+
 
     }
 }

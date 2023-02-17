@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 
 namespace RapiD.Geometry
 {
+
+    public enum MenuType
+    {
+        Door,
+        Chain,
+        Sphere,
+
+    }
     public enum ParticleType
     {
         Bubbles,

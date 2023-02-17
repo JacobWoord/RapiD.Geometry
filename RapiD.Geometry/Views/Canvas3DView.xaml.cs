@@ -48,6 +48,8 @@ namespace RapiD.Geometry.Views
             var args = e as MouseDown3DEventArgs;
             var vp = sender as Viewport3DX;
             var hits = vp.FindHits(args.Position);
+           
+            
             if (hits.Count == 0)
             {
                 (this.DataContext as Canvas3DViewModel).DeselectAll();
@@ -71,17 +73,23 @@ namespace RapiD.Geometry.Views
 
 
 
+
+
             if (model != null)
             {
                 var modeldata = model.DataContext as IModel;
 
-                if (modeldata is InfoButton3D b)
+                if (modeldata is InfoButton3D)
                 {
-                    (this.DataContext as Canvas3DViewModel).ShowProperties();
+                  (this.DataContext as Canvas3DViewModel).UpdateChainStartPoint(modeldata);
                 }
+                else
+                {
+                    (this.DataContext as Canvas3DViewModel).Select(modeldata);
+                    (this.DataContext as Canvas3DViewModel).SelectedModel = modeldata;
+                }               
 
-                (this.DataContext as Canvas3DViewModel).Select(modeldata);
-                (this.DataContext as Canvas3DViewModel).SelectedModel = modeldata;
+
             }
 
         }
