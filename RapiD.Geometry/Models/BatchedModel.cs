@@ -81,6 +81,7 @@ namespace RapiD.Geometry.Models
             matrix.Translate(new System.Windows.Media.Media3D.Vector3D(8000f, 0f, 0f));
             MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
             (door as BatchedModel).Transform.Children.Add(matrixTransform);
+            (door as BatchedModel).UpdateNodeList();
         }
 
         public void Mirror(MirrorAxis mirrorAxis)

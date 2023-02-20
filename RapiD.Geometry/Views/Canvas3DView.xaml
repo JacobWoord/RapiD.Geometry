@@ -102,8 +102,8 @@
                     Foreground="black" 
                     FontWeight="SemiBold"
                     BorderThickness="2"
-                    Command="{Binding UpdatePositionDoorAndNodesCommand}"
-                    Content="place nodes an door"
+                    Command="{Binding JacobCommand}"
+                    Content="update door and nodes"
                     
                     />
 
@@ -252,7 +252,7 @@
                     CoordinateSystemLabelX="X"
                     CoordinateSystemLabelY="Y"
                     CoordinateSystemLabelZ="Z"
-                    IsRendering="true"
+                    IsRendering="False"
                     LabelColor="White"
                     Mode="RelativeScreenSpaced"
                     SizeScale="200" />
