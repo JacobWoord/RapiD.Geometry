@@ -276,7 +276,7 @@
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" />
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
@@ -350,36 +350,93 @@
                     Text="{Binding ElementName=LengthValue, Path=Value}" />
             </StackPanel>
 
-            <StackPanel Grid.Row="3">
-                <Label Content="Spread"
-                   Grid.Row="3"
-                   Width="50"
-                   Margin="0 10 0 0"/>
-                <TextBox Text="{Binding Spread,Mode=TwoWay}"
-                     Grid.Row="3"
-                     Height="30"
-                     Width="50"/>
-                <Button Content="Apply"
-                    Grid.Row="3"
-                    Width="70"
-                    HorizontalAlignment="Center"
-                    Margin="0 5 0 0"/>
+
+            <TextBlock
+                Grid.Row="3"
+                Margin="0,20,0,0"
+                HorizontalAlignment="Center"
+                FontWeight="SemiBold"
+                Text="Edit EndPosition of Warp" />
+
+            <StackPanel
+                Grid.Row="3"
+                Margin="0,40,0,0"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+
+
+
+                <StackPanel Grid.Row="3" Margin="0,0,10,0">
+                    <Label
+                        Grid.Row="3"
+                        Width="50"
+                        Margin="0,10,0,0"
+                        Content="Xaxis" />
+                    <TextBox
+                        Grid.Row="3"
+                        Width="90"
+                        Height="30"                  
+                        Text="{Binding XAxis, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    <Button
+                        Grid.Row="3"
+                        Width="70"
+                        Margin="0,5,0,10"
+                        HorizontalAlignment="Center"
+                        Command="{Binding UpdateWarpEndPositionCommand}"
+                        Content="Apply" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Margin="0,0,10,0">
+                    <Label
+                        Grid.Row="3"
+                        Width="50"
+                        Margin="0,10,0,0"
+                        Content="Yaxis" />
+                    <TextBox
+                        Grid.Row="3"
+                        Width="90"
+                        Height="30"
+                        Text="{Binding YAxis, Mode=TwoWay}" />
+                    <Button
+                        Grid.Row="3"
+                        Width="70"
+                        Margin="0,5,0,10"
+                        Command="{Binding UpdateWarpEndPositionCommand}"
+                        HorizontalAlignment="Center"
+                        Content="Apply" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Margin="0,0,10,0">
+                    <Label
+                        Grid.Row="3"
+                        Width="50"
+                        Margin="0,10,0,0"
+                        Content="Zaxis" />
+                    <TextBox
+                        Grid.Row="3"
+                        Width="90"
+                        Height="30"
+                        Text="{Binding ZAxis, Mode=TwoWay}" />
+                    <Button
+                        Grid.Row="3"
+                        Width="70"
+                        Margin="0,5,0,10"
+                        Command="{Binding UpdateWarpEndPositionCommand}"
+                        HorizontalAlignment="Center"
+                        Content="Apply" />
+                </StackPanel>
+
+
+
             </StackPanel>
 
-            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button 
-                    Margin="5 0 5 0"
-                    Height="50"
-                    Command="{Binding CreateWarpCommand}"
-                    Background="LightBlue">Add Warp</Button>
-                <Button 
-                    Height="50"
-                    Margin="5 0 5 0"
-                    Background="LightBlue">Add Warp</Button>
 
-            </StackPanel>
 
-       
+
+
+
+
+
 
 
 

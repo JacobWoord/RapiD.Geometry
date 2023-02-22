@@ -29,6 +29,7 @@ namespace RapiD.Geometry.ViewModels
     {
 
         public string Doorfile;
+        public string Shipfile;
 
         public Canvas3DViewModel()
         {
@@ -48,9 +49,11 @@ namespace RapiD.Geometry.ViewModels
             modelCollection = new ObservableCollection<IModel>();
             string basefolder = Utils2D.GetAppDataFolder();
             Doorfile = basefolder + @"3DModels\FISHINGBOARD_SB.obj";
+            //Shipfile = basefolder + @"3DModels\UK151.obj";
 
             this.BbDoor = new Door(Doorfile, "bakboord");
             this.SbDoor = new Door(Doorfile, "stuurboord");
+           // this.Trawler = new Door(Shipfile, "ship");
 
 
 
@@ -64,23 +67,21 @@ namespace RapiD.Geometry.ViewModels
         {
             await BbDoor.OpenFile();
             await SbDoor.OpenFile();
+            //await Trawler.OpenFile();
            
 
             // Putting the  SB door in the correct postion. important to note that we Update the node list after all transformations are done!
-            SbDoor.UpdatePositionDoor();
+            SbDoor.UpdatePositionDoor(xaxis:10000f);
             SbDoor.RotateTransform(xaxis: 1d, degrees: 90d);
             sbDoor.RotateTransform(yaxis: 1d, degrees: -80d);
             sbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
             sbDoor.Mirror(MirrorAxis.X);
-            //UpdatePositionDoorAndNodes(sbDoor);
             SbDoor.UpdateNodeList();
             ShowNode(SbDoor);
 
+            /* BABOORD BORD */
 
-
-
-
-
+            BbDoor.UpdatePositionDoor(xaxis:10000f);
             bbDoor.RotateTransform(xaxis: 1d, degrees: 90d);
             bbDoor.RotateTransform(yaxis: 1d, degrees: 70d);
             bbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
@@ -94,7 +95,14 @@ namespace RapiD.Geometry.ViewModels
                 ModelCollection.Add(SbDoor);
                 ModelCollection.Add(BbDoor);
             });
+
+            CreateWarp();
         }
+
+
+
+
+
 
         void ShowNode(IModel? door)
         {
@@ -144,6 +152,9 @@ namespace RapiD.Geometry.ViewModels
         Door sbDoor;
 
         [ObservableProperty]
+        Door trawler;
+
+        [ObservableProperty]
         int spread;
 
         partial void OnSpreadChanged(int value)
@@ -177,13 +188,13 @@ namespace RapiD.Geometry.ViewModels
         float diameter;
 
         [ObservableProperty]
-        double xAxis;
+        float xAxis;
 
         [ObservableProperty]
-        double yAxis;
+        float yAxis;
 
         [ObservableProperty]
-        double zAxis;
+        float zAxis;
 
         [ObservableProperty]
         float width;
@@ -195,8 +206,9 @@ namespace RapiD.Geometry.ViewModels
         float numberOfChainCopies;
 
         [ObservableProperty]
-        bool isOpenMenu = false;
+        ChainLink3D chainModel;
 
+     
         public ChainSide selectedSide;
 
 
@@ -204,17 +216,31 @@ namespace RapiD.Geometry.ViewModels
         [RelayCommand]
         void CreateWarp()
         {
-
             var nodeList1 = SbDoor.GetNodeList();
             var nodeList2 = BbDoor.GetNodeList();
-            
-
-            ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList1[4], nodeList1[4] + nodeList1[4].X + 5000));
-            ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList2[4], nodeList2[4] + nodeList2[4].X + 5000));
-
-
-
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[4], new Vector3(nodeList1[4].X + 3000, nodeList1[4].Y, nodeList1[4].Z + 200)));
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[4], new Vector3(nodeList1[4].X + 3000, nodeList1[4].Y, nodeList1[4].Z + 200)));
         }
+
+
+        [RelayCommand]
+        public void UpdateWarpEndPosition()
+        {
+            if (selectedModel is ChainLink3D c)
+            {
+                if (SelectedModel is ChainLink3D chain)
+                {
+                    chain.SetNewEndPosition(new Vector3(XAxis,YAxis,ZAxis));
+                    chain.Draw();
+                }
+            }
+        }
+               
+
+
+
+
+
 
 
 
@@ -309,8 +335,8 @@ namespace RapiD.Geometry.ViewModels
         public void Select(IModel geometry, ChainSide chainside)
         {
             geometry.Select();
-            bool menuState = geometry.GetMenuState();
-            //IsOpenMenu = menuState;
+            
+            
             if (geometry.IsSelected == false)
             {
                 ModelCollection

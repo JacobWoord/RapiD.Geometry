@@ -37,7 +37,7 @@ namespace RapiD.Geometry.Models
         bool isSelected = false;
 
         [ObservableProperty]
-        bool isOpenMenu = false;
+        bool isOpenMenu = true;
 
         [ObservableProperty]
         System.Windows.Media.Media3D.Transform3DGroup transform = new();
@@ -90,10 +90,10 @@ namespace RapiD.Geometry.Models
         }
 
 
-        public async Task UpdatePositionDoor()
+        public async Task UpdatePositionDoor(float xaxis = 0 , float yaxis = 0, float zaxis = 0)
         {
             Matrix3D matrix = new Matrix3D();
-            matrix.Translate(new System.Windows.Media.Media3D.Vector3D(10000f, 0f, 0f));
+            matrix.Translate(new System.Windows.Media.Media3D.Vector3D(xaxis, yaxis, zaxis));
             MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
 
 
@@ -178,14 +178,14 @@ namespace RapiD.Geometry.Models
         public void Deselect()
         {
             IsSelected = false;
-            IsOpenMenu = false;
+          
 
         }
 
         public void Select()
         {
 
-            IsOpenMenu = !isOpenMenu;
+            
             IsSelected = !isSelected;
 
 
@@ -193,10 +193,6 @@ namespace RapiD.Geometry.Models
 
 
 
-        public bool GetMenuState()
-        {
-            return IsOpenMenu;
-        }
     }
 
 }

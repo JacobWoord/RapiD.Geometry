@@ -6,6 +6,7 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -104,7 +105,9 @@ namespace RapiD.Geometry.Views
                 }
                 else if(modeldata is ChainLink3D c)
                 {
-                   
+                    viewModel.XAxis = MathF.Round(c.EndPointVector.X,2);
+                    viewModel.YAxis = MathF.Round(c.EndPointVector.Y, 2);
+                    viewModel.ZAxis = MathF.Round(c.EndPointVector.Z, 2);
                     var distance1 = SharpDX.Vector3.Distance(hit.PointHit, c.StartPointVector);
                     var distance2 = SharpDX.Vector3.Distance(hit.PointHit, c.EndPointVector);
                     if(distance1< distance2)

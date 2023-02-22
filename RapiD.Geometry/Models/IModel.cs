@@ -13,8 +13,6 @@ namespace RapiD.Geometry.Models
         public string Name { get; set; }
        public void Deselect();
         public void Select();
-        
-        public bool GetMenuState();
 
         public bool IsSelected { get; set; }    
 
