@@ -8,6 +8,14 @@ using System.Threading.Tasks;
 namespace RapiD.Geometry
 {
 
+    public enum ChainSide
+    {
+        Left, 
+        Right,
+        middle
+    
+    };
+
 
     public enum MirrorAxis { X, Y, Z }
 

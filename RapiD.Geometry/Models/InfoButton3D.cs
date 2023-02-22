@@ -9,15 +9,11 @@ using System.Threading.Tasks;
 
 namespace RapiD.Geometry.Models
 {
-    public partial class InfoButton3D: GeometryBase3D
+    public partial class InfoButton3D : GeometryBase3D
     {
 
         [ObservableProperty]
-        double radius = 60 ;
-
-
-        [ObservableProperty]
-        Vector3 position2;
+        double radius = 60;
 
         [ObservableProperty]
         string idNumber;
@@ -25,22 +21,19 @@ namespace RapiD.Geometry.Models
         public InfoButton3D(Vector3 position, string linkedGuid)
         {
             Name = "InfoButton";
-            ID= linkedGuid;
-            this.idNumber= linkedGuid.ToString();
-            this.position2 = position;
-            OriginalMaterial= PhongMaterials.Red;
-            DrawButtonOnGeometry(position);
-            
+            ID = linkedGuid;
+            this.idNumber = linkedGuid.ToString();
+            this.Position = position;
+            OriginalMaterial = PhongMaterials.Red;
+            Draw();
+
 
         }
 
-
-        [RelayCommand]
-        void DrawButtonOnGeometry(Vector3 position)
+        public override void Draw()
         {
             MeshBuilder meshbuilder = new MeshBuilder();
-            //meshbuilder.AddSphere(position,Radius);
-            meshbuilder.AddSphere(position, 20d);
+            meshbuilder.AddSphere(Position,Radius);
             MeshGeometry = meshbuilder.ToMeshGeometry3D();
 
 

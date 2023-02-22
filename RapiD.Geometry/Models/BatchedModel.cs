@@ -1,21 +1,20 @@
-﻿using Assimp;
-using HelixToolkit.SharpDX.Core;
+﻿using HelixToolkit.SharpDX.Core;
 
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
-using System;
+using System.Windows.Media.Media3D;
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
 using Material = HelixToolkit.Wpf.SharpDX.Material;
 
 
 namespace RapiD.Geometry.Models
 {
+
+
     public abstract partial class BatchedModel : ObservableObject, IModel
     {
 
@@ -46,7 +45,11 @@ namespace RapiD.Geometry.Models
 
 
 
-        public List<Vector3> GetNodeList() { return nodeList; }
+        public List<Vector3> GetNodeList()
+        {
+
+            return nodeList;
+        }
 
 
 
@@ -56,7 +59,8 @@ namespace RapiD.Geometry.Models
         public string ID { get; set; }
         //  public bool IsSelected { get; set; }
 
-        public Vector3 Position { get; set; }
+        [ObservableProperty]
+        SharpDX.Vector3 position;
 
         public BatchedModel()
         {
@@ -64,24 +68,57 @@ namespace RapiD.Geometry.Models
             modelMaterials = new List<Material>();
         }
 
-
-
-        public void RotateTranform(IModel door)
+        public void RotateTransform(double xaxis = 0, double yaxis = 0, double zaxis = 0, double degrees = 90)
         {
-            RotateTransform3D rotateTransform3D = new RotateTransform3D(new AxisAngleRotation3D(new System.Windows.Media.Media3D.Vector3D(0, 1, 0), -180d));
-            (door as BatchedModel).Transform.Children.Add(rotateTransform3D);
+            var axis = new System.Windows.Media.Media3D.Vector3D(xaxis, yaxis, zaxis);
+            var rotation = new System.Windows.Media.Media3D.AxisAngleRotation3D(axis, degrees);
+            var transform = new System.Windows.Media.Media3D.RotateTransform3D(rotation);
 
-
+            //NOTE: every transform we add as a child to the Transformgroup removes the previous tranformation! important to update the node list after all transformations ar done!
+            Transform.Children.Add(transform);
         }
 
 
-        public void UpdatePositionDoor(IModel door)
+        public void UpdateNodeList()
+        {
+
+            for (int i = 0; i < nodeList.Count; i++)
+            {
+                NodeList[i] = (Vector3)Vector3.Transform(NodeList[i], Transform.Value.ToMatrix());
+                Debug.WriteLine($"Node {i}: {NodeList[i]}");
+            }
+        }
+
+
+        public async Task UpdatePositionDoor()
         {
             Matrix3D matrix = new Matrix3D();
-            matrix.Translate(new System.Windows.Media.Media3D.Vector3D(8000f, 0f, 0f));
+            matrix.Translate(new System.Windows.Media.Media3D.Vector3D(10000f, 0f, 0f));
             MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
-            (door as BatchedModel).Transform.Children.Add(matrixTransform);
+
+
+            Transform.Children.Add(matrixTransform);
+
+            Debug.WriteLine("Node list coordinates before update:");
+            foreach (var node in nodeList)
+            {
+                Debug.WriteLine(node);
+            }
+
+
+
+            Debug.WriteLine("Node list coordinates after update:");
+            foreach (var node in nodeList)
+            {
+                Debug.WriteLine(node);
+            }
         }
+
+
+
+
+
+
 
         public void Mirror(MirrorAxis mirrorAxis)
         {
@@ -109,11 +146,14 @@ namespace RapiD.Geometry.Models
 
             var configs = await Task.Run(() => Importer3D.OpenFile(FileName));
             var models = configs.Where(x => x.Name.Contains("anchor") == false);
+
             foreach (var m in models)
             {
                 BatchedMeshes.Add(m.BatchedMeshGeometryConfig);
                 ModelMaterials.Add(m.MaterialCore.ConvertToMaterial());
             }
+
+
 
             var anchors = configs.Where(x => x.Name.Contains("anchor") == true);
 
@@ -127,14 +167,6 @@ namespace RapiD.Geometry.Models
 
 
 
-
-        public void UpdateNodeList()
-        {
-            for (int i = 0; i < nodeList.Count; i++)
-            {
-                nodeList[i] = (Vector3)Vector3.Transform(nodeList[i], Transform.Value.ToMatrix());
-            }
-        }
 
 
 
@@ -152,14 +184,14 @@ namespace RapiD.Geometry.Models
 
         public void Select()
         {
-            
-            IsOpenMenu=  !isOpenMenu;
+
+            IsOpenMenu = !isOpenMenu;
             IsSelected = !isSelected;
 
-          
+
         }
 
-     
+
 
         public bool GetMenuState()
         {

@@ -11,8 +11,7 @@ namespace RapiD.Geometry.Models
     {
         public string ID { get; set; }  
         public string Name { get; set; }
-        public Vector3 Position { get; set; }
-        public void Deselect();
+       public void Deselect();
         public void Select();
         
         public bool GetMenuState();
@@ -20,4 +19,5 @@ namespace RapiD.Geometry.Models
         public bool IsSelected { get; set; }    
 
     }
+        
 }

@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls.Primitives;
@@ -55,6 +56,27 @@ namespace RapiD.Geometry.Models
             Draw();
         }
 
+
+        public float ChainLength()
+        {
+            return Vector3.Distance(startPointVector, endPointVector);
+        }
+
+       
+
+        public float CalcDistance()
+        {
+            float distance = Vector3.Distance(startPointVector, endPointVector);
+
+            return distance; 
+
+        }
+        
+     
+        public void SetNewEndPosition(Vector3 newEndPos)
+        {
+            this.EndPointVector = newEndPos;
+        }
 
         public void SetNewStartPosition(Vector3 newStartPos)
         {

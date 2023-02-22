@@ -54,7 +54,9 @@ namespace RapiD.Geometry.Models
 
         public string ID { get ; set; }
         public string Name { get; set; }
-        public Vector3 Position { get; set; }
+
+        [ObservableProperty]
+        Vector3 position;
 
         [ObservableProperty]
         HelixToolkit.SharpDX.Core.MeshGeometry3D meshGeometry;
@@ -97,30 +99,30 @@ namespace RapiD.Geometry.Models
 
         public void Select()
         {
+            //IsOpenMenu = !isOpenMenu;
+            IsSelected = !isSelected;
+            if (isSelected)
+            {
+                CurrentMaterial = PhongMaterials.Green;
+            }
+            else
+                CurrentMaterial = originalMaterial;
+        }
+    }
+}
 
            
 
 
-            IsOpenMenu = !isOpenMenu;
-
-            IsSelected = !isSelected;
-
-            if (isSelected)
-            {
 
 
-                CurrentMaterial = PhongMaterials.Green;
 
 
-            }
 
-            else
-                CurrentMaterial = originalMaterial;
-        }
+
+
 
        
-    }
-}
 
         
 

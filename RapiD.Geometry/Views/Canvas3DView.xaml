@@ -6,13 +6,18 @@
     xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:RapiD.Geometry.Views"
-    xmlns:models="clr-namespace:RapiD.Geometry.Models"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:RapiD.Geometry.Models"
     xmlns:viewmodels="clr-namespace:RapiD.Geometry.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:Canvas3DViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="1000"
     mc:Ignorable="d">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding InitializeCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -36,113 +41,103 @@
             <StackPanel Orientation="Horizontal">
                 <Button
                     MinWidth="100"
-                    Margin="5 2"
+                    Margin="5,2"
                     Background="White"
                     BorderBrush="black"
-                    Foreground="black" 
-                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding GoHomeCommand}"
                     Content="Home"
-                    />
+                    FontWeight="SemiBold"
+                    Foreground="black" />
 
                 <Button
                     MinWidth="120"
-                    Margin="5 2"
+                    Margin="5,2"
                     Background="White"
                     BorderBrush="black"
-                    Foreground="black" 
-                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding DrawTorrusCommand}"
                     Content="Draw Torrus"
-                    />
+                    FontWeight="SemiBold"
+                    Foreground="black" />
 
                 <Button
                     MinWidth="120"
-                    Margin="5 2"
-                     Background="White"
+                    Margin="5,2"
+                    Background="White"
                     BorderBrush="black"
-                    Foreground="black" 
-                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding DrawCillinderCommand}"
                     Content="Draw Cillinder"
-                     />
+                    FontWeight="SemiBold"
+                    Foreground="black" />
 
                 <Button
                     MinWidth="120"
-                    Margin="5 2"
+                    Margin="5,2"
                     Background="White"
                     BorderBrush="black"
-                    Foreground="black" 
-                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding ReplaceCommand}"
                     Content="Draw Button"
-                     />
+                    FontWeight="SemiBold"
+                    Foreground="black" />
 
                 <Button
                     MinWidth="120"
-                    Margin="5 2"
+                    Margin="5,2"
                     Background="White"
                     BorderBrush="black"
-                    Foreground="black" 
-                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding ReplaceCommand}"
                     Content="Replace cillinder"
-                     />
+                    FontWeight="SemiBold"
+                    Foreground="black" />
 
                 <Button
                     MinWidth="120"
-                    Margin="5 2"
+                    Margin="5,2"
                     Background="White"
                     BorderBrush="black"
-                    Foreground="black" 
-                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding UpdatePositionDoorAndNodesCommand}"
                     Content="place nodes an door"
-                    
-                    />
+                    FontWeight="SemiBold"
+                    Foreground="black" />
 
                 <Button
                     MinWidth="120"
-                    Margin="5 2"
-                     Background="White"
+                    Margin="5,2"
+                    Background="White"
                     BorderBrush="black"
-                    Foreground="black" 
-                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding CreateChainCommand}"
                     Content="Create Chain"
-                     />
+                    FontWeight="SemiBold"
+                    Foreground="black" />
 
                 <Button
-                    Margin="5 2"
                     MinWidth="120"
+                    Margin="5,2"
                     Background="White"
                     BorderBrush="black"
-                    Foreground="black" 
-                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding DrawTranslatedNodesCommand}"
                     Content="Add Door"
-                    />
+                    FontWeight="SemiBold"
+                    Foreground="black" />
 
                 <Button
                     MinWidth="120"
-                    Margin="5 2"
-                     Background="White"
+                    Margin="5,2"
+                    Background="White"
                     BorderBrush="Red"
-                    Foreground="Red" 
-                    FontWeight="SemiBold"
                     BorderThickness="2"
                     Command="{Binding RemoveCommand}"
                     Content="Remove"
-                     />
-            
+                    FontWeight="SemiBold"
+                    Foreground="Red" />
+
 
             </StackPanel>
 
@@ -151,13 +146,14 @@
         <Grid Grid.Row="1" Grid.ColumnSpan="2">
 
             <hx:Viewport3DX
-                BackgroundColor="MintCream"
+                BackgroundColor="Gray"
                 Camera="{Binding Camera}"
+                CameraMode="Inspect"
                 CameraRotationMode="Trackball"
                 EnableSwapChainRendering="True"
                 FixedRotationPointEnabled="True"
                 InfoBackground="Transparent"
-                InfoForeground="White"
+                InfoForeground="black"
                 IsChangeFieldOfViewEnabled="True"
                 Loaded="Viewport3DX_Loaded"
                 ModelUpDirection="0,0,1"
@@ -215,25 +211,23 @@
                                 Geometry="{Binding MeshGeometry}"
                                 Material="{Binding CurrentMaterial}"
                                 RenderWireframe="False"
-                                Transform="{Binding Transform}">
-                            </hx:MeshGeometryModel3D>
+                                Transform="{Binding Transform}" />
                         </DataTemplate>
                     </hx:ItemsModel3D.ItemTemplate>
                 </hx:ItemsModel3D>
 
-                <hx:ItemsModel3D ItemsSource="{Binding ModelCollection}"  >
+                <hx:ItemsModel3D ItemsSource="{Binding ModelCollection}">
 
                     <hx:ItemsModel3D.ItemTemplate>
                         <DataTemplate>
                             <hx:BatchedMeshGeometryModel3D
-                                CullMode="Back"
-                                EnableViewFrustumCheck="False"
                                 BatchedGeometries="{Binding BatchedMeshes}"
                                 BatchedMaterials="{Binding ModelMaterials}"
+                                CullMode="Back"
+                                EnableViewFrustumCheck="False"
                                 Material="{Binding BaseMaterial}"
                                 RenderWireframe="False"
-                                Transform="{Binding Transform}">
-                            </hx:BatchedMeshGeometryModel3D>
+                                Transform="{Binding Transform}" />
                         </DataTemplate>
                     </hx:ItemsModel3D.ItemTemplate>
                 </hx:ItemsModel3D>
@@ -253,7 +247,7 @@
                     CoordinateSystemLabelY="Y"
                     CoordinateSystemLabelZ="Z"
                     IsRendering="true"
-                    LabelColor="White"
+                    LabelColor="Black"
                     Mode="RelativeScreenSpaced"
                     SizeScale="200" />
 
@@ -271,19 +265,18 @@
             Text="Properties" />
 
         <Grid
-            Visibility="{Binding IsOpenMenu,Converter={StaticResource Bool2Vis}}"
             Name="props"
             Grid.Row="1"
             Grid.Column="2"
             Margin="5"
-            
             Background="White"
-            Opacity="0.9">
+            Opacity="0.9"
+            Visibility="{Binding IsOpenMenu, Converter={StaticResource Bool2Vis}}">
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="auto"/>
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
@@ -357,11 +350,36 @@
                     Text="{Binding ElementName=LengthValue, Path=Value}" />
             </StackPanel>
 
-            <ComboBox Grid.Row="3"
-                      MinHeight="40"
-                      MinWidth="200"
-                      ItemsSource="{Binding ChainsCollection}"/>
+            <StackPanel Grid.Row="3">
+                <Label Content="Spread"
+                   Grid.Row="3"
+                   Width="50"
+                   Margin="0 10 0 0"/>
+                <TextBox Text="{Binding Spread,Mode=TwoWay}"
+                     Grid.Row="3"
+                     Height="30"
+                     Width="50"/>
+                <Button Content="Apply"
+                    Grid.Row="3"
+                    Width="70"
+                    HorizontalAlignment="Center"
+                    Margin="0 5 0 0"/>
+            </StackPanel>
 
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button 
+                    Margin="5 0 5 0"
+                    Height="50"
+                    Command="{Binding CreateWarpCommand}"
+                    Background="LightBlue">Add Warp</Button>
+                <Button 
+                    Height="50"
+                    Margin="5 0 5 0"
+                    Background="LightBlue">Add Warp</Button>
+
+            </StackPanel>
+
+       
 
 
 
@@ -370,31 +388,28 @@
 
         <DataGrid
             Grid.Row="3"
-            SelectionMode="Extended"
-            SelectionUnit="FullRow"
             Grid.ColumnSpan="3"
             AutoGenerateColumns="True"
             CanUserAddRows="False"
             IsReadOnly="true"
             ItemsSource="{Binding ModelCollection}"
             SelectedItem="{Binding SelectedModel}"
-            >
-           
+            SelectionMode="Extended"
+            SelectionUnit="FullRow">
+
             <i:Interaction.Triggers>
-            <i:EventTrigger EventName="PreviewMouseButtonDown">
-                <i:InvokeCommandAction Command="{Binding SelectFromGridCommand}">
-                    
-                </i:InvokeCommandAction>
-            </i:EventTrigger>
+                <i:EventTrigger EventName="PreviewMouseButtonDown">
+                    <i:InvokeCommandAction Command="{Binding SelectFromGridCommand}" />
+                </i:EventTrigger>
             </i:Interaction.Triggers>
-            
-            
-          
-           
+
+
+
+
             <DataGrid.Columns>
-               
-                
-               
+
+
+
                 <DataGridTextColumn
                     Binding="{Binding Id}"
                     Header="Id"
@@ -425,8 +440,8 @@
 
                 </Style>
             </DataGrid.ColumnHeaderStyle>
-            
-           
+
+
 
 
 

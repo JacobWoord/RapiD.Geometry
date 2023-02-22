@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using System.Windows.Media.Media3D;
 
 namespace RapiD.Geometry.Models
@@ -17,18 +18,17 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         Transform3DGroup transform3DGroup = new();
         
-        public Door(string filename)
+        public Door(string filename, string name = "bord")
         {
 
-            
-            Name = "Bord";
+          
+            Name = name + "Bord";
             ID = Guid.NewGuid().ToString();
 
             FileName= filename;
 
-            Task.Factory.StartNew(OpenFile);
         }
-
+     
 
         public void ChangePosition()
         {

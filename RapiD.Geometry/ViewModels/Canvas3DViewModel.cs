@@ -9,9 +9,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,32 +35,96 @@ namespace RapiD.Geometry.ViewModels
 
             camera = new HelixToolkit.Wpf.SharpDX.OrthographicCamera()
             {
-                LookDirection = new System.Windows.Media.Media3D.Vector3D(2.5, 4.5, -3), /*(1, 20, -1)*/
-                UpDirection = new System.Windows.Media.Media3D.Vector3D(0.6, 0.6, 0.4), /* (0, 0, -1)*/
-                Position = new System.Windows.Media.Media3D.Point3D(-130, -200, 200), /*(-500, -500, 500)*/
-                FarPlaneDistance = 10000,
-                NearPlaneDistance = -10000,
-                Width = 400
+                LookDirection = new System.Windows.Media.Media3D.Vector3D(0.12, -1.1, -11), /*(2.5, 4.5, -3), (1, 20, -1)*/
+                UpDirection = new System.Windows.Media.Media3D.Vector3D(0.013, 0.76, 0.63), /* (0, 0, -1)*/
+                Position = new System.Windows.Media.Media3D.Point3D(-3349, 19.75, 3520), /*(-500, -500, 500)*/
+                FarPlaneDistance = 1000000,
+                NearPlaneDistance = -1000000,
+                Width = 23818
             };
 
             camera.CreateViewMatrix();
 
             modelCollection = new ObservableCollection<IModel>();
             string basefolder = Utils2D.GetAppDataFolder();
-            Doorfile = basefolder + @"3DModels\FISHINGBOARD_BB.obj";
+            Doorfile = basefolder + @"3DModels\FISHINGBOARD_SB.obj";
 
-            //this.myDoor = new Door(Doorfile);
-            //modelCollection.Add(myDoor);
-
-            this.myDoor2 = new Door(Doorfile);
-            modelCollection.Add(myDoor2);
+            this.BbDoor = new Door(Doorfile, "bakboord");
+            this.SbDoor = new Door(Doorfile, "stuurboord");
 
 
-            //myDoor2.UpdatePositionDoor(myDoor2);
-            //myDoor2.RotateTranform(myDoor2);
-            //myDoor2.Mirror(MirrorAxis.Z);
 
-        }  
+
+
+
+
+        }
+        [RelayCommand]
+        async Task Initialize()
+        {
+            await BbDoor.OpenFile();
+            await SbDoor.OpenFile();
+           
+
+            // Putting the  SB door in the correct postion. important to note that we Update the node list after all transformations are done!
+            SbDoor.UpdatePositionDoor();
+            SbDoor.RotateTransform(xaxis: 1d, degrees: 90d);
+            sbDoor.RotateTransform(yaxis: 1d, degrees: -80d);
+            sbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
+            sbDoor.Mirror(MirrorAxis.X);
+            //UpdatePositionDoorAndNodes(sbDoor);
+            SbDoor.UpdateNodeList();
+            ShowNode(SbDoor);
+
+
+
+
+
+
+            bbDoor.RotateTransform(xaxis: 1d, degrees: 90d);
+            bbDoor.RotateTransform(yaxis: 1d, degrees: 70d);
+            bbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
+            BbDoor.UpdateNodeList();
+            ShowNode(BbDoor);
+
+
+
+            await App.Current.Dispatcher.InvokeAsync(() =>
+            {
+                ModelCollection.Add(SbDoor);
+                ModelCollection.Add(BbDoor);
+            });
+        }
+
+        void ShowNode(IModel? door)
+        {
+            int count = 0;
+            var parsedDoor = (door as BatchedModel);
+            var nodelist = parsedDoor.GetNodeList();
+
+            foreach (var node in nodelist)
+            {
+
+                ModelCollection.Add(new InfoButton3D(node, count.ToString()));
+                count++;
+            }
+
+        }
+
+
+        
+        public void UpdatePositionDoorAndNodes(IModel door)
+        {
+            BatchedModel? parsedDoor = (door as BatchedModel);
+
+            Matrix3D matrix = new Matrix3D();
+            matrix.Translate(new Vector3D(-10000f, 0f, 0f));
+
+            MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
+            parsedDoor.Transform.Children.Add(matrixTransform);
+            
+        }
+
 
 
 
@@ -73,10 +138,18 @@ namespace RapiD.Geometry.ViewModels
         IModel selectedModel;
 
         [ObservableProperty]
-        Door myDoor;
+        Door bbDoor;
 
         [ObservableProperty]
-        Door myDoor2;
+        Door sbDoor;
+
+        [ObservableProperty]
+        int spread;
+
+        partial void OnSpreadChanged(int value)
+        {
+         //  UpdatePositionDoorAndNodes(sbdoor);
+        }
 
 
 
@@ -97,11 +170,8 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         ObservableCollection<ChainLink3D> chainsCollection = new();
 
-        //[ObservableProperty]
-        //ObservableCollection<BatchedModel> batchedModelCollection;
-
-        //[ObservableProperty]
-        //ObservableCollection<GeometryBase3D> geometry3DCollection;
+        [ObservableProperty]
+        Vector3 capturedPos;
 
         [ObservableProperty]
         float diameter;
@@ -127,185 +197,158 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         bool isOpenMenu = false;
 
+        public ChainSide selectedSide;
 
 
 
         [RelayCommand]
-        void newDoor()
+        void CreateWarp()
         {
-            this.myDoor2 = new Door(Doorfile);
-            modelCollection.Add(myDoor2);
 
+            var nodeList1 = SbDoor.GetNodeList();
+            var nodeList2 = BbDoor.GetNodeList();
+            
 
-        }
-
-        [RelayCommand]
-        public void UpdatePositionDoorAndNodes()
-        {
-            Matrix3D matrix = new Matrix3D();
-            matrix.Translate(new Vector3D(8000f, 0f, 0f));
-            MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
-            (myDoor2 as BatchedModel).Transform.Children.Add(matrixTransform);
-            (myDoor2 as BatchedModel).UpdateNodeList();
-
+            ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList1[4], nodeList1[4] + nodeList1[4].X + 5000));
+            ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList2[4], nodeList2[4] + nodeList2[4].X + 5000));
 
 
 
         }
 
 
-//           foreach(var model in modelCollection)
-//            {
-//                if (model is InfoButton3D b)
-//                {
-//                    b.Transform.Children.Add(matrixTransform);
-//                    nodePositions.Add(b.Position);
-//                }
-//}
 
-//DrawTorrus(nodePositions[1]);
-
-
-[RelayCommand]
-        void DrawTorrus(Vector3 Pos)
+        void ShowButtonIfSelected(IModel geometry, ChainSide chainside)
         {
-
-            Random random = new Random();
-            double diameter = random.NextDouble(10, 300);
-            double TubeDiameter = random.NextDouble(10, 300);
-
-            modelCollection.Add(new Torus3D(diameter, TubeDiameter,Pos));
-
-        }
-
-
-        [RelayCommand]
-        void DrawTranslatedNodes()
-        {
-
-            var nodelist = myDoor2.GetNodeList();
-
-            foreach (var node in nodelist)
+            int count = 0;
+            var nodeList1 = BbDoor.GetNodeList();
+            var nodeList2 = SbDoor.GetNodeList();
+           
+            if (geometry is ChainLink3D c)
             {
-                modelCollection.Add(new InfoButton3D(node, myDoor2.ID));
+
+                if (chainside == ChainSide.Right)
+                {
+                    selectedSide= ChainSide.Right;
+                    foreach (var node in nodeList1)
+                    {
+                        ModelCollection.Add(new InfoButton3D(node, count.ToString()));
+                        count++;
+                    }
+                }
+                else if (chainside == ChainSide.Left)
+                {
+                   selectedSide= ChainSide.Left;
+                    foreach (var node in nodeList2)
+                    {
+                        
+                        ModelCollection.Add(new InfoButton3D(node, count.ToString()));
+                        count++;
+                    }
+
+
+                }
+
+
+               
             }
+
         }
+
 
 
         public void UpdateChainStartPoint(IModel Node)
         {
-
-
             if (Node is not null)
             {
-                var pos = (Node as InfoButton3D).Position2;
+                var pos = (Node as InfoButton3D).Position;
 
-                if (selectedModel is ChainLink3D chain)
+                if (SelectedModel is ChainLink3D chain)
                 {
                     chain.SetNewStartPosition(pos);
                     chain.Draw();
                 }
             }
-
-
         }
 
+        public void UpdateChainEndPoint(IModel Node)
+        {
+            if (Node is not null)
+            {
+                var pos = (Node as InfoButton3D).Position;
 
- 
+                if (SelectedModel is ChainLink3D chain)
+                {
+                    chain.SetNewEndPosition(pos);
+                    chain.Draw();
+                }
+            }
+        }
 
-  
-
-
-
-
-     
 
 
 
         public void DeselectAll()
         {
-            if (modelCollection != null)
+            if (ModelCollection != null)
             {
                 // Removes all infobuttons
-                modelCollection
+                ModelCollection
                   .OfType<InfoButton3D>()
                   .ToList()
-                  .ForEach(x => modelCollection
+                  .ForEach(x => ModelCollection
                   .Remove(x));
 
                 // Deselects all models
-                modelCollection.ToList().ForEach(x => x.Deselect());
+                ModelCollection.ToList().ForEach(x => x.Deselect());
             }
 
             return;
         }
 
-       
-        [RelayCommand]
-        void SelectFromGrid()
-        {
-            selectedModel.Select();
-
-        }
-
-
-        public void Select(IModel geometry)
+        public void Select(IModel geometry, ChainSide chainside)
         {
             geometry.Select();
             bool menuState = geometry.GetMenuState();
-            IsOpenMenu = menuState;
-
-            modelCollection
-                .OfType<ChainLink3D>()
-                .ToList()
-                .ForEach(x => chainsCollection.Add(x));
-
+            //IsOpenMenu = menuState;
             if (geometry.IsSelected == false)
             {
-
-                modelCollection
+                ModelCollection
                     .OfType<InfoButton3D>()
                     .ToList()
-                    .ForEach(x => modelCollection.Remove(x));
-
-
+                    .ForEach(x => ModelCollection.Remove(x));
             }
-            ShowButtonIfSelected(geometry);
+            ShowButtonIfSelected(geometry, chainside);
         }
 
-
-        void ShowButtonIfSelected(IModel geometry)
-        {
-            int count = 0;
-            var nodeList = myDoor2.GetNodeList();
-            int indexOfNodeList = 0;
-            if (geometry is ChainLink3D)
-                foreach (var node in nodeList)
-                {
-                    modelCollection.Add(new InfoButton3D(node, count.ToString()));
-                    count++;
-                }
-
-
-        }
-
-
-         [RelayCommand]
+        [RelayCommand]
         void CreateChain()
         {
 
-            var nodeList = myDoor2.GetNodeList();
-            var indexOfList = nodeList;
+            var nodeList = SbDoor.GetNodeList();
+            var nodeList2 = BbDoor.GetNodeList();
 
-
-
-
-            modelCollection.Add(new ChainLink3D(15f, 50, 40f, indexOfList[4], new SharpDX.Vector3(-8000, -800, -200)));
-            modelCollection.Add(new ChainLink3D(15f, 50, 40f, indexOfList[0], new SharpDX.Vector3(-8000, -800, -200)));
-
-
-
+            ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList[5], nodeList[5] + nodeList[5].X -1000 ));
+           ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList[7], nodeList[7] + nodeList[7].X -1000 + nodeList[7].Y + 1000));
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -313,22 +356,25 @@ namespace RapiD.Geometry.ViewModels
         [RelayCommand]
         void Remove()
         {
-            modelCollection.Remove(selectedModel);
+            ModelCollection.Remove(SelectedModel);
         }
 
 
 
+     
+
+
         [RelayCommand]
-        void UpdatePositionX()
+        void Replace()
         {
-            if (selectedModel != null)
+            if (SelectedModel != null)
             {
                 Matrix3D matrix = new Matrix3D();
-                matrix.Translate(new Vector3D(xAxis, 0d, 0d));
+                matrix.Translate(new Vector3D(0d, 0d, -1000));
                 MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
 
                 // Add the MatrixTransform3D to the TransformGroup
-                if (selectedModel is GeometryBase3D g)
+                if (SelectedModel is GeometryBase3D g)
                 {
                     g.Transform.Children.Add(matrixTransform);
                     g.Draw();
@@ -336,180 +382,138 @@ namespace RapiD.Geometry.ViewModels
             }
         }
 
-      
+        [RelayCommand]
+        void UpdateWidth()
+        {
+            float width = this.Width;
 
-        
-
-
-
-              
-
-            
-             
-
-
-
-            [RelayCommand]
-            void Replace()
+            if (SelectedModel == null)
             {
-                if (selectedModel != null)
-                {
-                    Matrix3D matrix = new Matrix3D();
-                    matrix.Translate(new Vector3D(0d, 0d, -1000));
-                    MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
-
-                    // Add the MatrixTransform3D to the TransformGroup
-                    if (selectedModel is GeometryBase3D g)
-                    {
-                        g.Transform.Children.Add(matrixTransform);
-                        g.Draw();
-                    }
-                }
+                return;
             }
-
-            [RelayCommand]
-            void UpdateWidth()
+            else if (SelectedModel is ChainLink3D chain)
             {
-                float width = this.width;
-
-                if (selectedModel == null)
-                {
-                    return;
-                }
-                else if (selectedModel is ChainLink3D chain)
-                {
-                    chain.Width = width;
-                    chain.Draw();
-
-                }
+                chain.Width = width;
+                chain.Draw();
 
             }
 
+        }
 
 
-            [RelayCommand]
-            void UpdateLength()
+
+        [RelayCommand]
+        void UpdateLength()
+        {
+            float length = this.Length;
+            if (SelectedModel == null)
             {
-                float length = this.length;
-                if (selectedModel == null)
-                {
-                    return;
-                }
-                else if (selectedModel is ChainLink3D chain)
-                {
-                    chain.Length = length;
-                    chain.Draw();
-                }
+                return;
             }
-
-
-
-
-
-            [RelayCommand]
-            void DrawSingleChainLink()
+            else if (SelectedModel is ChainLink3D chain)
             {
-                //geometry3DCollection.Add(new ChainLink3D(10f, 40f, 65f, 1));
-
-
-
+                chain.Length = length;
+                chain.Draw();
             }
+        }
 
-            [RelayCommand]
-            void UpdateDiameter()
+
+
+        [RelayCommand]
+        void UpdateDiameter()
+        {
+
+            float diam = Diameter;
+
+            if (SelectedModel == null)
             {
 
-                float diam = diameter;
-
-                if (selectedModel == null)
-                {
-
-                    return;
-
-                }
-                else if (selectedModel is Cillinder3D c)
-                {
-                    c.Diameter = diam;
-
-                    c.Draw();
-                }
-                else if (selectedModel is Sphere3D sphere)
-                {
-                    sphere.Radius = diam;
-                    sphere.Draw();
-                }
-                else if (selectedModel is ChainLink3D chain)
-                {
-                    chain.Diameter = diam;
-                    chain.Draw();
-                }
-
+                return;
 
             }
-
-
-
-
-
-
-            [RelayCommand]
-            void DrawCillinder()
+            else if (SelectedModel is Cillinder3D c)
             {
+                c.Diameter = diam;
 
-                Random random = new Random();
-                float p11 = random.Next(10, 30);
-                float p12 = random.Next(10, 30);
-                float p13 = random.Next(10, 30);
-
-                float p21 = random.Next(10, 30);
-                float p22 = random.Next(10, 30);
-                float p23 = random.Next(10, 30);
-
-
-                modelCollection.Add(new Cillinder3D(new Vector3(p11, p12, p13), new Vector3(p21, p23, p22)));
-
+                c.Draw();
             }
-
-
-            [RelayCommand]
-            void DrawStructure()
+            else if (SelectedModel is Sphere3D sphere)
             {
-                modelCollection.Add(new Structure3D());
+                sphere.Radius = diam;
+                sphere.Draw();
             }
-
-            [RelayCommand]
-            void DrawTube()
+            else if (SelectedModel is ChainLink3D chain)
             {
-                modelCollection.Add(new Tube3D());
-            }
-
-
-
-
-            [RelayCommand]
-            void DrawSphere()
-            {
-
-                Random random = new Random();
-                double diameter = random.NextDouble(10, 300);
-                double TubeDiameter = random.NextDouble(10, 300);
-
-                modelCollection.Add(new Sphere3D());
-
-            }
-
-
-
-
-            [RelayCommand]
-            void GoHome()
-            {
-                MainViewModel.Navigate(Ioc.Default.GetService<HomeViewModel>());
+                chain.Diameter = diam;
+                chain.Draw();
             }
 
 
         }
+
+
+
+
+
+
+        [RelayCommand]
+        void DrawCillinder()
+        {
+
+            Random random = new Random();
+            float p11 = random.Next(10, 30);
+            float p12 = random.Next(10, 30);
+            float p13 = random.Next(10, 30);
+
+            float p21 = random.Next(10, 30);
+            float p22 = random.Next(10, 30);
+            float p23 = random.Next(10, 30);
+
+
+            ModelCollection.Add(new Cillinder3D(new Vector3(p11, p12, p13), new Vector3(p21, p23, p22)));
+
+        }
+
+
+        [RelayCommand]
+        void DrawStructure()
+        {
+            ModelCollection.Add(new Structure3D());
+        }
+
+        [RelayCommand]
+        void DrawTube()
+        {
+            ModelCollection.Add(new Tube3D());
+        }
+
+
+
+
+        [RelayCommand]
+        void DrawSphere()
+        {
+
+            Random random = new Random();
+            double diameter = random.NextDouble(10, 300);
+            double TubeDiameter = random.NextDouble(10, 300);
+
+            ModelCollection.Add(new Sphere3D());
+
+        }
+
+        [RelayCommand]
+        void GoHome()
+        {
+            MainViewModel.Navigate(Ioc.Default.GetService<HomeViewModel>());
+        }
+
+
     }
+}
+
+
+
 
 
 

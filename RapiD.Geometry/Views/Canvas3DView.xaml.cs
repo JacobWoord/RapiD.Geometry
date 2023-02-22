@@ -2,6 +2,7 @@
 using HelixToolkit.Wpf.SharpDX;
 using RapiD.Geometry.Models;
 using RapiD.Geometry.ViewModels;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -48,32 +49,40 @@ namespace RapiD.Geometry.Views
             var args = e as MouseDown3DEventArgs;
             var vp = sender as Viewport3DX;
             var hits = vp.FindHits(args.Position);
-           
-            
+            Canvas3DViewModel? viewModel = (this.DataContext as Canvas3DViewModel);
+
+
             if (hits.Count == 0)
             {
-                (this.DataContext as Canvas3DViewModel).DeselectAll();
+
+                
+                //var position = new Vector3(Convert.ToSingle(args.Position.X), Convert.ToSingle(args.Position.Y), Convert.ToSingle(args.Position));
+               // (this.DataContext as Canvas3DViewModel).CapturedPos = position;
+                viewModel.DeselectAll();
                 return;
             }
             else if (hits.Count == 1) { }
-            var hit = hits.First();
-
-
-           
-            BatchedMeshGeometryModel3D batchedModel = hit.ModelHit as BatchedMeshGeometryModel3D;
-            MeshGeometryModel3D model = hit.ModelHit as MeshGeometryModel3D;
+                var hit = hits.First();
             
 
-            if(batchedModel != null)
-            {
-                var doorData = batchedModel.DataContext as IModel;
-                (this.DataContext as Canvas3DViewModel).DeselectAll();
-                (this.DataContext as Canvas3DViewModel).Select(doorData);
-                (this.DataContext as Canvas3DViewModel).SelectedModel = doorData;
-            }
 
 
+                BatchedMeshGeometryModel3D? batchedModel = hit.ModelHit as BatchedMeshGeometryModel3D;
+                MeshGeometryModel3D? model = hit.ModelHit as MeshGeometryModel3D;
 
+
+                if (batchedModel != null)
+                {
+                    var doorData = batchedModel.DataContext as IModel;
+
+
+                    viewModel.DeselectAll();
+                    viewModel.Select(doorData, ChainSide.middle);
+                    viewModel.SelectedModel = doorData;
+                }
+
+
+            
 
 
             if (model != null)
@@ -82,35 +91,56 @@ namespace RapiD.Geometry.Views
 
                 if (modeldata is InfoButton3D)
                 {
-                  (this.DataContext as Canvas3DViewModel).UpdateChainStartPoint(modeldata);
+                    ChainSide side = viewModel.selectedSide;
+
+                    if (side == ChainSide.Left)
+                    {
+                        viewModel.UpdateChainStartPoint(modeldata);
+                        viewModel.DeselectAll();
+                    }
+                        viewModel.UpdateChainEndPoint(modeldata);
+                        viewModel.DeselectAll();
+
+                }
+                else if(modeldata is ChainLink3D c)
+                {
+                   
+                    var distance1 = SharpDX.Vector3.Distance(hit.PointHit, c.StartPointVector);
+                    var distance2 = SharpDX.Vector3.Distance(hit.PointHit, c.EndPointVector);
+                    if(distance1< distance2)
+                    {
+                       viewModel.DeselectAll();
+
+                        viewModel.Select(modeldata,ChainSide.Left);
+                        viewModel.SelectedModel = modeldata;
+                    }
+                    else
+                    {
+                        viewModel.DeselectAll();
+
+                        viewModel.Select(modeldata, ChainSide.Right);
+                        viewModel.SelectedModel = modeldata;
+                    }
+
+
+                  
+                    viewModel.DeselectAll();
+
+                    viewModel.Select(modeldata,ChainSide.middle);
+                    viewModel.SelectedModel = modeldata;
                 }
                 else
                 {
-                    (this.DataContext as Canvas3DViewModel).DeselectAll();
+                    viewModel.DeselectAll();
 
-                    (this.DataContext as Canvas3DViewModel).Select(modeldata);
-                    (this.DataContext as Canvas3DViewModel).SelectedModel = modeldata;
+                    viewModel.Select(modeldata,ChainSide.middle);
+                    viewModel.SelectedModel = modeldata;
                 }               
 
 
             }
 
         }
-
-
-
-
-     
-
-
-
-            
-            
-           
-
-
-
-
 
 
 
