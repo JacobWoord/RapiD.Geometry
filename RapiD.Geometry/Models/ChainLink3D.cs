@@ -83,6 +83,15 @@ namespace RapiD.Geometry.Models
             this.StartPointVector = newStartPos;
         }
 
+
+        //public void SetNewPosition(Vector3 newStartPos)
+        //{
+        //    this.StartPointVector = newStartPos;
+        //}
+
+
+
+
         public Matrix RotationMatrix(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2)
         {
             Vector3 v1 = a2 - a1;

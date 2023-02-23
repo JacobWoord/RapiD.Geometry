@@ -55,6 +55,9 @@ namespace RapiD.Geometry.ViewModels
            // this.Trawler = new Door(Shipfile, "ship");
 
 
+            myDoor2.UpdatePositionDoor(myDoor2);
+            myDoor2.RotateTranform(myDoor2);
+            myDoor2.Mirror(MirrorAxis.Z);
 
 
 
@@ -407,8 +410,7 @@ namespace RapiD.Geometry.ViewModels
                         count++;
                     }
 
-
-                }
+ 
 
 
                
