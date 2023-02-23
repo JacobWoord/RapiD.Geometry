@@ -11,15 +11,15 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemeResources />
                 <ui:XamlControlsResources />
-                
+
                 <!--  Other merged dictionaries here  -->
             </ResourceDictionary.MergedDictionaries>
-           
+
             <converters:ColorToBrushConverter x:Key="color2brush" />
-            <converters:BoolToVisiblity x:Key="Bool2Vis"/>
+            <converters:BoolToVisiblity x:Key="Bool2Vis" />
 
             <!--  Other app resources here  -->
         </ResourceDictionary>
     </Application.Resources>
-    
+
 </Application>

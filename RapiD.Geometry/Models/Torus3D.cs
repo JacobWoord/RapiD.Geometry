@@ -10,7 +10,7 @@ using System.Windows.Media.Media3D;
 
 namespace RapiD.Geometry.Models
 {
-   public partial class Torus3D : GeometryBase3D
+   public partial class Torus3D : GeometryBase3D,IModel
     {
 
         [ObservableProperty]
@@ -37,15 +37,18 @@ namespace RapiD.Geometry.Models
 
 
 
-        public Torus3D(double diam, double tubeDiam,Vector3 pos)
+        public Torus3D(double diam, double tubeDiam,Vector3 pos, double rotateYDegrees = 0)
         {
-            Position = pos;
 
+            double degrees = rotateYDegrees;
+           this.Position = pos;
+            this.Name = "Connection";
             this.diameter = diam;
             this.tubeDiameter = tubeDiam;
-
+            Transform.Children.Add(new TranslateTransform3D(pos.X, pos.Y, pos.Z));
+            RotateAroundModelCenter(yaxis:1, degrees:degrees);
             // Assing model material
-            OriginalMaterial = PhongMaterials.Green;
+            OriginalMaterial = PhongMaterials.Red;
 
             Draw();
 
@@ -55,7 +58,7 @@ namespace RapiD.Geometry.Models
          
 
 
-
+          
         public override void Draw()
         {
             // Create triangle mesh for an 3d sphere
@@ -64,6 +67,7 @@ namespace RapiD.Geometry.Models
             // Assign mesh to model
             MeshGeometry = meshBuilder.ToMeshGeometry3D();
 
+            
 
         }
     }

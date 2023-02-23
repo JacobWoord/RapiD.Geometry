@@ -1,6 +1,7 @@
 ﻿using HelixToolkit.SharpDX.Core;
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
+using SharpDX.Direct2D1;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
@@ -70,14 +71,31 @@ namespace RapiD.Geometry.Models
             
 
         }
-       
-        
+        public void UpdatePosition()
+        {
+            meshGeometry.UpdateBounds();
+            this.Position = meshGeometry.Bound.Center;
+        }
+
         public override string ToString()
         {
             return Name;  //$"{this.GetType()}";
         }
 
-
+       public void RotateAroundModelCenter(double xaxis = 0, double yaxis = 0, double zaxis = 0, double degrees = 90)
+        {
+           
+            var axis = new System.Windows.Media.Media3D.Vector3D(xaxis, yaxis, zaxis);
+            var rotation = new System.Windows.Media.Media3D.AxisAngleRotation3D(axis, degrees);
+            var transform = new System.Windows.Media.Media3D.RotateTransform3D(rotation,position.ToPoint3D());
+            this.Transform.Children.Add(transform);
+        }
+        public void Translate(double x = 0, double y = 0, double z = 0)
+        {
+            var trans = new TranslateTransform3D(x, y, z);
+            this.Transform.Children.Add(trans);
+            Position += new Vector3((float)x,(float)y,(float)z);
+        }
 
 
 
@@ -109,6 +127,8 @@ namespace RapiD.Geometry.Models
                 CurrentMaterial = originalMaterial;
         }
     }
+
+  
 }
 
            

@@ -36,16 +36,15 @@ namespace RapiD.Geometry.ViewModels
 
             camera = new HelixToolkit.Wpf.SharpDX.OrthographicCamera()
             {
-                LookDirection = new System.Windows.Media.Media3D.Vector3D(0.12, -1.1, -11), /*(2.5, 4.5, -3), (1, 20, -1)*/
-                UpDirection = new System.Windows.Media.Media3D.Vector3D(0.013, 0.76, 0.63), /* (0, 0, -1)*/
-                Position = new System.Windows.Media.Media3D.Point3D(-3349, 19.75, 3520), /*(-500, -500, 500)*/
+                LookDirection = new System.Windows.Media.Media3D.Vector3D(213, -79, 57), //0.12, -1.1, -11
+                UpDirection = new System.Windows.Media.Media3D.Vector3D(0.39, 0.91,0.08), /* (0, 0, -1)*/
+                Position = new System.Windows.Media.Media3D.Point3D(4356, -2075, -1086), /*(-500, -500, 500)*/
                 FarPlaneDistance = 1000000,
                 NearPlaneDistance = -1000000,
-                Width = 23818
+                Width = 70876
             };
 
             camera.CreateViewMatrix();
-
             modelCollection = new ObservableCollection<IModel>();
             string basefolder = Utils2D.GetAppDataFolder();
             Doorfile = basefolder + @"3DModels\FISHINGBOARD_SB.obj";
@@ -71,23 +70,24 @@ namespace RapiD.Geometry.ViewModels
            
 
             // Putting the  SB door in the correct postion. important to note that we Update the node list after all transformations are done!
-            SbDoor.UpdatePositionDoor(xaxis:10000f);
+          await  SbDoor.UpdatePositionDoor(xaxis:10000f);
             SbDoor.RotateTransform(xaxis: 1d, degrees: 90d);
-            sbDoor.RotateTransform(yaxis: 1d, degrees: -80d);
-            sbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
-            sbDoor.Mirror(MirrorAxis.X);
+            SbDoor.RotateTransform(yaxis: 1d, degrees: -80d);
+            SbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
+            SbDoor.Mirror(MirrorAxis.X);
             SbDoor.UpdateNodeList();
             ShowNode(SbDoor);
-
             /* BABOORD BORD */
 
-            BbDoor.UpdatePositionDoor(xaxis:10000f);
-            bbDoor.RotateTransform(xaxis: 1d, degrees: 90d);
-            bbDoor.RotateTransform(yaxis: 1d, degrees: 70d);
-            bbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
+           await BbDoor.UpdatePositionDoor(xaxis:10000f);
+            BbDoor.RotateTransform(xaxis: 1d, degrees: 90d);
+            BbDoor.RotateTransform(yaxis: 1d, degrees: 70d);
+            BbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
             BbDoor.UpdateNodeList();
-            ShowNode(BbDoor);
 
+            //create RingConnections for net
+            /*SB*/ CreateConnections(-4000, -1400, 10000, degrees: 0);
+            /*BB*/ CreateConnections(3000, -1400f, -11400f,degrees:120);
 
 
             await App.Current.Dispatcher.InvokeAsync(() =>
@@ -97,14 +97,15 @@ namespace RapiD.Geometry.ViewModels
             });
 
             CreateWarp();
+            CreateDoorPatent();
         }
 
 
 
 
 
-
-        void ShowNode(IModel? door)
+      [RelayCommand]
+      public void ShowNode(IModel? door)
         {
             int count = 0;
             var parsedDoor = (door as BatchedModel);
@@ -211,15 +212,149 @@ namespace RapiD.Geometry.ViewModels
      
         public ChainSide selectedSide;
 
+        
+        public void CreateConnections(float x=0, float y=0 , float z=0, double degrees=0)
+        {
+            ModelCollection.Add(new Torus3D(500, 100, new Vector3(x, y, z), rotateYDegrees:degrees));
+
+        }
+
+    
 
 
         [RelayCommand]
+        public void RotateModel(object param)
+        {
+            var model = (SelectedModel as GeometryBase3D);
+
+          
+   
+
+            if (model != null)
+            {
+                switch (param)
+                {
+                    case "+X":
+                        model.RotateAroundModelCenter(xaxis: 1, degrees: 10);
+                        break;
+                    case "-X":
+                        model.RotateAroundModelCenter(xaxis: 1, degrees: -10);
+                        break;
+                    case "+Y":
+                        model.RotateAroundModelCenter(yaxis: 1, degrees: 10);
+                        break;
+                    case "-Y":
+                        model.RotateAroundModelCenter(yaxis: 1, degrees: -10);
+                        break;
+                    case "+Z":
+                        model.RotateAroundModelCenter(zaxis: 1, degrees: 10);
+                        break;
+                    case "-Z":
+                        model.RotateAroundModelCenter(zaxis: 1, degrees: -10);
+                        break;
+
+                    default:
+                        break;
+                }
+
+
+            }
+
+
+        }
+
+     
+       
+
+
+        [RelayCommand]
+        public void MoveConnection(object parameter)
+        {
+
+            GeometryBase3D model = (SelectedModel as GeometryBase3D);
+
+            
+          
+
+
+
+            if (model != null)
+                {
+                    string parameterString = parameter.ToString();
+                Vector3 NewPosition = model.Transform.ToVector3();
+                XAxis = NewPosition.X;
+                YAxis = NewPosition.Y;
+                ZAxis = NewPosition.Z;
+
+
+
+                switch (parameterString)
+                {
+                    case "+Y":
+                        model.Translate(y:200);
+                            break;
+                    case "-Y":
+                        model.Translate(y: -200);
+                        break;
+                    case "+X":
+                        model.Translate(x: 200);
+                        break;
+                    case "-X":
+                        model.Translate(x: -200);
+                        break;
+                    case "+Z":
+                        model.Translate(z: 200);
+                        break;
+                    case "-Z":
+                        model.Translate(z: -200);
+                        break;
+
+                    default:
+                        break;
+
+                        
+
+
+
+                }
+            }
+                return;
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        void CreateDoorPatent()
+        {
+            var nodeList1 = SbDoor.GetNodeList();
+            var nodeList2 = BbDoor.GetNodeList();
+            /*SB*/
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[7], new Vector3(-3600, -1400, 10000)));
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[5], new Vector3(-3600,-1400,10000)));
+            /*BB*/
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[7], new Vector3(3000,-1400,-11200)));
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[5], new Vector3(3000,-1400,-11200)));
+        }
+
+
         void CreateWarp()
         {
             var nodeList1 = SbDoor.GetNodeList();
             var nodeList2 = BbDoor.GetNodeList();
-            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[4], new Vector3(nodeList1[4].X + 3000, nodeList1[4].Y, nodeList1[4].Z + 200)));
-            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[4], new Vector3(nodeList1[4].X + 3000, nodeList1[4].Y, nodeList1[4].Z + 200)));
+        /*SB*/ ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[3], new Vector3(nodeList1[3].X + 3000 * 5, nodeList1[4].Y + 9000, nodeList1[4].Z + -3000)));
+        /*BB*/ ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[4], new Vector3(nodeList2[4].X + 3000 * 5, nodeList2[4].Y + 8000, nodeList2[4].Z + 9000)));
         }
 
 

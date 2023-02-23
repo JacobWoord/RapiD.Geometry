@@ -56,8 +56,8 @@
                     Background="White"
                     BorderBrush="black"
                     BorderThickness="2"
-                    Command="{Binding DrawTorrusCommand}"
-                    Content="Draw Torrus"
+                    Command="{Binding CreateConnectionsCommand}"
+                    Content="Create connections"
                     FontWeight="SemiBold"
                     Foreground="black" />
 
@@ -165,9 +165,25 @@
                 ZoomExtentsWhenLoaded="True"
                 ZoomSensitivity="0.9">
                 <hx:Viewport3DX.InputBindings>
+                    <!-- Transform Bindings-->
+                    <KeyBinding Key="U" Command="{Binding MoveConnectionCommand}" CommandParameter="+X"/>
+                    <KeyBinding Key="J" Command="{Binding MoveConnectionCommand}" CommandParameter="-X"/>
+                    <KeyBinding Key="Y" Command="{Binding MoveConnectionCommand}" CommandParameter="+Y"/>
+                    <KeyBinding Key="H" Command="{Binding MoveConnectionCommand}" CommandParameter="-Y"/>
+                    <KeyBinding Key="I" Command="{Binding MoveConnectionCommand}" CommandParameter="+Z"/>
+                    <KeyBinding Key="K" Command="{Binding MoveConnectionCommand}" CommandParameter="-Z"/>
+
+                    <!-- Rotation Bindings-->
+                    <KeyBinding Key="NumPad1" Command="{Binding RotateModelCommand}" CommandParameter="-X"/>
+                    <KeyBinding Key="NumPad7" Command="{Binding RotateModelCommand}" CommandParameter="+X"/>
+                    <KeyBinding Key="NumPad2" Command="{Binding RotateModelCommand}" CommandParameter="-Y"/>
+                    <KeyBinding Key="NumPad8" Command="{Binding RotateModelCommand}" CommandParameter="+Y"/>
+                    <KeyBinding Key="NumPad3" Command="{Binding RotateModelCommand}" CommandParameter="-Z"/>
+                    <KeyBinding Key="NumPad9" Command="{Binding RotateModelCommand}" CommandParameter="+Z"/>
+
+
                     <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
                     <KeyBinding Key="F" Command="hx:ViewportCommands.FrontView" />
-                    <KeyBinding Key="U" Command="hx:ViewportCommands.TopView" />
                     <KeyBinding Key="D" Command="hx:ViewportCommands.BottomView" />
                     <KeyBinding Key="L" Command="hx:ViewportCommands.LeftView" />
                     <KeyBinding Key="R" Command="hx:ViewportCommands.RightView" />
@@ -185,22 +201,7 @@
                 <hx:AmbientLight3D Color="Gray" />
                 <hx:DirectionalLight3D Direction="0,0,-1" Color="LightYellow" />
 
-                <!--  Models  -->
-
-                <!--<hx:ItemsModel3D ItemsSource="{Binding ModelCollection}">
-                    <hx:ItemsModel3D.Resources>
-                        <DataTemplate DataType="{x:Type models:GeometryBase3D}">
-                            <hx:MeshGeometryModel3D
-                                CullMode="Back"
-                                EnableViewFrustumCheck="False"
-                                Geometry="{Binding MeshGeometry}"
-                                Material="{Binding CurrentMaterial}"
-                                RenderWireframe="False"
-                                Transform="{Binding Transform}" />
-                        </DataTemplate>
-                    </hx:ItemsModel3D.Resources>
-                </hx:ItemsModel3D>-->
-
+                
 
                 <hx:ItemsModel3D ItemsSource="{Binding ModelCollection}">
                     <hx:ItemsModel3D.ItemTemplate>
@@ -425,10 +426,32 @@
                         HorizontalAlignment="Center"
                         Content="Apply" />
                 </StackPanel>
-
-
-
             </StackPanel>
+
+            <StackPanel Grid.Row="7" Orientation="Horizontal">
+
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5 0 40 0">
+                    <Label>XPos</Label>
+                    <TextBlock Text="{Binding XAxis,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5 0 40 0">
+                    <Label>YPos</Label>
+                    <TextBlock Text="{Binding YAxis,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5 0 40 0">
+                    <Label>ZPos</Label>
+                    <TextBlock Text="{Binding ZAxis,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+
+
+                
+                
+            </StackPanel>
+
+
+
 
 
 

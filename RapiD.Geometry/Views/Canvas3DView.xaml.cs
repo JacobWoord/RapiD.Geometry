@@ -55,10 +55,6 @@ namespace RapiD.Geometry.Views
 
             if (hits.Count == 0)
             {
-
-                
-                //var position = new Vector3(Convert.ToSingle(args.Position.X), Convert.ToSingle(args.Position.Y), Convert.ToSingle(args.Position));
-               // (this.DataContext as Canvas3DViewModel).CapturedPos = position;
                 viewModel.DeselectAll();
                 return;
             }
@@ -93,14 +89,9 @@ namespace RapiD.Geometry.Views
                 if (modeldata is InfoButton3D)
                 {
                     ChainSide side = viewModel.selectedSide;
+                    viewModel.UpdateChainStartPoint(modeldata);
 
-                    if (side == ChainSide.Left)
-                    {
-                        viewModel.UpdateChainStartPoint(modeldata);
-                        viewModel.DeselectAll();
-                    }
-                        viewModel.UpdateChainEndPoint(modeldata);
-                        viewModel.DeselectAll();
+               
 
                 }
                 else if(modeldata is ChainLink3D c)
@@ -108,29 +99,36 @@ namespace RapiD.Geometry.Views
                     viewModel.XAxis = MathF.Round(c.EndPointVector.X,2);
                     viewModel.YAxis = MathF.Round(c.EndPointVector.Y, 2);
                     viewModel.ZAxis = MathF.Round(c.EndPointVector.Z, 2);
+                    //Distance between start and end of a chain
                     var distance1 = SharpDX.Vector3.Distance(hit.PointHit, c.StartPointVector);
                     var distance2 = SharpDX.Vector3.Distance(hit.PointHit, c.EndPointVector);
-                    if(distance1< distance2)
-                    {
-                       viewModel.DeselectAll();
 
+                    //distance between startpoint chain and door to determine the door
+                    var bbDoornodes = viewModel.BbDoor.GetNodeList();
+                    var sbDoornodes = viewModel.SbDoor.GetNodeList();
+                    var distanceToBb = Vector3.Distance(c.StartPointVector, bbDoornodes[3]);
+                    var distanceToSb = Vector3.Distance(c.StartPointVector, sbDoornodes[3]);
+                   
                         viewModel.Select(modeldata,ChainSide.Left);
                         viewModel.SelectedModel = modeldata;
-                    }
-                    else
+
+
+                        if (distanceToBb < distanceToSb)
+                        {
+                            //BB Door
+                            viewModel.ShowNode(viewModel.BbDoor);
+                        }
+                    else if (distanceToSb < distanceToBb)
                     {
-                        viewModel.DeselectAll();
+                        //SB Door
+                        viewModel.ShowNode(viewModel.SbDoor);
 
-                        viewModel.Select(modeldata, ChainSide.Right);
-                        viewModel.SelectedModel = modeldata;
                     }
 
 
-                  
-                    viewModel.DeselectAll();
 
-                    viewModel.Select(modeldata,ChainSide.middle);
-                    viewModel.SelectedModel = modeldata;
+
+
                 }
                 else
                 {

@@ -9,6 +9,8 @@ namespace RapiD.Geometry.Models
 {
     public static class Utils2D
     {
+
+
         public static string GetAppDataFolder()
         {
             string foldername = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Net Designer\";
@@ -16,6 +18,8 @@ namespace RapiD.Geometry.Models
                 Directory.CreateDirectory(foldername);
             return foldername;
         }
+
+      
 
     }
 }
