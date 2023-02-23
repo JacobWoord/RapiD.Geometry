@@ -37,7 +37,7 @@ namespace RapiD.Geometry.ViewModels
             camera = new HelixToolkit.Wpf.SharpDX.OrthographicCamera()
             {
                 LookDirection = new System.Windows.Media.Media3D.Vector3D(213, -79, 57), //0.12, -1.1, -11
-                UpDirection = new System.Windows.Media.Media3D.Vector3D(0.39, 0.91,0.08), /* (0, 0, -1)*/
+                UpDirection = new System.Windows.Media.Media3D.Vector3D(0.39, 0.91, 0.08), /* (0, 0, -1)*/
                 Position = new System.Windows.Media.Media3D.Point3D(4356, -2075, -1086), /*(-500, -500, 500)*/
                 FarPlaneDistance = 1000000,
                 NearPlaneDistance = -1000000,
@@ -52,12 +52,12 @@ namespace RapiD.Geometry.ViewModels
 
             this.BbDoor = new Door(Doorfile, "bakboord");
             this.SbDoor = new Door(Doorfile, "stuurboord");
-           // this.Trawler = new Door(Shipfile, "ship");
+            // this.Trawler = new Door(Shipfile, "ship");
 
 
-            myDoor2.UpdatePositionDoor(myDoor2);
-            myDoor2.RotateTranform(myDoor2);
-            myDoor2.Mirror(MirrorAxis.Z);
+            //myDoor2.UpdatePositionDoor(myDoor2);
+            //myDoor2.RotateTranform(myDoor2);
+            //myDoor2.Mirror(MirrorAxis.Z);
 
 
 
@@ -70,10 +70,10 @@ namespace RapiD.Geometry.ViewModels
             await BbDoor.OpenFile();
             await SbDoor.OpenFile();
             //await Trawler.OpenFile();
-           
+
 
             // Putting the  SB door in the correct postion. important to note that we Update the node list after all transformations are done!
-          await  SbDoor.UpdatePositionDoor(xaxis:10000f);
+            await SbDoor.UpdatePositionDoor(xaxis: 10000f);
             SbDoor.RotateTransform(xaxis: 1d, degrees: 90d);
             SbDoor.RotateTransform(yaxis: 1d, degrees: -80d);
             SbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
@@ -82,15 +82,17 @@ namespace RapiD.Geometry.ViewModels
             ShowNode(SbDoor);
             /* BABOORD BORD */
 
-           await BbDoor.UpdatePositionDoor(xaxis:10000f);
+            await BbDoor.UpdatePositionDoor(xaxis: 10000f);
             BbDoor.RotateTransform(xaxis: 1d, degrees: 90d);
             BbDoor.RotateTransform(yaxis: 1d, degrees: 70d);
             BbDoor.RotateTransform(zaxis: 1d, degrees: 0d);
             BbDoor.UpdateNodeList();
 
             //create RingConnections for net
-            /*SB*/ CreateConnections(-4000, -1400, 10000, degrees: 0);
-            /*BB*/ CreateConnections(3000, -1400f, -11400f,degrees:120);
+            /*SB*/
+            CreateConnections(-4000, -1400, 10000, degrees: 0);
+            /*BB*/
+            CreateConnections(3000, -1400f, -11400f, degrees: 120);
 
 
             await App.Current.Dispatcher.InvokeAsync(() =>
@@ -107,8 +109,8 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-      [RelayCommand]
-      public void ShowNode(IModel? door)
+        [RelayCommand]
+        public void ShowNode(IModel? door)
         {
             int count = 0;
             var parsedDoor = (door as BatchedModel);
@@ -124,7 +126,7 @@ namespace RapiD.Geometry.ViewModels
         }
 
 
-        
+
         public void UpdatePositionDoorAndNodes(IModel door)
         {
             BatchedModel? parsedDoor = (door as BatchedModel);
@@ -134,7 +136,7 @@ namespace RapiD.Geometry.ViewModels
 
             MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
             parsedDoor.Transform.Children.Add(matrixTransform);
-            
+
         }
 
 
@@ -163,7 +165,7 @@ namespace RapiD.Geometry.ViewModels
 
         partial void OnSpreadChanged(int value)
         {
-         //  UpdatePositionDoorAndNodes(sbdoor);
+            //  UpdatePositionDoorAndNodes(sbdoor);
         }
 
 
@@ -212,17 +214,17 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         ChainLink3D chainModel;
 
-     
+
         public ChainSide selectedSide;
 
-        
-        public void CreateConnections(float x=0, float y=0 , float z=0, double degrees=0)
+
+        public void CreateConnections(float x = 0, float y = 0, float z = 0, double degrees = 0)
         {
-            ModelCollection.Add(new Torus3D(500, 100, new Vector3(x, y, z), rotateYDegrees:degrees));
+            ModelCollection.Add(new Torus3D(500, 100, new Vector3(x, y, z), rotateYDegrees: degrees));
 
         }
 
-    
+
 
 
         [RelayCommand]
@@ -230,8 +232,8 @@ namespace RapiD.Geometry.ViewModels
         {
             var model = (SelectedModel as GeometryBase3D);
 
-          
-   
+
+
 
             if (model != null)
             {
@@ -266,8 +268,8 @@ namespace RapiD.Geometry.ViewModels
 
         }
 
-     
-       
+
+
 
 
         [RelayCommand]
@@ -276,14 +278,14 @@ namespace RapiD.Geometry.ViewModels
 
             GeometryBase3D model = (SelectedModel as GeometryBase3D);
 
-            
-          
+
+
 
 
 
             if (model != null)
-                {
-                    string parameterString = parameter.ToString();
+            {
+                string parameterString = parameter.ToString();
                 Vector3 NewPosition = model.Transform.ToVector3();
                 XAxis = NewPosition.X;
                 YAxis = NewPosition.Y;
@@ -294,8 +296,8 @@ namespace RapiD.Geometry.ViewModels
                 switch (parameterString)
                 {
                     case "+Y":
-                        model.Translate(y:200);
-                            break;
+                        model.Translate(y: 200);
+                        break;
                     case "-Y":
                         model.Translate(y: -200);
                         break;
@@ -315,14 +317,14 @@ namespace RapiD.Geometry.ViewModels
                     default:
                         break;
 
-                        
+
 
 
 
                 }
             }
-                return;
-            }
+            return;
+        }
 
 
 
@@ -345,10 +347,10 @@ namespace RapiD.Geometry.ViewModels
             var nodeList2 = BbDoor.GetNodeList();
             /*SB*/
             ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[7], new Vector3(-3600, -1400, 10000)));
-            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[5], new Vector3(-3600,-1400,10000)));
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[5], new Vector3(-3600, -1400, 10000)));
             /*BB*/
-            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[7], new Vector3(3000,-1400,-11200)));
-            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[5], new Vector3(3000,-1400,-11200)));
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[7], new Vector3(3000, -1400, -11200)));
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[5], new Vector3(3000, -1400, -11200)));
         }
 
 
@@ -356,8 +358,10 @@ namespace RapiD.Geometry.ViewModels
         {
             var nodeList1 = SbDoor.GetNodeList();
             var nodeList2 = BbDoor.GetNodeList();
-        /*SB*/ ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[3], new Vector3(nodeList1[3].X + 3000 * 5, nodeList1[4].Y + 9000, nodeList1[4].Z + -3000)));
-        /*BB*/ ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[4], new Vector3(nodeList2[4].X + 3000 * 5, nodeList2[4].Y + 8000, nodeList2[4].Z + 9000)));
+            /*SB*/
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[3], new Vector3(nodeList1[3].X + 3000 * 5, nodeList1[4].Y + 9000, nodeList1[4].Z + -3000)));
+            /*BB*/
+            ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[4], new Vector3(nodeList2[4].X + 3000 * 5, nodeList2[4].Y + 8000, nodeList2[4].Z + 9000)));
         }
 
 
@@ -368,12 +372,12 @@ namespace RapiD.Geometry.ViewModels
             {
                 if (SelectedModel is ChainLink3D chain)
                 {
-                    chain.SetNewEndPosition(new Vector3(XAxis,YAxis,ZAxis));
+                    chain.SetNewEndPosition(new Vector3(XAxis, YAxis, ZAxis));
                     chain.Draw();
                 }
             }
         }
-               
+
 
 
 
@@ -387,13 +391,13 @@ namespace RapiD.Geometry.ViewModels
             int count = 0;
             var nodeList1 = BbDoor.GetNodeList();
             var nodeList2 = SbDoor.GetNodeList();
-           
+
             if (geometry is ChainLink3D c)
             {
 
                 if (chainside == ChainSide.Right)
                 {
-                    selectedSide= ChainSide.Right;
+                    selectedSide = ChainSide.Right;
                     foreach (var node in nodeList1)
                     {
                         ModelCollection.Add(new InfoButton3D(node, count.ToString()));
@@ -402,22 +406,22 @@ namespace RapiD.Geometry.ViewModels
                 }
                 else if (chainside == ChainSide.Left)
                 {
-                   selectedSide= ChainSide.Left;
+                    selectedSide = ChainSide.Left;
                     foreach (var node in nodeList2)
                     {
-                        
+
                         ModelCollection.Add(new InfoButton3D(node, count.ToString()));
                         count++;
                     }
 
- 
 
 
-               
+
+
+                }
+
             }
-
         }
-
 
 
         public void UpdateChainStartPoint(IModel Node)
@@ -472,8 +476,8 @@ namespace RapiD.Geometry.ViewModels
         public void Select(IModel geometry, ChainSide chainside)
         {
             geometry.Select();
-            
-            
+
+
             if (geometry.IsSelected == false)
             {
                 ModelCollection
@@ -491,8 +495,8 @@ namespace RapiD.Geometry.ViewModels
             var nodeList = SbDoor.GetNodeList();
             var nodeList2 = BbDoor.GetNodeList();
 
-            ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList[5], nodeList[5] + nodeList[5].X -1000 ));
-           ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList[7], nodeList[7] + nodeList[7].X -1000 + nodeList[7].Y + 1000));
+            ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList[5], nodeList[5] + nodeList[5].X - 1000));
+            ModelCollection.Add(new ChainLink3D(15f, 50, 40f, nodeList[7], nodeList[7] + nodeList[7].X - 1000 + nodeList[7].Y + 1000));
         }
 
 
@@ -524,7 +528,7 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-     
+
 
 
         [RelayCommand]
@@ -674,8 +678,6 @@ namespace RapiD.Geometry.ViewModels
 
     }
 }
-
-
 
 
 
