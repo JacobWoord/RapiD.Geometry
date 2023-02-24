@@ -89,6 +89,7 @@ namespace RapiD.Geometry.Models
             var rotation = new System.Windows.Media.Media3D.AxisAngleRotation3D(axis, degrees);
             var transform = new System.Windows.Media.Media3D.RotateTransform3D(rotation,position.ToPoint3D());
             this.Transform.Children.Add(transform);
+            transform.ToVector3();
         }
         public void Translate(double x = 0, double y = 0, double z = 0)
         {

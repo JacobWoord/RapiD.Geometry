@@ -103,6 +103,32 @@ namespace RapiD.Geometry.ViewModels
 
             CreateWarp();
             CreateDoorPatent();
+
+
+            //test section
+
+            //CreatePath();
+            ModelCollection.Add(new Squared3D(new Vector3(-33000,-9800,-6800), 90));
+           
+            //modelCollection.Add(new Torus3D(4000,200,new Vector3(0,0,0)));
+        }
+
+
+        void CreatePath()
+        {
+
+            List<Vector3> TubePath = new();
+            TubePath.Add(new Vector3(0, 0, 0));
+
+
+            for (int i = 0; i < 50; i++)
+            {
+
+                TubePath.Add(new Vector3(TubePath[i].X + 150, 0, 0));
+
+            }
+
+            modelCollection.Add(new CablePatent(TubePath,300));
         }
 
 
