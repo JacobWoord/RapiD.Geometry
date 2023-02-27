@@ -24,8 +24,10 @@ namespace RapiD.Geometry.Models
         float width;
         [ObservableProperty]
         float diameter;
+       
         [ObservableProperty]
-        float length;
+        float elementlength; // is innerlength of link
+
         [ObservableProperty]
         float copies;
         [ObservableProperty]
@@ -39,25 +41,35 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         Vector3 endPointVector;
 
+        [ObservableProperty]
+        float chainLength;
 
         
-        public ChainLink3D(float diameter, float width,float length, Vector3 startPointVector, Vector3 endPointVector)
+        public ChainLink3D(float diameter, float width,float innerLength, Vector3 startPointVector, Vector3 endPointVector, float chainLengthCm = 2000 )
         {
             this.ID=Guid.NewGuid().ToString();
             this.width = width;
-            this.length = length;
-            this.diameter = diameter;
+            this.radius = (width - diameter) / 2;
             this.copies = copies;
             this.elements = new ObservableCollection<Element3D>();
             this.startPointVector = startPointVector;
             this.endPointVector = endPointVector;
 
+            //Calculation
+            this.chainLength = chainLengthCm;
+            this.elementlength = innerLength;
+            this.diameter = diameter;
+
+
+
             OriginalMaterial = PhongMaterials.Yellow;
             Draw();
         }
 
+        
 
-        public float ChainLength()
+
+        public float CalcChainLength()
         {
             return Vector3.Distance(startPointVector, endPointVector);
         }
@@ -128,15 +140,18 @@ namespace RapiD.Geometry.Models
         public override void Draw()
         {
             MeshBuilder meshBuilder = new MeshBuilder();
-            float radius = (width - diameter) / 2;
+
+            float length = this.elementlength + diameter - 2 * radius;
             float trans = 0f;
             float translate = length + (radius * 2) - diameter;
             float yoffset = 0;
             int segments = 10;
             float interval = 180 / segments;
-           
 
-            float elementlength = (length + 2 * radius - diameter);
+            
+
+
+
             Vector3 buttonOffset = new Vector3(-50, 50, 50);
 
             Vector3 startVector = startPointVector;

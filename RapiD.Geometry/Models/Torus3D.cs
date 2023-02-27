@@ -37,16 +37,16 @@ namespace RapiD.Geometry.Models
 
 
 
-        public Torus3D(double diam, double tubeDiam,Vector3 pos, double rotateYDegrees = 0)
+        public Torus3D(double diam, double tubeDiam,Vector3 pos)
         {
 
-            double degrees = rotateYDegrees;
+           
            this.Position = pos;
             this.Name = "Connection";
             this.diameter = diam;
             this.tubeDiameter = tubeDiam;
             Transform.Children.Add(new TranslateTransform3D(pos.X, pos.Y, pos.Z));
-            RotateAroundModelCenter(yaxis:1, degrees:degrees);
+       
             // Assing model material
             OriginalMaterial = PhongMaterials.Red;
 

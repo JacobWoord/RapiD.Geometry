@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Material = HelixToolkit.Wpf.SharpDX.Material;
-
+using SharpDX.Direct3D11;
 
 namespace RapiD.Geometry.Models
 {
@@ -17,6 +17,9 @@ namespace RapiD.Geometry.Models
 
     public abstract partial class BatchedModel : ObservableObject, IModel
     {
+
+        [ObservableProperty]
+        CullMode cullMode=CullMode.Back;
 
         [ObservableProperty]
         IList<BatchedMeshGeometryConfig> batchedMeshes;
@@ -85,7 +88,6 @@ namespace RapiD.Geometry.Models
             for (int i = 0; i < nodeList.Count; i++)
             {
                 NodeList[i] = (Vector3)Vector3.Transform(NodeList[i], Transform.Value.ToMatrix());
-                Debug.WriteLine($"Node {i}: {NodeList[i]}");
             }
         }
 
@@ -99,20 +101,12 @@ namespace RapiD.Geometry.Models
 
             Transform.Children.Add(matrixTransform);
 
-            Debug.WriteLine("Node list coordinates before update:");
-            foreach (var node in nodeList)
-            {
-                Debug.WriteLine(node);
-            }
-
-
-
-            Debug.WriteLine("Node list coordinates after update:");
-            foreach (var node in nodeList)
-            {
-                Debug.WriteLine(node);
-            }
         }
+            
+
+
+
+            
 
 
 
@@ -131,6 +125,7 @@ namespace RapiD.Geometry.Models
                 scale.ScaleZ = -1;
 
             Transform.Children.Add(scale);
+            CullMode = CullMode.Front;
             //AllNodes.Where(x => x.CanTranslate).ToList().ForEach(x => x.Transform3DGroup.Children.Add(scale));
 
         }

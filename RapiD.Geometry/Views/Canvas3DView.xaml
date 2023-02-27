@@ -146,6 +146,7 @@
         <Grid Grid.Row="1" Grid.ColumnSpan="2">
 
             <hx:Viewport3DX
+                
                 BackgroundColor="Beige"
                 Camera="{Binding Camera}"
                 CameraMode="Inspect"
@@ -194,20 +195,11 @@
                 </hx:Viewport3DX.InputBindings>
 
 
-
-
-                <!--  Lighting  -->
-                <hx:SpotLight3D Color="Yellow" />
-                <hx:AmbientLight3D Color="Gray" />
-                <hx:DirectionalLight3D Direction="0,0,-1" Color="LightYellow" />
-
-                
-
                 <hx:ItemsModel3D ItemsSource="{Binding ModelCollection}">
                     <hx:ItemsModel3D.ItemTemplate>
                         <DataTemplate>
                             <hx:MeshGeometryModel3D
-                                CullMode="Back"
+                                CullMode="{Binding CullMode}"
                                 EnableViewFrustumCheck="False"
                                 Geometry="{Binding MeshGeometry}"
                                 Material="{Binding CurrentMaterial}"
@@ -224,7 +216,7 @@
                             <hx:BatchedMeshGeometryModel3D
                                 BatchedGeometries="{Binding BatchedMeshes}"
                                 BatchedMaterials="{Binding ModelMaterials}"
-                                CullMode="Back"
+                                 CullMode="{Binding CullMode}"
                                 EnableViewFrustumCheck="False"
                                 Material="{Binding BaseMaterial}"
                                 RenderWireframe="False"
@@ -234,6 +226,14 @@
                 </hx:ItemsModel3D>
 
 
+
+
+                <!--  Lighting  -->
+                <hx:SpotLight3D Color="Yellow" />
+                
+                <hx:AmbientLight3D Color="Gray" />
+                <hx:DirectionalLight3D Direction="0,1,-1" Color="LightYellow" />
+               
 
 
 
@@ -253,6 +253,11 @@
                     SizeScale="200" />
 
             </hx:Viewport3DX>
+
+
+
+
+
 
         </Grid>
 
