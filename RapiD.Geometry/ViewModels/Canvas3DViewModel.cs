@@ -103,7 +103,7 @@ namespace RapiD.Geometry.ViewModels
             float spread = Vector3.Distance(SbConnectionPosition, BbConnectionPostion);
 
 
-            modelCollection.Add(new Squared3D(new Vector3(spread /2 , -30000, 1000), new Vector3(8000, 1000, 8000)));
+            modelCollection.Add(new Squared3D(new Vector3(spread /2 , -30000, 1000), new Vector3(40000, 1000, 10000)));
 
            
 
