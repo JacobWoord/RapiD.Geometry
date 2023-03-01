@@ -17,7 +17,7 @@ namespace RapiD.Geometry.Models
         public Floor3D(Vector3 position,Vector3 size)
         {
 
-            OriginalMaterial = PhongMaterials.Green;
+            OriginalMaterial = PhongMaterials.Bisque;
             Position = position;
             Size = size;
             Name = "Squared Box";

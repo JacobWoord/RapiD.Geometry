@@ -61,7 +61,6 @@ namespace RapiD.Geometry.Models
             this.diameter = diameter;
 
 
-
             OriginalMaterial = PhongMaterials.Yellow;
             Draw();
         }

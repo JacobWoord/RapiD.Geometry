@@ -29,9 +29,6 @@ namespace RapiD.Geometry.Models
             this.name = name;
         }
 
-
-
-
         public List<ChainLink3D> CreateDoorPatent(Door door)
         {
             var nodeList = door.GetNodeList();
@@ -40,6 +37,12 @@ namespace RapiD.Geometry.Models
             Vector3 topnode = nodeList[5];
             float elementLength = innerLength;
             float distance = Vector3.Distance(bottomnode, topnode);
+
+
+
+
+
+
         
 
 

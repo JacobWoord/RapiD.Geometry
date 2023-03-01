@@ -43,7 +43,15 @@ namespace RapiD.Geometry.Models
         }
 
         
-        
+        public Warp3D DrawWarp()
+        {
+            var nodeList = GetNodeList();
+            List<Vector3> centerPoints= new();
+            centerPoints.Add(nodeList[3]);
+            centerPoints.Add(new Vector3(nodeList[3].X, nodeList[3].Y +100000, nodeList[3].Z));
+            var warp = new Warp3D(centerPoints);
+            return warp;
+        }
         
         
        

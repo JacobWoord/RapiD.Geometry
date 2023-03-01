@@ -146,7 +146,6 @@
         <Grid Grid.Row="1" Grid.ColumnSpan="2">
 
             <hx:Viewport3DX
-                
                 BackgroundColor="Beige"
                 Camera="{Binding Camera}"
                 CameraMode="Inspect"
@@ -166,21 +165,57 @@
                 ZoomExtentsWhenLoaded="True"
                 ZoomSensitivity="0.9">
                 <hx:Viewport3DX.InputBindings>
-                    <!-- Transform Bindings-->
-                    <KeyBinding Key="Y" Command="{Binding MoveConnectionCommand}" CommandParameter="+X"/>
-                    <KeyBinding Key="H" Command="{Binding MoveConnectionCommand}" CommandParameter="-X"/>
-                    <KeyBinding Key="U" Command="{Binding MoveConnectionCommand}" CommandParameter="+Y"/>
-                    <KeyBinding Key="J" Command="{Binding MoveConnectionCommand}" CommandParameter="-Y"/>
-                    <KeyBinding Key="I" Command="{Binding MoveConnectionCommand}" CommandParameter="+Z"/>
-                    <KeyBinding Key="K" Command="{Binding MoveConnectionCommand}" CommandParameter="-Z"/>
+                    <!--  Transform Bindings  -->
+                    <KeyBinding
+                        Key="Y"
+                        Command="{Binding MoveConnectionCommand}"
+                        CommandParameter="+X" />
+                    <KeyBinding
+                        Key="H"
+                        Command="{Binding MoveConnectionCommand}"
+                        CommandParameter="-X" />
+                    <KeyBinding
+                        Key="U"
+                        Command="{Binding MoveConnectionCommand}"
+                        CommandParameter="+Y" />
+                    <KeyBinding
+                        Key="J"
+                        Command="{Binding MoveConnectionCommand}"
+                        CommandParameter="-Y" />
+                    <KeyBinding
+                        Key="I"
+                        Command="{Binding MoveConnectionCommand}"
+                        CommandParameter="+Z" />
+                    <KeyBinding
+                        Key="K"
+                        Command="{Binding MoveConnectionCommand}"
+                        CommandParameter="-Z" />
 
-                    <!-- Rotation Bindings-->
-                    <KeyBinding Key="NumPad1" Command="{Binding RotateModelCommand}" CommandParameter="-X"/>
-                    <KeyBinding Key="NumPad7" Command="{Binding RotateModelCommand}" CommandParameter="+X"/>
-                    <KeyBinding Key="NumPad2" Command="{Binding RotateModelCommand}" CommandParameter="-Y"/>
-                    <KeyBinding Key="NumPad8" Command="{Binding RotateModelCommand}" CommandParameter="+Y"/>
-                    <KeyBinding Key="NumPad3" Command="{Binding RotateModelCommand}" CommandParameter="-Z"/>
-                    <KeyBinding Key="NumPad9" Command="{Binding RotateModelCommand}" CommandParameter="+Z"/>
+                    <!--  Rotation Bindings  -->
+                    <KeyBinding
+                        Key="NumPad1"
+                        Command="{Binding RotateModelCommand}"
+                        CommandParameter="-X" />
+                    <KeyBinding
+                        Key="NumPad7"
+                        Command="{Binding RotateModelCommand}"
+                        CommandParameter="+X" />
+                    <KeyBinding
+                        Key="NumPad2"
+                        Command="{Binding RotateModelCommand}"
+                        CommandParameter="-Y" />
+                    <KeyBinding
+                        Key="NumPad8"
+                        Command="{Binding RotateModelCommand}"
+                        CommandParameter="+Y" />
+                    <KeyBinding
+                        Key="NumPad3"
+                        Command="{Binding RotateModelCommand}"
+                        CommandParameter="-Z" />
+                    <KeyBinding
+                        Key="NumPad9"
+                        Command="{Binding RotateModelCommand}"
+                        CommandParameter="+Z" />
 
 
                     <KeyBinding Key="B" Command="hx:ViewportCommands.BackView" />
@@ -216,7 +251,7 @@
                             <hx:BatchedMeshGeometryModel3D
                                 BatchedGeometries="{Binding BatchedMeshes}"
                                 BatchedMaterials="{Binding ModelMaterials}"
-                                 CullMode="{Binding CullMode}"
+                                CullMode="{Binding CullMode}"
                                 EnableViewFrustumCheck="False"
                                 Material="{Binding BaseMaterial}"
                                 RenderWireframe="False"
@@ -230,10 +265,9 @@
 
                 <!--  Lighting  -->
                 <hx:SpotLight3D Color="Yellow" />
-                
+
                 <hx:AmbientLight3D Color="Gray" />
                 <hx:DirectionalLight3D Direction="0,1,-1" Color="LightYellow" />
-               
 
 
 
@@ -381,7 +415,7 @@
                     <TextBox
                         Grid.Row="3"
                         Width="90"
-                        Height="30"                  
+                        Height="30"
                         Text="{Binding XAxis, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                     <Button
                         Grid.Row="3"
@@ -407,8 +441,8 @@
                         Grid.Row="3"
                         Width="70"
                         Margin="0,5,0,10"
-                        Command="{Binding UpdateWarpEndPositionCommand}"
                         HorizontalAlignment="Center"
+                        Command="{Binding UpdateWarpEndPositionCommand}"
                         Content="Apply" />
                 </StackPanel>
 
@@ -427,32 +461,41 @@
                         Grid.Row="3"
                         Width="70"
                         Margin="0,5,0,10"
-                        Command="{Binding UpdateWarpEndPositionCommand}"
                         HorizontalAlignment="Center"
+                        Command="{Binding UpdateWarpEndPositionCommand}"
                         Content="Apply" />
                 </StackPanel>
             </StackPanel>
 
             <StackPanel Grid.Row="7" Orientation="Horizontal">
 
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5 0 40 0">
+                <StackPanel
+                    Margin="5,0,40,0"
+                    HorizontalAlignment="Center"
+                    Orientation="Vertical">
                     <Label>XPos</Label>
-                    <TextBlock Text="{Binding XAxis,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="{Binding XAxis, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5 0 40 0">
+                <StackPanel
+                    Margin="5,0,40,0"
+                    HorizontalAlignment="Center"
+                    Orientation="Vertical">
                     <Label>YPos</Label>
-                    <TextBlock Text="{Binding YAxis,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="{Binding YAxis, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
-                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5 0 40 0">
+                <StackPanel
+                    Margin="5,0,40,0"
+                    HorizontalAlignment="Center"
+                    Orientation="Vertical">
                     <Label>ZPos</Label>
-                    <TextBlock Text="{Binding ZAxis,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="{Binding ZAxis, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
 
-                
-                
+
+
             </StackPanel>
 
 

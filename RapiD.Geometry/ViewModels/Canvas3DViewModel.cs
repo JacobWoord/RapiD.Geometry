@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
@@ -57,6 +58,10 @@ namespace RapiD.Geometry.ViewModels
 
             modelCollection.Add(new Floor3D(new Vector3(0, 0, -50), new Vector3(750000, 750000, 100)));
             effectsManager = new EffectsManager();
+
+           
+
+           
    }
         [RelayCommand]
         async Task Initialize()
@@ -68,14 +73,14 @@ namespace RapiD.Geometry.ViewModels
             // Putting the  SB door in the correct postion. important to note that we Update the node list after all transformations are done!
             await SbDoor.UpdatePositionDoor(xaxis: 80000f);
             SbDoor.UpdateNodeList();
-       
-           
+
+
             /* BABOORD BORD */
             bbDoor.Mirror(MirrorAxis.X);
             BbDoor.UpdateNodeList();
 
             var BBpatent = new DoorPatent3D();
-            List<ChainLink3D> BbChainPatent =  BBpatent.CreateDoorPatent(BbDoor);
+            List<ChainLink3D> BbChainPatent = BBpatent.CreateDoorPatent(BbDoor);
             Vector3 BbConnectionPostion = BbChainPatent[1].EndPointVector;
 
             var BbConnector = new Torus3D(500, 100, new Vector3(BbConnectionPostion.X, BbConnectionPostion.Y - 500 / 2, BbConnectionPostion.Z));
@@ -92,7 +97,7 @@ namespace RapiD.Geometry.ViewModels
             var SBpatent = new DoorPatent3D();
             List<ChainLink3D> SbChainPatent = SBpatent.CreateDoorPatent(SbDoor);
             Vector3 SbConnectionPosition = SbChainPatent[1].EndPointVector;
-            IModel SbConnector = new Torus3D(500, 100, new Vector3(SbConnectionPosition.X, SbConnectionPosition.Y - 500/ 2, SbConnectionPosition.Z));
+            IModel SbConnector = new Torus3D(500, 100, new Vector3(SbConnectionPosition.X, SbConnectionPosition.Y - 500 / 2, SbConnectionPosition.Z));
             modelCollection.Add(SbConnector);
             foreach (var item in SbChainPatent)
             {
@@ -103,26 +108,87 @@ namespace RapiD.Geometry.ViewModels
             float spread = Vector3.Distance(SbConnectionPosition, BbConnectionPostion);
 
 
-            modelCollection.Add(new Squared3D(new Vector3(spread /2 , -30000, 1000), new Vector3(40000, 1000, 10000)));
+            //NET
+            var net = new Squared3D(new Vector3(spread / 2, -30000, 4300), new Vector3(10000, 1000, 8000));
+            modelCollection.Add(net);
+            var netPoints = net.AddNetPoints();
+            foreach (var item in netPoints)
+            {
+                modelCollection.Add(item);
+            }
+            List<ChainLink3D> netPatentBb = net.CreateNetPatent(netPoints[0].Position, netPoints[2].Position);
+            List<ChainLink3D> netPatentSb = net.CreateNetPatent(netPoints[3].Position, netPoints[5].Position);
+            foreach (var item in netPatentBb)
+            {
+                modelCollection.Add(item);
+            }
+            foreach (var item in netPatentSb)
+            {
+                modelCollection.Add(item);
+            }
+            
+            // Line - Helper
+            float lineLength = 100000;
 
-           
+            Vector3 center = netPoints[7].Position;
+            Vector3 middle = netPoints[1].Position;
+            Vector3 direction = middle - center;
+            Vector3 directionNormalized = Vector3.Normalize(direction);
+            Vector3 lineEnd = center + directionNormalized * lineLength;
+
+            ModelCollection.Add(new Tube3D(new Vector3(center.X, center.Y, center.Z), lineEnd));
+
+            var p = new SharpDX.Plane(center, middle, middle + new Vector3(0, 0, 1000));
+            var startplane = -p.Normal * p.D;
+            var endplane = -p.Normal * p.D * 1.01f;
+            float dist = Vector3.Distance(startplane, endplane);
 
 
-            /*BB*/
+            ModelCollection.Add(new Tube3D(startplane, endplane, 5000) { Name = "PLane" });
+
+
+           //Cables SB
+            Vector3 upperCablePositionSb = new Vector3(net.Size.X / 2, net.Size.Y / 2, net.Size.Z / 2);
+            Vector3 bottomCablePositionSb = new Vector3(net.Size.X / 2, net.Size.Y / 2, -net.Size.Z / 2);
+            //var cableSb1 = new Tube3D(new Vector3(SbConnectionPosition.X, SbConnectionPosition.Y, SbConnectionPosition.Z), netPatentSb[1].EndPointVector);
+
+            //ModelCollection.Add(cableSb1);
+
+
+            //Cables BB
+
+            Vector3 upperCablePositionBB = new Vector3(-net.Size.X / 2, net.Size.Y / 2, net.Size.Z / 2);
+            Vector3 bottomCablePositionBb = new Vector3(-net.Size.X / 2, net.Size.Y / 2, -net.Size.Z / 2);
+            //var cableBb1 = new Tube3D(new Vector3(BbConnectionPostion.X, BbConnectionPostion.Y, BbConnectionPostion.Z), netPatentBb[1].EndPointVector);
+            var UpperPointBb = net.Position + upperCablePositionBB;
+            var BottomPointBb = net.Position + upperCablePositionBB;
+
+            //ModelCollection.Add(cableBb1);
+
+
+
+            //Warp
+            ModelCollection.Add(sbDoor.DrawWarp());
+            ModelCollection.Add(BbDoor.DrawWarp());
+
+            //PEES
+
+
+            /*AWAIT*/
             await App.Current.Dispatcher.InvokeAsync(() =>
             {
                 ModelCollection.Add(SbDoor);
                 ModelCollection.Add(BbDoor);
             });
-           
 
 
-
-          
-
-
-            
         }
+
+
+
+
+
+
 
 
 
@@ -209,20 +275,20 @@ namespace RapiD.Geometry.ViewModels
 
         void CreatePath()
         {
-
             List<Vector3> TubePath = new();
             TubePath.Add(new Vector3(0, 0, 0));
-
-
             for (int i = 0; i < 50; i++)
             {
-
                 TubePath.Add(new Vector3(TubePath[i].X + 150, 0, 0));
-
             }
 
             modelCollection.Add(new CablePatent(TubePath, 300));
         }
+
+
+
+
+
 
 
 
@@ -237,27 +303,10 @@ namespace RapiD.Geometry.ViewModels
 
             foreach (var node in nodelist)
             {
-
                 ModelCollection.Add(new InfoButton3D(node, count.ToString()));
                 count++;
             }
-
         }
-
-
-
-        //public void UpdatePositionDoorAndNodes(IModel door)
-        //{
-        //    BatchedModel? parsedDoor = (door as BatchedModel);
-
-        //    Matrix3D matrix = new Matrix3D();
-        //    matrix.Translate(new Vector3D(-10000f, 0f, 0f));
-
-        //    MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
-        //    parsedDoor.Transform.Children.Add(matrixTransform);
-
-        //}
-
 
 
         public void CreateBBConnection(Vector3 position)
@@ -325,12 +374,6 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-
-
-
-
-
-
         [RelayCommand]
         public void MoveConnection(object parameter)
         {
@@ -383,19 +426,6 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-       
 
 
         void CreateWarp()
@@ -537,24 +567,6 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         [RelayCommand]
         void Remove()
         {
@@ -562,51 +574,9 @@ namespace RapiD.Geometry.ViewModels
         }
 
 
-        [RelayCommand]
-        void DrawCillinder()
-        {
-
-            Random random = new Random();
-            float p11 = random.Next(10, 30);
-            float p12 = random.Next(10, 30);
-            float p13 = random.Next(10, 30);
-
-            float p21 = random.Next(10, 30);
-            float p22 = random.Next(10, 30);
-            float p23 = random.Next(10, 30);
-
-
-            ModelCollection.Add(new Cillinder3D(new Vector3(p11, p12, p13), new Vector3(p21, p23, p22)));
-
-        }
-
-
-        [RelayCommand]
-        void DrawStructure()
-        {
-            ModelCollection.Add(new Structure3D());
-        }
-
-        [RelayCommand]
-        void DrawTube()
-        {
-            ModelCollection.Add(new Tube3D());
-        }
 
 
 
-
-        [RelayCommand]
-        void DrawSphere()
-        {
-
-            Random random = new Random();
-            double diameter = random.NextDouble(10, 300);
-            double TubeDiameter = random.NextDouble(10, 300);
-
-            ModelCollection.Add(new Sphere3D());
-
-        }
 
         [RelayCommand]
         void GoHome()

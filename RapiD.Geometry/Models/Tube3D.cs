@@ -17,30 +17,23 @@ namespace RapiD.Geometry.Models
     {
 
         [ObservableProperty]
-        List<Vector3> centerPoints = new List<Vector3>()
-        {
-
-             new Vector3(-30, 60, 0),
-             new Vector3(30, 60, 0),
-             new Vector3(30, -60, 0),
-             new Vector3(-30, -60, 0),
-             new Vector3(-30, 60, 0),
-
-
-        };
-
+        List<Vector3> centerPoints;
+        
 
 
         [ObservableProperty]
-        double diameter;
+        double diameter =150;
 
         [ObservableProperty]
         int thetaDiv = 30;
 
-        public Tube3D()
+        public Tube3D(Vector3 start, Vector3 end, float diameter=150f)
         {
-            OriginalMaterial = PhongMaterials.Yellow;
-
+            OriginalMaterial = PhongMaterials.Black;
+            this.centerPoints = new List<Vector3>();
+            centerPoints.Add(start);
+            centerPoints.Add(end);
+            this.diameter = diameter;
 
             Draw();
 
@@ -62,7 +55,7 @@ namespace RapiD.Geometry.Models
         {
             MeshBuilder meshBuilder = new MeshBuilder();
             MeshGeometry = meshBuilder.ToMeshGeometry3D();
-            meshBuilder.AddTube(centerPoints, 10, 10, false);
+            meshBuilder.AddTube(CenterPoints, Diameter, 40, false);
             MeshGeometry = meshBuilder.ToMeshGeometry3D();
            
         }

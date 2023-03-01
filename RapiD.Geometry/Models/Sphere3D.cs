@@ -15,9 +15,14 @@ namespace RapiD.Geometry.Models
     {
 
         [ObservableProperty]
-        float radius=20;
-        public Sphere3D()
+        float radius=500;
+
+        [ObservableProperty]
+        int nodeNumber;
+        public Sphere3D(Vector3 position)
         {
+
+            Position= position;
            
             // Assing model material
             OriginalMaterial = PhongMaterials.Red;
@@ -36,7 +41,7 @@ namespace RapiD.Geometry.Models
 
             // Create triangle mesh for an 3d sphere
             MeshBuilder meshBuilder = new MeshBuilder();
-            meshBuilder.AddSphere(Vector3.Zero, radius);
+            meshBuilder.AddSphere(Position, radius);
 
             // Assign mesh to model
             MeshGeometry = meshBuilder.ToMeshGeometry3D();
