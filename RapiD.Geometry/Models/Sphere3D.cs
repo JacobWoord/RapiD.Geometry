@@ -25,7 +25,13 @@ namespace RapiD.Geometry.Models
             Position= position;
            
             // Assing model material
-            OriginalMaterial = PhongMaterials.Red;
+            
+
+
+
+
+
+
 
             Draw();
  

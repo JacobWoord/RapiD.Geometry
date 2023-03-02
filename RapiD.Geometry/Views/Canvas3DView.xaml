@@ -13,6 +13,7 @@
     d:DesignHeight="450"
     d:DesignWidth="1000"
     mc:Ignorable="d">
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding InitializeCommand}" />
@@ -36,9 +37,9 @@
             Grid.Row="0"
             Grid.ColumnSpan="3"
             Height="60"
-            HorizontalAlignment="Center"
+            HorizontalAlignment="Left"
             Background="White">
-            <StackPanel Orientation="Horizontal">
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                 <Button
                     MinWidth="100"
                     Margin="5,2"
@@ -49,94 +50,6 @@
                     Content="Home"
                     FontWeight="SemiBold"
                     Foreground="black" />
-
-                <Button
-                    MinWidth="120"
-                    Margin="5,2"
-                    Background="White"
-                    BorderBrush="black"
-                    BorderThickness="2"
-                    Command="{Binding CreateConnectionsCommand}"
-                    Content="Create connections"
-                    FontWeight="SemiBold"
-                    Foreground="black" />
-
-                <Button
-                    MinWidth="120"
-                    Margin="5,2"
-                    Background="White"
-                    BorderBrush="black"
-                    BorderThickness="2"
-                    Command="{Binding DrawCillinderCommand}"
-                    Content="Draw Cillinder"
-                    FontWeight="SemiBold"
-                    Foreground="black" />
-
-                <Button
-                    MinWidth="120"
-                    Margin="5,2"
-                    Background="White"
-                    BorderBrush="black"
-                    BorderThickness="2"
-                    Command="{Binding ReplaceCommand}"
-                    Content="Draw Button"
-                    FontWeight="SemiBold"
-                    Foreground="black" />
-
-                <Button
-                    MinWidth="120"
-                    Margin="5,2"
-                    Background="White"
-                    BorderBrush="black"
-                    BorderThickness="2"
-                    Command="{Binding ReplaceCommand}"
-                    Content="Replace cillinder"
-                    FontWeight="SemiBold"
-                    Foreground="black" />
-
-                <Button
-                    MinWidth="120"
-                    Margin="5,2"
-                    Background="White"
-                    BorderBrush="black"
-                    BorderThickness="2"
-                    Command="{Binding UpdatePositionDoorAndNodesCommand}"
-                    Content="place nodes an door"
-                    FontWeight="SemiBold"
-                    Foreground="black" />
-
-                <Button
-                    MinWidth="120"
-                    Margin="5,2"
-                    Background="White"
-                    BorderBrush="black"
-                    BorderThickness="2"
-                    Command="{Binding CreateChainCommand}"
-                    Content="Create Chain"
-                    FontWeight="SemiBold"
-                    Foreground="black" />
-
-                <Button
-                    MinWidth="120"
-                    Margin="5,2"
-                    Background="White"
-                    BorderBrush="black"
-                    BorderThickness="2"
-                    Command="{Binding DrawTranslatedNodesCommand}"
-                    Content="Add Door"
-                    FontWeight="SemiBold"
-                    Foreground="black" />
-
-                <Button
-                    MinWidth="120"
-                    Margin="5,2"
-                    Background="White"
-                    BorderBrush="Red"
-                    BorderThickness="2"
-                    Command="{Binding RemoveCommand}"
-                    Content="Remove"
-                    FontWeight="SemiBold"
-                    Foreground="Red" />
 
 
             </StackPanel>
@@ -317,15 +230,46 @@
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition Height="auto" />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
+
             </Grid.RowDefinitions>
 
 
 
-            <StackPanel>
+
+
+            <Grid Grid.RowSpan="3">
+                <Grid.Background>
+                        <ImageBrush>
+                            <ImageBrush.ImageSource>
+                                <BitmapImage UriSource="pack://application:,,,/Assets/Images/chainbackground.png"></BitmapImage>
+                            </ImageBrush.ImageSource>
+                        </ImageBrush>
+                    </Grid.Background>
+
+                    <ItemsControl ItemTemplate="{Binding ItemTemplate}">
+                    
+                        
+                        
+
+                    <ItemsControl.Resources>
+                        <!--<DataTemplate x:Key="ChainTemplate" x:Name="chainProps" DataType="{x:Type models:ChainLink3D}">
+                            <Grid>
+                                <ComboBox ItemsSource="{Binding ID}">
+                                    <TextBlock />
+                                </ComboBox>
+
+                            </Grid>
+                        </DataTemplate>-->
+                    </ItemsControl.Resources>               
+
+
+
+
+                </ItemsControl>
+                </Grid>
+            
+
+            <!--<StackPanel>
                 <Label HorizontalAlignment="Center" Foreground="Black">Diameter/Radius</Label>
                 <Slider
                     Name="S1Value"
@@ -344,130 +288,16 @@
                     Background="Black"
                     Foreground="White"
                     Text="{Binding ElementName=S1Value, Path=Value}" />
-            </StackPanel>
-
-            <StackPanel Grid.Row="1">
-                <Label HorizontalAlignment="Center" Foreground="Black">Width:</Label>
-                <Slider
-                    Name="WidthValue"
-                    Margin="10,0"
-                    Maximum="100"
-                    Minimum="50"
-                    TickFrequency="1"
-                    TickPlacement="BottomRight"
-                    Value="{Binding Width, Mode=TwoWay}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="ValueChanged">
-                            <i:InvokeCommandAction Command="{Binding UpdateWidthCommand}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </Slider>
-                <TextBlock
-                    Background="Black"
-                    Foreground="White"
-                    Text="{Binding ElementName=WidthValue, Path=Value}" />
-            </StackPanel>
-
-            <StackPanel Grid.Row="2">
-                <Label HorizontalAlignment="Center" Foreground="Black">Length</Label>
-                <Slider
-                    Name="LengthValue"
-                    Margin="10,5"
-                    Maximum="100"
-                    Minimum="30"
-                    TickFrequency="1"
-                    TickPlacement="BottomRight"
-                    Value="{Binding Length, Mode=TwoWay}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="ValueChanged">
-                            <i:InvokeCommandAction Command="{Binding UpdateLengthCommand}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </Slider>
-                <TextBlock
-                    Background="Black"
-                    Foreground="White"
-                    Text="{Binding ElementName=LengthValue, Path=Value}" />
-            </StackPanel>
-
-
-            <TextBlock
-                Grid.Row="3"
-                Margin="0,20,0,0"
-                HorizontalAlignment="Center"
-                FontWeight="SemiBold"
-                Text="Edit EndPosition of Warp" />
-
-            <StackPanel
-                Grid.Row="3"
-                Margin="0,40,0,0"
-                HorizontalAlignment="Center"
-                Orientation="Horizontal">
+            </StackPanel>-->
 
 
 
-                <StackPanel Grid.Row="3" Margin="0,0,10,0">
-                    <Label
-                        Grid.Row="3"
-                        Width="50"
-                        Margin="0,10,0,0"
-                        Content="Xaxis" />
-                    <TextBox
-                        Grid.Row="3"
-                        Width="90"
-                        Height="30"
-                        Text="{Binding XAxis, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                    <Button
-                        Grid.Row="3"
-                        Width="70"
-                        Margin="0,5,0,10"
-                        HorizontalAlignment="Center"
-                        Command="{Binding UpdateWarpEndPositionCommand}"
-                        Content="Apply" />
-                </StackPanel>
 
-                <StackPanel Grid.Row="3" Margin="0,0,10,0">
-                    <Label
-                        Grid.Row="3"
-                        Width="50"
-                        Margin="0,10,0,0"
-                        Content="Yaxis" />
-                    <TextBox
-                        Grid.Row="3"
-                        Width="90"
-                        Height="30"
-                        Text="{Binding YAxis, Mode=TwoWay}" />
-                    <Button
-                        Grid.Row="3"
-                        Width="70"
-                        Margin="0,5,0,10"
-                        HorizontalAlignment="Center"
-                        Command="{Binding UpdateWarpEndPositionCommand}"
-                        Content="Apply" />
-                </StackPanel>
 
-                <StackPanel Grid.Row="3" Margin="0,0,10,0">
-                    <Label
-                        Grid.Row="3"
-                        Width="50"
-                        Margin="0,10,0,0"
-                        Content="Zaxis" />
-                    <TextBox
-                        Grid.Row="3"
-                        Width="90"
-                        Height="30"
-                        Text="{Binding ZAxis, Mode=TwoWay}" />
-                    <Button
-                        Grid.Row="3"
-                        Width="70"
-                        Margin="0,5,0,10"
-                        HorizontalAlignment="Center"
-                        Command="{Binding UpdateWarpEndPositionCommand}"
-                        Content="Apply" />
-                </StackPanel>
-            </StackPanel>
 
-            <StackPanel Grid.Row="7" Orientation="Horizontal">
+
+
+            <StackPanel Grid.Row="3" Orientation="Horizontal">
 
                 <StackPanel
                     Margin="5,0,40,0"

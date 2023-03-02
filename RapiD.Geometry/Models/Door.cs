@@ -32,6 +32,8 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         float innerChainLength = 40;
 
+        public Side doorSide;
+
 
 
         public Door(string filename, string name = "bord")

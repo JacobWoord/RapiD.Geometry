@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\chainbackground.png" />
     <None Remove="Models\f2lty3b5.uo5~" />
   </ItemGroup>
 
@@ -27,6 +28,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="ModernWpfUI" Version="0.9.7-preview.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Images\chainbackground.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

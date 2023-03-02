@@ -45,13 +45,13 @@ namespace RapiD.Geometry.Models
             var centerPoint = new Vector3(Position.X + Size.X / 2 + -offSetX, Position.Y + Size.Y / 2 + -offSetY, Position.Z);
             List<Sphere3D> NetSquared;
             NetSquared = new List<Sphere3D>();
-            NetSquared.Add(new Sphere3D(bbUpperPoint + Position) { NodeNumber = 1 });
-            NetSquared.Add(new Sphere3D(new Vector3(Position.X - Size.X / 2, Position.Y + Size.Y / 2, Position.Z)) { NodeNumber = 3 });
-            NetSquared.Add(new Sphere3D(bbBottomPoint + Position) { NodeNumber = 3 });
-            NetSquared.Add(new Sphere3D(SbUpperPoint + Position) { NodeNumber = 4 });
-            NetSquared.Add(new Sphere3D(new Vector3(Position.X + Size.X / 2, Position.Y + Size.Y / 2, Position.Z)) { NodeNumber = 5 });
-            NetSquared.Add(new Sphere3D(SbBottomPoint + Position) { NodeNumber = 7 });
-            NetSquared.Add(new Sphere3D(SbBottomPoint + Position) { NodeNumber = 7 });
+             NetSquared.Add(new Sphere3D(bbUpperPoint + Position) { NodeNumber = 0 });  
+            NetSquared.Add(new Sphere3D(new Vector3(Position.X - Size.X / 2, Position.Y + Size.Y / 2, Position.Z)) { NodeNumber = 1 });
+            NetSquared.Add(new Sphere3D(bbBottomPoint + Position) { NodeNumber = 2 });
+            NetSquared.Add(new Sphere3D(SbUpperPoint + Position) { NodeNumber = 3 });
+            NetSquared.Add(new Sphere3D(new Vector3(Position.X + Size.X / 2, Position.Y + Size.Y / 2, Position.Z)) { NodeNumber = 4 });
+            NetSquared.Add(new Sphere3D(SbBottomPoint + Position) { NodeNumber = 5 });
+            NetSquared.Add(new Sphere3D(SbBottomPoint + Position) { NodeNumber = 6 });
 
             var newcenter = centerPoint - new Vector3(0, 0, 1000);
             NetSquared.Add(new Sphere3D(newcenter) { NodeNumber = 8 });
@@ -65,19 +65,42 @@ namespace RapiD.Geometry.Models
         }
 
 
-        public List<ChainLink3D> CreateNetPatent(Vector3 topVector, Vector3 bottomVector)
+        public List<ChainLink3D> CreateNetPatent(Side defineSide)
         {
+            Vector3 topNode;
+            Vector3 center = ListPoints[7].Position;
+            Vector3 middle;
+            Vector3 bottomNode;
+
+            Vector3 newnode;
+
+
+
+            if (defineSide == Side.StarBoard)
+            {
+                topNode = ListPoints[0].Position;
+                middle = ListPoints[1].Position;
+                bottomNode = ListPoints[2].Position;
+
+            }
+            else
+            {
+                topNode = ListPoints[3].Position;
+                middle = ListPoints[4].Position;
+                bottomNode = ListPoints[5].Position;
+            }
+            
+            
+            
             //OutLine Direction ( Direction to point the roration to)
             float lineLength = 100000;
-            Vector3 center = listPoints[7].Position;
-            Vector3 middle = listPoints[1].Position;
+           
             Vector3 direction = middle - center;
             Vector3 axis= Vector3.Normalize(direction);
 
             float topLength = 5000;
             float bottomLength = 5000;
-            Vector3 bottomNode = bottomVector;
-            Vector3 topNode = topVector;
+           
             float distance = Vector3.Distance(topNode, bottomNode);
 
 
@@ -86,15 +109,38 @@ namespace RapiD.Geometry.Models
 
             float transwidht = bottomLength * MathF.Sin(angle_bottom);
             float transheigth = bottomLength * cos_bottom;
-
-
-
             Vector3 endNode = bottomNode + new Vector3(0, transwidht, transheigth);
-           
-      
+
+
+
+            Plane p1 = new Plane(center, middle, middle+new Vector3(0,0,1000));
+            Plane p2 = new Plane(topNode, bottomNode, endNode);
+
+            float angle = AngleBetween(p1, p2);
+            float angledeg = angle * 180 / MathF.PI;
+
+            if (defineSide == Side.StarBoard)
+            {
+                 newnode = rotateVectorAboutAxis(bottomNode, topNode, endNode, angle);
+
+            }
+            else
+            {
+                newnode = rotateVectorAboutAxis(bottomNode, topNode, endNode, -angle);
+
+            }
+
+            newnode = CalculateThirdPointOnPlane(bottomNode, topNode, bottomLength, topLength, p1, center);
+
+            float olddistbot = Vector3.Distance(bottomNode, endNode);
+            float newdistbot = Vector3.Distance(bottomNode, newnode);
+            float olddisttop = Vector3.Distance(topNode, endNode);
+            float newdisttop = Vector3.Distance(topNode, newnode);
+
+            
             List<ChainLink3D> NetPatent = new();
-            NetPatent.Add(new ChainLink3D(60, 180, 220, topNode, endNode));
-            NetPatent.Add(new ChainLink3D(60, 180, 220, bottomNode, endNode));
+            NetPatent.Add(new ChainLink3D(60, 180, 220, topNode, newnode));
+            NetPatent.Add(new ChainLink3D(60, 180, 220, bottomNode, newnode));
 
 
             return NetPatent;
@@ -158,7 +204,7 @@ namespace RapiD.Geometry.Models
 
             // Calculate the angle of rotation
             float angle = (float)Math.Acos(Vector3.Dot(lineUnit, planeUnit));
-            float angledeg = angle * 180 / MathF.PI;
+            
 
             // Calculate the axis of rotation
             Vector3 axis = Vector3.Cross(lineUnit, planeUnit);
@@ -174,27 +220,72 @@ namespace RapiD.Geometry.Models
 
         public static Vector3 rotateVectorAboutAxis(Vector3 axis1, Vector3 axis2, Vector3 vectorToRotate, float angle)
         {
-            Vector3 lineDirection = Vector3.Cross(axis1, axis2);
-            lineDirection.Normalize();
+            // Define the point to be rotated
+            Vector3 point = vectorToRotate;
 
-            Vector3 vectorPerpendicularToLine = vectorToRotate - (Vector3.Dot(vectorToRotate, lineDirection) * lineDirection);
-            vectorPerpendicularToLine.Normalize();
+            // Define two points that define the axis of rotation
+            Vector3 point1 = axis1;
+            Vector3 point2 = axis2;
 
-            Vector3 axisOfRotation = Vector3.Cross(lineDirection, vectorPerpendicularToLine);
+            // Calculate the translation vector that will move the line to pass through the origin
+            Vector3 translation = -point1;
 
-            Matrix rotationOntoPlaneMatrix = Matrix.RotationAxis(lineDirection, (float)Math.PI / 2);
-            Matrix rotationInPlaneMatrix = Matrix.RotationAxis(axisOfRotation, angle);
-            Matrix finalRotationMatrix = rotationInPlaneMatrix * rotationOntoPlaneMatrix;
+            // Translate the point and the line
+            point += translation;
+            point1 += translation;
+            point2 += translation;
 
-            Vector3 rotatedVector = Vector3.Transform(vectorToRotate, finalRotationMatrix).ToVector3();
+            // Calculate the axis of rotation and angle of rotation as before
+            Vector3 axis = Vector3.Normalize(point2 - point1);
 
 
-            return rotatedVector;
+            // Create the rotation quaternion
+            Quaternion rotation = Quaternion.RotationAxis(axis, angle);
+
+            // Apply the rotation to the point
+            Vector3 rotatedPoint = Vector3.Transform(point, rotation);
+
+            // Translate the rotated point back to its original position
+            rotatedPoint -= translation;
+
+            return rotatedPoint;
+
         }
 
 
 
 
+
+
+        public static Vector3 CalculateThirdPointOnPlane(Vector3 A, Vector3 B, float d1, float d2, Plane p, Vector3 point)
+        {
+            // Calculate vector AB from A to B
+            Vector3 AB = B - A;
+            var pointonplane =point;
+
+
+            // Calculate scalar parameter t for the line passing through A and B
+            float t = Vector3.Dot(p.Normal, pointonplane - A) / Vector3.Dot(p.Normal, AB);
+
+            // Calculate the point P on the line AB that lies on the plane P
+            Vector3 P = A + t * AB;
+
+            // Calculate the distance from P to A and B
+            float distAP = Vector3.Distance(P, A);
+            float distBP = Vector3.Distance(P, B);
+
+            // Check if the distances from P to A and B are equal to d1 and d2
+            if (Math.Abs(distAP - d1) > 1e-6 || Math.Abs(distBP - d2) > 1e-6)
+            {
+                // Calculate the projection of the point onto the plane
+                float d = Vector3.Dot(p.Normal, pointonplane - P) / Vector3.Dot(p.Normal, p.Normal);
+                Vector3 projection = P + d * p.Normal;
+                P = projection;
+            }
+
+            // Return the exact location of the third point on the plane P
+            return P;
+        }
 
 
 
