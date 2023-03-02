@@ -5,6 +5,7 @@ using HelixToolkit.Wpf.SharpDX;
 using Microsoft.Win32;
 using RapiD.Geometry;
 using RapiD.Geometry.Models;
+using RapiD.Geometry.Views;
 using SharpDX;
 using SharpDX.Direct3D9;
 using System;
@@ -59,11 +60,29 @@ namespace RapiD.Geometry.ViewModels
 
             modelCollection.Add(new Floor3D(new Vector3(0, 0, -50), new Vector3(750000, 750000, 100)));
             effectsManager = new EffectsManager();
+            diameters = new ObservableCollection<string>();
+            diameters.Add("gedag");
+            // {
 
-           
+            //"16mm",
+            //"18mm",
+            //"20mm",
+            //"22mm",
+            //"24mm"
 
-           
-   }
+            // };
+
+
+
+        }
+
+
+
+
+
+        [ObservableProperty]
+        ObservableCollection<string> diameters;
+
         [RelayCommand]
         async Task Initialize()
         {
@@ -77,7 +96,7 @@ namespace RapiD.Geometry.ViewModels
 
 
             /* BABOORD BORD */
-            bbDoor.Mirror(MirrorAxis.X);
+            BbDoor.Mirror(MirrorAxis.X);
             BbDoor.UpdateNodeList();
 
             var BBpatent = new DoorPatent3D();
@@ -88,7 +107,7 @@ namespace RapiD.Geometry.ViewModels
             ModelCollection.Add(BbConnector);
             foreach (var item in BbChainPatent)
             {
-                modelCollection.Add(item);
+                ModelCollection.Add(item);
             }
 
            
@@ -99,10 +118,10 @@ namespace RapiD.Geometry.ViewModels
             List<ChainLink3D> SbChainPatent = SBpatent.CreateDoorPatent(SbDoor);
             Vector3 SbConnectionPosition = SbChainPatent[1].EndPointVector;
             IModel SbConnector = new Torus3D(500, 100, new Vector3(SbConnectionPosition.X, SbConnectionPosition.Y - 500 / 2, SbConnectionPosition.Z));
-            modelCollection.Add(SbConnector);
+            ModelCollection.Add(SbConnector);
             foreach (var item in SbChainPatent)
             {
-                modelCollection.Add(item);
+                ModelCollection.Add(item);
             }
 
 
@@ -111,21 +130,21 @@ namespace RapiD.Geometry.ViewModels
 
             //NET
             var net = new Squared3D(new Vector3(spread / 2, -40000, 4300), new Vector3(10000, 1000, 8000));
-            modelCollection.Add(net);
+            ModelCollection.Add(net);
             var netPoints = net.AddNetPoints();
             foreach (var item in netPoints)
             {
-                modelCollection.Add(item);
+                ModelCollection.Add(item);
             }
             List<ChainLink3D> netPatentBb = net.CreateNetPatent(Side.PortSide);
             List<ChainLink3D> netPatentSb = net.CreateNetPatent(Side.StarBoard);
             foreach (var item in netPatentBb)
             {
-                modelCollection.Add(item);
+                ModelCollection.Add(item);
             }
             foreach (var item in netPatentSb)
             {
-                modelCollection.Add(item);
+                ModelCollection.Add(item);
             }
             
             // Line - Helper
@@ -225,11 +244,13 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         int spread;
 
-        [ObservableProperty]
-        DataTemplate itemTemplate;
+       
 
 
-  
+
+
+
+
         [ObservableProperty]
         Material material = PhongMaterials.Red;
 
@@ -244,9 +265,9 @@ namespace RapiD.Geometry.ViewModels
         ObservableCollection<Vector3> nodePositions = new();
 
 
+
         [ObservableProperty]
         ObservableCollection<ChainLink3D> chainsCollection = new();
-
         [ObservableProperty]
         Vector3 capturedPos;
 
@@ -288,9 +309,8 @@ namespace RapiD.Geometry.ViewModels
             switch (SelectedModel)
             {
                 case ChainLink3D:
-                    var sphere = new Sphere3D(new Vector3(0, 0, 0));
-                    sphere.OriginalMaterial = PhongMaterials.Yellow;
-                    ModelCollection.Add(sphere);
+
+                    return;
                     break;
                 case Squared3D:
                     var sphere1 = new Sphere3D(new Vector3(0, 0, 0));
@@ -325,7 +345,7 @@ namespace RapiD.Geometry.ViewModels
                 TubePath.Add(new Vector3(TubePath[i].X + 150, 0, 0));
             }
 
-            modelCollection.Add(new CablePatent(TubePath, 300));
+            ModelCollection.Add(new CablePatent(TubePath, 300));
         }
 
 
@@ -629,7 +649,11 @@ namespace RapiD.Geometry.ViewModels
 
 
     }
-}
+
+
+    
+    }
+
 
 
 

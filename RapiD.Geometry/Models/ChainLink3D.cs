@@ -24,6 +24,8 @@ namespace RapiD.Geometry.Models
         float width;
         [ObservableProperty]
         float diameter;
+
+        
        
         [ObservableProperty]
         float elementlength; // is innerlength of link
