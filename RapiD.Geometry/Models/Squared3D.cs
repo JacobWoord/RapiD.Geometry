@@ -26,6 +26,7 @@ namespace RapiD.Geometry.Models
 
         public Squared3D(Vector3 position, Vector3 size)
         {
+            ID = Guid.NewGuid().ToString();
             OriginalMaterial = PhongMaterials.Blue;
             Position = position;
             Size = size;

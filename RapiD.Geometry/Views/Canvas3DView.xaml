@@ -15,7 +15,7 @@
     mc:Ignorable="d"
     >
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type models:ChainLink3D}">
+        <DataTemplate DataType="{x:Type viewmodels:ChainControlViewModel}">
             <local:ChainControlView/>
         </DataTemplate>
        
@@ -251,7 +251,7 @@
               
                 
 
-                <ContentControl Content="{Binding SelectedModel}"/>
+                <ContentControl Content="{Binding SideViewModel}"/>
 
 
 

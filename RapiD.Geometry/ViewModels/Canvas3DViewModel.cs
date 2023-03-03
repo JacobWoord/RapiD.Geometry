@@ -62,22 +62,19 @@ namespace RapiD.Geometry.ViewModels
             effectsManager = new EffectsManager();
             diameters = new ObservableCollection<string>();
             diameters.Add("gedag");
-            // {
 
-            //"16mm",
-            //"18mm",
-            //"20mm",
-            //"22mm",
-            //"24mm"
 
-            // };
-
+           // sideViewModel = new ChainControlViewModel(selectedModel as ChainLink3D);
+           
 
 
         }
 
 
 
+
+        [ObservableProperty]
+        ObservableObject sideViewModel;
 
 
         [ObservableProperty]
@@ -100,32 +97,44 @@ namespace RapiD.Geometry.ViewModels
             BbDoor.UpdateNodeList();
 
             var BBpatent = new DoorPatent3D();
-            List<ChainLink3D> BbChainPatent = BBpatent.CreateDoorPatent(BbDoor);
-            Vector3 BbConnectionPostion = BbChainPatent[1].EndPointVector;
+            BBpatent.InitializeModels(modelCollection);
+            BBpatent.Update(bbDoor.GetNodeList(), modelCollection);
 
-            var BbConnector = new Torus3D(500, 100, new Vector3(BbConnectionPostion.X, BbConnectionPostion.Y - 500 / 2, BbConnectionPostion.Z));
-            ModelCollection.Add(BbConnector);
-            foreach (var item in BbChainPatent)
-            {
-                ModelCollection.Add(item);
-            }
+           // List<ChainLink3D> BbChainPatent = BBpatent.Draw();
+            //if (BbChainPatent != null)
+            //{
+            //    Vector3 BbConnectionPostion = BbChainPatent[1].EndPointVector;
 
-           
+            //    var BbConnector = new Torus3D(500, 100, new Vector3(BbConnectionPostion.X, BbConnectionPostion.Y - 500 / 2, BbConnectionPostion.Z));
+            //    ModelCollection.Add(BbConnector);
 
+            //    foreach (var item in BbChainPatent)
+            //    {
+            //        ModelCollection.Add(item);
+            //    }
+            //}
+         
+        
             /* STUURBOORD BORD */
 
             var SBpatent = new DoorPatent3D();
-            List<ChainLink3D> SbChainPatent = SBpatent.CreateDoorPatent(SbDoor);
-            Vector3 SbConnectionPosition = SbChainPatent[1].EndPointVector;
-            IModel SbConnector = new Torus3D(500, 100, new Vector3(SbConnectionPosition.X, SbConnectionPosition.Y - 500 / 2, SbConnectionPosition.Z));
-            ModelCollection.Add(SbConnector);
-            foreach (var item in SbChainPatent)
-            {
-                ModelCollection.Add(item);
-            }
+            SBpatent.InitializeModels(modelCollection);
+            SBpatent.Update(sbDoor.GetNodeList(), modelCollection);
 
 
-            float spread = Vector3.Distance(SbConnectionPosition, BbConnectionPostion);
+            //if (SbChainPatent != null)
+            //{
+            //    Vector3 SbConnectionPosition = SbChainPatent[1].EndPointVector;
+            //    IModel SbConnector = new Torus3D(500, 100, new Vector3(SbConnectionPosition.X, SbConnectionPosition.Y - 500 / 2, SbConnectionPosition.Z));
+            //    ModelCollection.Add(SbConnector);
+            //    foreach (var item in SbChainPatent)
+            //    {
+            //        ModelCollection.Add(item);
+            //    }
+            //}
+
+
+            float spread = Vector3.Distance(bbDoor.Position, sbDoor.Position);
 
 
             //NET
@@ -216,10 +225,7 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-
-
-
-
+      
 
 
 
@@ -306,24 +312,20 @@ namespace RapiD.Geometry.ViewModels
 
         partial void OnSelectedModelChanged(IModel value)
         {
-            switch (SelectedModel)
+            switch (selectedModel)
             {
                 case ChainLink3D:
-
+                    SideViewModel = new ChainControlViewModel(selectedModel);
                     return;
                     break;
                 case Squared3D:
-                    var sphere1 = new Sphere3D(new Vector3(0, 0, 0));
-                    sphere1.OriginalMaterial = PhongMaterials.Blue;
-                    ModelCollection.Add(sphere1);
+                    SideViewModel = selectedModel as Squared3D;
                     break;
                 case Torus3D:
-                    var sphere2 = new Sphere3D(new Vector3(0, 0, 0));
-                    sphere2.OriginalMaterial = PhongMaterials.Red;
-                    ModelCollection.Add(sphere2);
+                    SideViewModel = selectedModel as Torus3D;
                     break;
                 case CablePatent:
-                    // code block
+                    SideViewModel = selectedModel as CablePatent;
                     break;
                 default:
                     // code block
@@ -605,7 +607,9 @@ namespace RapiD.Geometry.ViewModels
 
                 // Deselects all models
                 ModelCollection.ToList().ForEach(x => x.Deselect());
+                SideViewModel = null;
             }
+            
 
             return;
         }

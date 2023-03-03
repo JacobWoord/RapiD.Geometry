@@ -2,6 +2,7 @@
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
 using SharpDX.Direct2D1;
+using SharpDX.Direct3D11;
 using SharpDX.Direct3D9;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ namespace RapiD.Geometry.Models
         public bool linkedButton = false;
 
 
-
+        
 
         public bool GetMenuState() { return isOpenMenu; }
 
@@ -64,6 +65,9 @@ namespace RapiD.Geometry.Models
 
         [ObservableProperty]
         System.Windows.Media.Media3D.Transform3DGroup transform;
+
+        [ObservableProperty]
+        CullMode cullMode = CullMode.Back;
 
         public GeometryBase3D()
         {

@@ -40,8 +40,8 @@ namespace RapiD.Geometry.Models
         public Torus3D(double diam, double tubeDiam,Vector3 pos)
         {
 
-           
-           this.Position = pos;
+            ID = Guid.NewGuid().ToString();
+            this.Position = pos;
             this.Name = "Connection";
             this.diameter = diam;
             this.tubeDiameter = tubeDiam;

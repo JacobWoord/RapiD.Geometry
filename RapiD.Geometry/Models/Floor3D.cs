@@ -16,7 +16,7 @@ namespace RapiD.Geometry.Models
 
         public Floor3D(Vector3 position,Vector3 size)
         {
-
+            ID = Guid.NewGuid().ToString();
             OriginalMaterial = PhongMaterials.Bisque;
             Position = position;
             Size = size;

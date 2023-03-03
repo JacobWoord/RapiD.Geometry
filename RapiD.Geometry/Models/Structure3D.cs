@@ -22,6 +22,7 @@ namespace RapiD.Geometry.Models
 
         public Structure3D()
         {
+            ID = Guid.NewGuid().ToString();
             OriginalMaterial = PhongMaterials.Chrome;
             Draw();
         }
