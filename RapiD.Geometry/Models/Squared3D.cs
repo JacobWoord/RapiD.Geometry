@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
+using System.Xml;
 using Quaternion = SharpDX.Quaternion;
 
 namespace RapiD.Geometry.Models
@@ -71,8 +72,7 @@ namespace RapiD.Geometry.Models
             Vector3 center = ListPoints[7].Position;
             Vector3 middle;
             Vector3 bottomNode;
-
-            Vector3 newnode;
+       
 
 
 
@@ -89,58 +89,20 @@ namespace RapiD.Geometry.Models
                 middle = ListPoints[4].Position;
                 bottomNode = ListPoints[5].Position;
             }
-            
-            
-            
-            //OutLine Direction ( Direction to point the roration to)
-            float lineLength = 100000;
            
-            Vector3 direction = middle - center;
-            Vector3 axis= Vector3.Normalize(direction);
 
             float topLength = 5000;
-            float bottomLength = 5000;
-           
-            float distance = Vector3.Distance(topNode, bottomNode);
-
-
-            float cos_bottom = (bottomLength * bottomLength + distance * distance - topLength * topLength) / (2 * bottomLength * distance);
-            float angle_bottom = MathF.Acos(cos_bottom);
-
-            float transwidht = bottomLength * MathF.Sin(angle_bottom);
-            float transheigth = bottomLength * cos_bottom;
-            Vector3 endNode = bottomNode + new Vector3(0, transwidht, transheigth);
-
-
-
-            Plane p1 = new Plane(center, middle, middle+new Vector3(0,0,1000));
-            Plane p2 = new Plane(topNode, bottomNode, endNode);
-
-            float angle = AngleBetween(p1, p2);
-            float angledeg = angle * 180 / MathF.PI;
-
-            if (defineSide == Side.StarBoard)
-            {
-                 newnode = rotateVectorAboutAxis(bottomNode, topNode, endNode, angle);
-
-            }
-            else
-            {
-                newnode = rotateVectorAboutAxis(bottomNode, topNode, endNode, -angle);
-
-            }
-
-            newnode = CalculateThirdPointOnPlane(bottomNode, topNode, bottomLength, topLength, p1, center);
-
-            float olddistbot = Vector3.Distance(bottomNode, endNode);
-            float newdistbot = Vector3.Distance(bottomNode, newnode);
-            float olddisttop = Vector3.Distance(topNode, endNode);
-            float newdisttop = Vector3.Distance(topNode, newnode);
-
+            float bottomLength = 5000;   
             
+            //define plane trough seamline
+            Plane p1 = new Plane(center, middle, middle+new Vector3(0,0,1000));
+            //calculate third point of patent
+            Vector3 thirdNode = findThirdPoint(bottomNode,topNode, bottomLength, topLength, p1);
+
+
             List<ChainLink3D> NetPatent = new();
-            NetPatent.Add(new ChainLink3D(60, 180, 220, topNode, newnode));
-            NetPatent.Add(new ChainLink3D(60, 180, 220, bottomNode, newnode));
+            NetPatent.Add(new ChainLink3D(60, 180, 220, topNode, thirdNode));
+            NetPatent.Add(new ChainLink3D(60, 180, 220, bottomNode, thirdNode));
 
 
             return NetPatent;
@@ -158,7 +120,7 @@ namespace RapiD.Geometry.Models
 
         public static Matrix rotationMatrixPlaneVector(Vector3 lineStart, Vector3 lineEnd, Plane plane)
         {
-            Vector3 startPoint = lineStart;
+            Vector3 startPoint = lineStart; 
             Vector3 endPoint = lineEnd;
             Vector3 planeNormal = plane.Normal;
 
@@ -189,39 +151,11 @@ namespace RapiD.Geometry.Models
 
 
 
-        public static Matrix rotationMatrixPlaneVector2(Vector3 lineStart, Vector3 lineEnd, Plane plane)
-        {
-            Vector3 startPoint = lineStart;
-            Vector3 endPoint = lineEnd;
-            Vector3 planeNormal = plane.Normal;
-
-            // Calculate the vector that defines the line
-            Vector3 lineVector = endPoint - startPoint;
-
-            // Calculate the unit vectors for the line and plane
-            Vector3 lineUnit = Vector3.Normalize(lineVector);
-            Vector3 planeUnit =Vector3.Normalize(Vector3.Cross(lineUnit, planeNormal));
-
-            // Calculate the angle of rotation
-            float angle = (float)Math.Acos(Vector3.Dot(lineUnit, planeUnit));
-            
-
-            // Calculate the axis of rotation
-            Vector3 axis = Vector3.Cross(lineUnit, planeUnit);
-
-            // Create the rotation matrix using Matrix.RotationAxis
-            Matrix rotationMatrix = Matrix.RotationAxis(axis, angle);
-
-            return rotationMatrix;
-
-        
-
-        }
 
         public static Vector3 rotateVectorAboutAxis(Vector3 axis1, Vector3 axis2, Vector3 vectorToRotate, float angle)
         {
             // Define the point to be rotated
-            Vector3 point = vectorToRotate;
+            Vector3 point = new Vector3(vectorToRotate.X, vectorToRotate.Y, vectorToRotate.Z);
 
             // Define two points that define the axis of rotation
             Vector3 point1 = axis1;
@@ -255,43 +189,60 @@ namespace RapiD.Geometry.Models
 
 
 
-
-
-        public static Vector3 CalculateThirdPointOnPlane(Vector3 A, Vector3 B, float d1, float d2, Plane p, Vector3 point)
+        public static Vector3 findThirdPoint(Vector3 p1, Vector3 p2, float l1, float l2, Plane plane)
         {
-            // Calculate vector AB from A to B
-            Vector3 AB = B - A;
-            var pointonplane =point;
+            //get length of third rib
+            float l3 = Vector3.Distance(p1,p2);
 
+            //calculate angel between first rib and third rib
+            float angle =MathF.Acos((l1 * l1 + l3 * l3 - l2 * l2) /(2 * l1 * l3));
 
-            // Calculate scalar parameter t for the line passing through A and B
-            float t = Vector3.Dot(p.Normal, pointonplane - A) / Vector3.Dot(p.Normal, AB);
+            //define direction between two known points
+            Vector3 direction = Vector3.Normalize(p2 - p1);
+            //set rotationaxis to the crossproduct of these two point
+            Vector3 rotationaxis = Vector3.Normalize(Vector3.Cross(p1, p2));
+     
 
-            // Calculate the point P on the line AB that lies on the plane P
-            Vector3 P = A + t * AB;
+            //define the direction of the first rib and calculate the location of the third point 
+            Matrix rotation = Matrix.RotationAxis(rotationaxis, angle);
+            Vector3 rib1Direction = Vector3.TransformNormal(direction, rotation);
 
-            // Calculate the distance from P to A and B
-            float distAP = Vector3.Distance(P, A);
-            float distBP = Vector3.Distance(P, B);
+            Vector3 p3 = p1 + rib1Direction * l1;
 
-            // Check if the distances from P to A and B are equal to d1 and d2
-            if (Math.Abs(distAP - d1) > 1e-6 || Math.Abs(distBP - d2) > 1e-6)
+            //float anglewithplane = AngleBetween(plane, new Plane(p2, p1, p3));
+
+            //loop from 0 to 360 degree to find the value that is the most close to the known plane
+            float maxdif = float.MaxValue;
+            float angletorotate = 0f;
+          
+            for (float i = 0; i <= 2*MathF.PI; i+=0.01f)
             {
-                // Calculate the projection of the point onto the plane
-                float d = Vector3.Dot(p.Normal, pointonplane - P) / Vector3.Dot(p.Normal, p.Normal);
-                Vector3 projection = P + d * p.Normal;
-                P = projection;
-            }
+                Vector3 newvec = rotateVectorAboutAxis(p1, p2, p3, i);
+                float dist = DistancePointToPlane(newvec, plane);
 
-            // Return the exact location of the third point on the plane P
-            return P;
+
+                if (dist < maxdif)
+                {
+                    maxdif = dist;
+                    angletorotate = i;
+                }
+            }
+        
+           return rotateVectorAboutAxis(p1, p2, p3, angletorotate);
+
         }
 
 
+        public static float DistancePointToPlane(Vector3 point, Plane plane)
+        {
+            // Calculate the distance from the point to the plane using the plane equation:
+            // ax + by + cz + d = 0
+            // Where a, b, and c are the components of the plane's normal vector, and d is the distance from the origin to the plane.
+            float distance = Vector3.Dot(plane.Normal, point) + plane.D;
 
-
-
-
+            // Return the absolute value of the distance, since the sign indicates which side of the plane the point is on.
+            return Math.Abs(distance) / plane.Normal.Length();
+        }
 
 
 
