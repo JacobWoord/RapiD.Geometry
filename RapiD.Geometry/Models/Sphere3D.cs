@@ -17,25 +17,28 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         float radius=500;
 
+        
+
+
         [ObservableProperty]
         int nodeNumber;
         public Sphere3D(Vector3 position)
         {
-
-            Position= position;
+            ID = Guid.NewGuid().ToString();
+            Position = position;
            
             // Assing model material
             
-
-
-
-
-
-
-
             Draw();
  
         }
+
+
+
+
+
+
+
            
             
  

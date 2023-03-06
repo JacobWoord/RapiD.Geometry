@@ -24,6 +24,8 @@ namespace RapiD.Geometry.Models
         float width;
         [ObservableProperty]
         float diameter;
+        [ObservableProperty]
+        public ChainType chainType;
        
         [ObservableProperty]
         float elementlength; // is innerlength of link
@@ -44,6 +46,9 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         float chainLength;
 
+        [ObservableProperty]
+        float numberOfCopies;
+
         
         public ChainLink3D(float diameter, float width,float innerLength, Vector3 startPointVector, Vector3 endPointVector, float chainLengthCm = 2000 )
         {
@@ -56,7 +61,7 @@ namespace RapiD.Geometry.Models
             this.endPointVector = endPointVector;
 
             //Calculation
-            this.chainLength = chainLengthCm;
+            this.chainLength = Vector3.Distance(startPointVector,endPointVector);
             this.elementlength = innerLength;
             this.diameter = diameter;
 
@@ -134,10 +139,17 @@ namespace RapiD.Geometry.Models
 
   
 
+        public void UpdatePositions(Vector3 start,Vector3 end)
+        {
+            startPointVector = start;
+            endPointVector = end;
 
-
+            Draw();
+        }
         public override void Draw()
         {
+            if (startPointVector == endPointVector)
+                return;
             MeshBuilder meshBuilder = new MeshBuilder();
 
             float length = this.elementlength + diameter - 2 * radius;
@@ -158,6 +170,7 @@ namespace RapiD.Geometry.Models
 
             float distanceBetweenTwoPoints = Vector3.Distance(startVector, endVector);
             float numOfCopies = MathF.Round(distanceBetweenTwoPoints / elementlength);
+            this.numberOfCopies = numOfCopies;
 
 
             Vector3 relVector = endVector - startVector;

@@ -27,6 +27,7 @@ namespace RapiD.Geometry.Models
 
         public Squared3D(Vector3 position, Vector3 size)
         {
+            ID = Guid.NewGuid().ToString();
             OriginalMaterial = PhongMaterials.Blue;
             Position = position;
             Size = size;
@@ -46,7 +47,7 @@ namespace RapiD.Geometry.Models
             var centerPoint = new Vector3(Position.X + Size.X / 2 + -offSetX, Position.Y + Size.Y / 2 + -offSetY, Position.Z);
             List<Sphere3D> NetSquared;
             NetSquared = new List<Sphere3D>();
-             NetSquared.Add(new Sphere3D(bbUpperPoint + Position) { NodeNumber = 0 });  
+            NetSquared.Add(new Sphere3D(bbUpperPoint + Position) { NodeNumber = 0 });  
             NetSquared.Add(new Sphere3D(new Vector3(Position.X - Size.X / 2, Position.Y + Size.Y / 2, Position.Z)) { NodeNumber = 1 });
             NetSquared.Add(new Sphere3D(bbBottomPoint + Position) { NodeNumber = 2 });
             NetSquared.Add(new Sphere3D(SbUpperPoint + Position) { NodeNumber = 3 });

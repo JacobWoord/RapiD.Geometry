@@ -90,12 +90,13 @@ namespace RapiD.Geometry.Views
                 {
                     ChainSide side = viewModel.selectedSide;
                     viewModel.UpdateChainStartPoint(modeldata);
-
+                    viewModel.DeselectAll();
                
 
                 }
                 else if(modeldata is ChainLink3D c)
                 {
+                    viewModel.DeselectAll();
                     viewModel.XAxis = MathF.Round(c.EndPointVector.X,2);
                     viewModel.YAxis = MathF.Round(c.EndPointVector.Y, 2);
                     viewModel.ZAxis = MathF.Round(c.EndPointVector.Z, 2);

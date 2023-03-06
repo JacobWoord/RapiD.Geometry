@@ -30,7 +30,7 @@ namespace RapiD.Geometry.Models
 
         public Element3D(Vector3 startPoint , Vector3 endPoint)
         {
-
+            ID = Guid.NewGuid().ToString();
             this.startPoint = startPoint;
             this.endPoint = endPoint;
             

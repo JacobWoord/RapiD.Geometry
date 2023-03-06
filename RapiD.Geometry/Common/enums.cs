@@ -9,6 +9,13 @@ namespace RapiD.Geometry
 {
 
 
+    public enum ChainType
+    {
+        DoorPatent,
+        NetPatent,
+        Regular
+    }
+
 
 
     public enum ChainSide
