@@ -49,19 +49,21 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         float numberOfCopies;
 
+        [ObservableProperty]
+        string patentId;
+
         
         public ChainLink3D(float diameter, float width,float innerLength, Vector3 startPointVector, Vector3 endPointVector, float chainLengthCm = 2000 )
         {
             this.ID=Guid.NewGuid().ToString();
             this.width = width;
-            this.radius = (width - diameter) / 2;
             this.copies = copies;
             this.elements = new ObservableCollection<Element3D>();
             this.startPointVector = startPointVector;
             this.endPointVector = endPointVector;
 
             //Calculation
-            this.chainLength = Vector3.Distance(startPointVector,endPointVector);
+           
             this.elementlength = innerLength;
             this.diameter = diameter;
 
@@ -70,6 +72,8 @@ namespace RapiD.Geometry.Models
             Draw();
         }
 
+      
+     
         
 
 
@@ -136,6 +140,13 @@ namespace RapiD.Geometry.Models
             return rotationMatrix;
         }
 
+        public void UpdateProperties( float diameter, float width, float innerLength)
+        {
+            this.Elementlength = innerLength;
+            this.width= width;
+            this.diameter =diameter;
+            Draw();
+        }
 
   
 
@@ -143,7 +154,7 @@ namespace RapiD.Geometry.Models
         {
             startPointVector = start;
             endPointVector = end;
-
+            this.chainLength = Vector3.Distance(startPointVector, endPointVector);
             Draw();
         }
         public override void Draw()
@@ -151,7 +162,8 @@ namespace RapiD.Geometry.Models
             if (startPointVector == endPointVector)
                 return;
             MeshBuilder meshBuilder = new MeshBuilder();
-
+            this.radius = (width - diameter) / 2;
+            this.ChainLength = Vector3.Distance(startPointVector, endPointVector); 
             float length = this.elementlength + diameter - 2 * radius;
             float trans = 0f;
             float translate = length + (radius * 2) - diameter;
@@ -188,7 +200,7 @@ namespace RapiD.Geometry.Models
 
             Debug.WriteLine($"distance:{distanceBetweenTwoPoints}");
             Position = startVector + buttonOffset;
-            Name = "ChainStructure";
+           
             //The for loop is drawing the chainlink 
 
             for (int j = 0; j < numOfCopies; j++)

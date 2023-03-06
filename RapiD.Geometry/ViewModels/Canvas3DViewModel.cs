@@ -1,4 +1,5 @@
 ﻿using Assimp;
+using CommunityToolkit.Mvvm.Messaging;
 using HelixToolkit.SharpDX.Core;
 using HelixToolkit.SharpDX.Core.Model.Scene;
 using HelixToolkit.Wpf.SharpDX;
@@ -31,7 +32,7 @@ using Material = HelixToolkit.Wpf.SharpDX.Material;
 namespace RapiD.Geometry.ViewModels
 {
 
-    public partial class Canvas3DViewModel : ObservableObject
+    public partial class Canvas3DViewModel : ObservableObject, IRecipient<patentChangedMessage>
     {
 
         public string Doorfile;
@@ -63,12 +64,17 @@ namespace RapiD.Geometry.ViewModels
             diameters = new ObservableCollection<string>();
             diameters.Add("gedag");
 
-
-           // sideViewModel = new ChainControlViewModel(selectedModel as ChainLink3D);
+            StrongReferenceMessenger.Default.Register<patentChangedMessage>(this);
            
 
 
         }
+
+        [ObservableProperty]
+        ObservableCollection<DoorPatent3D> doorPatents = new();
+
+        [ObservableProperty]
+        float patentLength = 2000;
 
 
 
@@ -96,9 +102,10 @@ namespace RapiD.Geometry.ViewModels
             BbDoor.Mirror(MirrorAxis.X);
             BbDoor.UpdateNodeList();
 
-            var BBpatent = new DoorPatent3D();
-            BBpatent.InitializeModels(modelCollection);
-            BBpatent.Update(bbDoor.GetNodeList(), modelCollection);
+            var bbDoorPatent = new DoorPatent3D(Side.PortSide);
+            bbDoorPatent.InitializeModels(modelCollection);
+            bbDoorPatent.Update(bbDoor.GetNodeList(), modelCollection);
+            DoorPatents.Add(bbDoorPatent);
 
            // List<ChainLink3D> BbChainPatent = BBpatent.Draw();
             //if (BbChainPatent != null)
@@ -117,9 +124,10 @@ namespace RapiD.Geometry.ViewModels
         
             /* STUURBOORD BORD */
 
-            var SBpatent = new DoorPatent3D();
-            SBpatent.InitializeModels(modelCollection);
-            SBpatent.Update(sbDoor.GetNodeList(), modelCollection);
+            var SbDoorPatent = new DoorPatent3D(Side.StarBoard);
+            SbDoorPatent.InitializeModels(modelCollection);
+            SbDoorPatent.Update(sbDoor.GetNodeList(), modelCollection);
+            DoorPatents.Add(SbDoorPatent);  
 
 
             //if (SbChainPatent != null)
@@ -315,21 +323,25 @@ namespace RapiD.Geometry.ViewModels
             switch (selectedModel)
             {
                 case ChainLink3D:
+                    if ((value as ChainLink3D).PatentId != null)
+                    {
+                        SideViewModel = new ChainControlViewModel(selectedModel);
+
+                    }
+                    // DoorPatent3D linkedPatent = DoorPatents.Where(x => x.id == (value as ChainLink3D).PatentId).First();
                     SideViewModel = new ChainControlViewModel(selectedModel);
-                    return;
+                    // SideViewModel = new ChainControlViewModel(selectedModel);
                     break;
                 case Squared3D:
-                    SideViewModel = selectedModel as Squared3D;
-                    break;
-                case Torus3D:
-                    SideViewModel = selectedModel as Torus3D;
-                    break;
-                case CablePatent:
-                    SideViewModel = selectedModel as CablePatent;
-                    break;
-                default:
-                    // code block
-                    break;
+
+                       return;
+
+                    
+                      
+                    
+
+
+
             }
 
 
@@ -651,7 +663,29 @@ namespace RapiD.Geometry.ViewModels
             MainViewModel.Navigate(Ioc.Default.GetService<HomeViewModel>());
         }
 
+        public void Receive(patentChangedMessage message)
+        {
 
+            var id = message.patentId;
+            var length = message.totalLength;
+            var name = message.name;
+            DoorPatent3D Doorpatent =   doorPatents.Where(doorPatents=> doorPatents.id == id).FirstOrDefault();
+            if (name == "UpperChain")
+            {
+                Doorpatent.upperChainLength = length;
+                Doorpatent.Update();
+            }
+            else if (name == "BottomChain")
+            {
+                Doorpatent.BottomChainLength = length;
+                Doorpatent.Update();
+            }
+            return;
+
+
+            
+
+        }
     }
 
 

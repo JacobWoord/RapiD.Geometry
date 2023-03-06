@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace RapiD.Geometry
 {
 
-
+   
     public enum ChainType
     {
         DoorPatent,

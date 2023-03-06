@@ -19,8 +19,8 @@
             <local:ChainControlView/>
         </DataTemplate>
        
-        <DataTemplate DataType="{x:Type models:Squared3D}">
-            <local:DoorPatentControlView/>
+        <DataTemplate DataType="{x:Type viewmodels:DoorControlViewModel}">
+            <local:DoorControlView/>
         </DataTemplate>
     </UserControl.Resources>
 

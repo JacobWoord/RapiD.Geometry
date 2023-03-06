@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace RapiD.Geometry.Views
 {
     /// <summary>
-    /// Interaction logic for DoorPatentControlView.xaml
+    /// Interaction logic for DoorControlView.xaml
     /// </summary>
-    public partial class DoorPatentControlView : UserControl
+    public partial class DoorControlView : UserControl
     {
-        public DoorPatentControlView()
+        public DoorControlView()
         {
             InitializeComponent();
         }

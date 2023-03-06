@@ -1,4 +1,5 @@
-﻿using RapiD.Geometry.Models;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using RapiD.Geometry.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace RapiD.Geometry.ViewModels
     public partial class ChainControlViewModel : ObservableObject
     {
 
-        
+
         public ChainControlViewModel(IModel selectedChain)
         {
             this.chain = selectedChain as ChainLink3D;
@@ -20,7 +21,8 @@ namespace RapiD.Geometry.ViewModels
             this.SelectedWidth = chain.Width;
             this.SelectedLength = chain.Elementlength;
             this.SelectedNumOfLinks = chain.NumberOfCopies;
-            this.ChainType= chain.ChainType;    
+            this.ChainType= chain.ChainType;
+            this.currentLength = totalLength;
             FillNumOfLinksListCalc(numberOfLinks);
             FillNumOfLinksListCalc(length);
 
@@ -32,6 +34,9 @@ namespace RapiD.Geometry.ViewModels
 
         [ObservableProperty]
         float totalLength;
+
+        [ObservableProperty]
+        float currentLength ;
 
         [ObservableProperty]
         List<float> diameters = new() {16,20,22,24,26,60,30};
@@ -53,6 +58,9 @@ namespace RapiD.Geometry.ViewModels
         List<float> length = new();
         [ObservableProperty]
         float selectedLength;
+
+      
+
 
         [ObservableProperty]
         ChainType chainType;
@@ -84,11 +92,16 @@ namespace RapiD.Geometry.ViewModels
         [RelayCommand]
         void Update()
         {
+            if (TotalLength != currentLength)
+            {
+                StrongReferenceMessenger.Default.Send(new patentChangedMessage(TotalLength, chain.PatentId,chain.Name));
+                CurrentLength = totalLength;
+            }
+
             chain.Diameter = selectedDiameter;
-            chain.ChainLength = selectedLength;
+            chain.Elementlength = selectedLength;
             chain.Width = selectedWidth;
-            
-               
+
             chain.Draw();
         }
 

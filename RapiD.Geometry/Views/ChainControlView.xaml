@@ -39,7 +39,7 @@
 
         <TextBlock
             Grid.ColumnSpan="2"
-            Margin="10"
+            Margin="100"
             HorizontalAlignment="Center"
             FontSize="16"
             FontWeight="SemiBold"
@@ -66,7 +66,7 @@
                             ShadowDepth="2"
                             Color="Black" />
                     </Border.Effect>
-                    <TextBox Text="{Binding TotalLength,Mode=TwoWay}"/>
+                    <TextBox Text="{Binding TotalLength,Mode=TwoWay,UpdateSourceTrigger=LostFocus}"/>
                 </Border>
             </StackPanel>
 
@@ -180,7 +180,25 @@
                     </ComboBox>
                 </Border>
 
-                <Button Command="{Binding UpdateCommand}">Update Function</Button>
+                <Border BorderBrush="Green"
+                        BorderThickness="2"
+                        CornerRadius="3.5"
+                        Margin="0 38">
+                    <Border.Effect>
+                        <DropShadowEffect
+                            Direction="320"
+                            Opacity="0.5"
+                            ShadowDepth="2"
+                            Color="Black" />
+                    </Border.Effect>
+                    <Button Content="UPDATE"
+                            Command="{Binding UpdateCommand}"
+                            HorizontalAlignment="Stretch"
+                            
+                            />
+                </Border>
+                        
+
             </StackPanel>
 
         </StackPanel>
