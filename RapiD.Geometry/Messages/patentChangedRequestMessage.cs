@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RapiD.Geometry.Models
+namespace RapiD.Geometry.Messages
 {
     public record patentChangedRequestMessage
     {

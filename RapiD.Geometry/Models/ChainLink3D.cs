@@ -6,29 +6,48 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls.Primitives;
 using System.Xml.Schema;
+using Xceed.Wpf.Toolkit.Converters;
 
 namespace RapiD.Geometry.Models
 {
     public partial class ChainLink3D : GeometryBase3D
     {
 
+
+
+        private float upperChainLength;
+        private float bottomChainLength;
+        private float middleChainLength;
+        private float radius;
+
         [ObservableProperty]
-        float radius;
-        [ObservableProperty]
-        float width;
+        private float width;
+       
+        
+        
         [ObservableProperty]
         float diameter;
-        [ObservableProperty]
-        public ChainType chainType;
-       
+
+
         [ObservableProperty]
         float elementlength; // is innerlength of link
+        
+
+        [ObservableProperty]
+        public ChainType chainType;
+
+        [ObservableProperty]
+        List<ChainLink3D> patent = new();
+       
+        
 
         [ObservableProperty]
         float copies;
@@ -52,8 +71,15 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         string patentId;
 
-        
-        public ChainLink3D(float diameter, float width,float innerLength, Vector3 startPointVector, Vector3 endPointVector, float chainLengthCm = 2000 )
+        public string ConnectionId;
+
+        partial void OnEndPointVectorChanged(Vector3 value)
+        {
+            Draw();
+        }
+
+
+        public ChainLink3D(Vector3 startPointVector , Vector3 endPointVector, float chainLengthCm = 2000, float diameter = 20, float width = 50, float innerLength = 100)
         {
             this.ID=Guid.NewGuid().ToString();
             this.width = width;
@@ -72,9 +98,60 @@ namespace RapiD.Geometry.Models
             Draw();
         }
 
-      
-     
-        
+
+        public List<ChainLink3D> CreateDoorPatent(List<Vector3> vectors,float upperChainLength=4000, float bottomChainLength = 4000, float middelChainLength = 3000)
+        {
+            //List<ChainLink3D> patentToReturn = new();
+
+            this.upperChainLength = upperChainLength;
+            this.middleChainLength = middelChainLength;
+            this.bottomChainLength = bottomChainLength;
+            Vector3 topNode = vectors[7];
+            Vector3 bottomNode = vectors[5];
+            Vector3 middleNode = vectors[2];
+            float distance = Vector3.Distance(topNode, bottomNode);
+
+            //Creates Upper Chain
+            float averageNumberOfLinksUP = upperChainLength / (elementlength + diameter * 2);
+            float finalNumberOfLinklsUP = MathF.Round(averageNumberOfLinksUP);
+            float finalChainLengthUp = finalNumberOfLinklsUP * elementlength;
+
+
+            //Creates Bottom Chain
+            float averageNumberOfLinksBOT = bottomChainLength / (elementlength + diameter * 2);
+            float finalNumberOfLinklsBOT = MathF.Round(averageNumberOfLinksBOT);
+            float finalChainLengthBOT = finalNumberOfLinklsBOT * elementlength;
+
+            //Side lengths in mm
+            float upperLength = finalChainLengthUp;
+            float bottomLength = finalChainLengthBOT;
+
+
+
+            float cos_bottom = (bottomLength * bottomLength + distance * distance - upperLength * upperLength) / (2 * bottomLength * distance);
+            float angle_bottom = MathF.Acos(cos_bottom);
+
+            float transwidht = bottomLength * MathF.Sin(angle_bottom);
+            float transheigth = bottomLength * cos_bottom;
+
+            Vector3 endNode = bottomNode + new Vector3(0, -transwidht, transheigth);
+
+            patent.Add(new ChainLink3D( topNode, endNode, upperChainLength));
+            patent.Add(new ChainLink3D( bottomNode, endNode, bottomChainLength));
+            patent.Add(new ChainLink3D( middleNode, endNode, middelChainLength));
+
+            return patent;
+        }
+
+
+
+
+
+
+
+
+
+
 
 
         public float CalcChainLength()
@@ -148,9 +225,7 @@ namespace RapiD.Geometry.Models
             Draw();
         }
 
-  
-
-        public void UpdatePositions(Vector3 start,Vector3 end)
+          public void UpdatePositions(Vector3 start,Vector3 end)
         {
             startPointVector = start;
             endPointVector = end;

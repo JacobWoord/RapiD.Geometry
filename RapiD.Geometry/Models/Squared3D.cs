@@ -19,11 +19,17 @@ namespace RapiD.Geometry.Models
 {
     public partial class Squared3D : GeometryBase3D
     {
-        [ObservableProperty]
-        List<Sphere3D> listPoints = new();
-
+     
         public Vector3 Size { get; set; }
-
+        public Vector3 BbUpperPoint;
+        public Vector3 BbMiddlePoint;
+        public Vector3 BbBottomPoint;
+       
+        public Vector3 SbUpperPoint;
+        public Vector3 SbMiddlePoint;
+        public Vector3 SbBottomPoint;
+       
+        public Vector3 CenterPoint;
 
         public Squared3D(Vector3 position, Vector3 size)
         {
@@ -35,80 +41,86 @@ namespace RapiD.Geometry.Models
             Draw();
         }
 
-        public List<Sphere3D> AddNetPoints()
-        {
-            Vector3 bbUpperPoint = new Vector3(-Size.X / 2, Size.Y / 2, Size.Z / 2);
-            Vector3 bbBottomPoint = new Vector3(-Size.X / 2, Size.Y / 2, -Size.Z / 2);
 
-            Vector3 SbUpperPoint = new Vector3(Size.X / 2, Size.Y / 2, Size.Z / 2);
-            Vector3 SbBottomPoint = new Vector3(Size.X / 2, Size.Y / 2, -Size.Z / 2);
+        public void UpdatePoints()
+        {
+
+            BbUpperPoint = new Vector3(-Size.X / 2, Size.Y / 2, Size.Z / 2) + Position;
+            BbMiddlePoint = new Vector3(Position.X - Size.X / 2, Position.Y + Size.Y / 2, Position.Z);
+            BbBottomPoint = new Vector3(-Size.X / 2, Size.Y / 2, -Size.Z / 2) + Position;
+
+            SbUpperPoint = new Vector3(Size.X / 2, Size.Y / 2, Size.Z / 2) + Position;
+            SbMiddlePoint = new Vector3(Position.X + Size.X / 2, Position.Y + Size.Y / 2, Position.Z);
+            SbBottomPoint = new Vector3(Size.X / 2, Size.Y / 2, -Size.Z / 2) + Position;
             float offSetY = 5000;
             float offSetX = 5000;
-            var centerPoint = new Vector3(Position.X + Size.X / 2 + -offSetX, Position.Y + Size.Y / 2 + -offSetY, Position.Z);
-            List<Sphere3D> NetSquared;
-            NetSquared = new List<Sphere3D>();
-            NetSquared.Add(new Sphere3D(bbUpperPoint + Position) { NodeNumber = 0 });  
-            NetSquared.Add(new Sphere3D(new Vector3(Position.X - Size.X / 2, Position.Y + Size.Y / 2, Position.Z)) { NodeNumber = 1 });
-            NetSquared.Add(new Sphere3D(bbBottomPoint + Position) { NodeNumber = 2 });
-            NetSquared.Add(new Sphere3D(SbUpperPoint + Position) { NodeNumber = 3 });
-            NetSquared.Add(new Sphere3D(new Vector3(Position.X + Size.X / 2, Position.Y + Size.Y / 2, Position.Z)) { NodeNumber = 4 });
-            NetSquared.Add(new Sphere3D(SbBottomPoint + Position) { NodeNumber = 5 });
-            NetSquared.Add(new Sphere3D(SbBottomPoint + Position) { NodeNumber = 6 });
-
-            var newcenter = centerPoint - new Vector3(0, 0, 1000);
-            NetSquared.Add(new Sphere3D(newcenter) { NodeNumber = 8 });
-
-            foreach (var item in NetSquared)
-            {
-                ListPoints.Add(item);
-            }
-            return NetSquared;
+            CenterPoint = new Vector3(Position.X + Size.X / 2 + -offSetX, Position.Y + Size.Y / 2 + -offSetY, Position.Z - 1000);
 
         }
 
 
-        public List<ChainLink3D> CreateNetPatent(Side defineSide)
-        {
-            Vector3 topNode;
-            Vector3 center = ListPoints[7].Position;
-            Vector3 middle;
-            Vector3 bottomNode;
+
+
+
+
+
+
+
+
+
+       
+
+
+        //public List<ChainLink3D> CreateNetPatent(Side defineSide)
+        //{
+
+          
+        //    Vector3 topNode;
+        //    Vector3 center = ListPoints[7].Position;
+        //    Vector3 middle;
+        //    Vector3 bottomNode;
        
 
 
 
-            if (defineSide == Side.StarBoard)
-            {
-                topNode = ListPoints[0].Position;
-                middle = ListPoints[1].Position;
-                bottomNode = ListPoints[2].Position;
+        //    if (defineSide == Side.StarBoard)
+        //    {
+        //        topNode = ListPoints[0].Position;
+        //        middle = ListPoints[1].Position;
+        //        bottomNode = ListPoints[2].Position;
 
-            }
-            else
-            {
-                topNode = ListPoints[3].Position;
-                middle = ListPoints[4].Position;
-                bottomNode = ListPoints[5].Position;
-            }
+        //    }
+        //    else
+        //    {
+        //        topNode = ListPoints[3].Position;
+        //        middle = ListPoints[4].Position;
+        //        bottomNode = ListPoints[5].Position;
+        //    }
            
 
-            float topLength = 5000;
-            float bottomLength = 5000;   
-            
-            //define plane trough seamline
-            Plane p1 = new Plane(center, middle, middle+new Vector3(0,0,1000));
-            //calculate third point of patent
-            Vector3 thirdNode = findThirdPoint(bottomNode,topNode, bottomLength, topLength, p1);
+        //    float topLength = 5000;
+        //    float bottomLength = 5000;
+
+        
+
+        //    //define plane trough seamline
+        //    Plane p1 = new Plane(center, middle, middle+new Vector3(0,0,1000));
+        //    Patent3D patent = new Patent3D(bottomNode, topNode, middle, bottomLength, topLength, p1);
+ 
+
+        //    List<ChainLink3D> NetPatent = new();
+        //    NetPatent.Add(new ChainLink3D( patent.topPoint, patent.targetPoint));
+        //    NetPatent.Add(new ChainLink3D( patent.bottomPoint, patent.targetPoint));
+
+        //    patent.lengthbottom= 10000;
+        //    patent.UpdatePatent();
 
 
-            List<ChainLink3D> NetPatent = new();
-            NetPatent.Add(new ChainLink3D(60, 180, 220, topNode, thirdNode));
-            NetPatent.Add(new ChainLink3D(60, 180, 220, bottomNode, thirdNode));
 
 
-            return NetPatent;
+        //    return NetPatent;
 
-        }
+        //}
 
         public static float AngleBetween(Plane firstPlane, Plane secondPlane)
         {
@@ -254,7 +266,7 @@ namespace RapiD.Geometry.Models
 
             meshBuilder.AddBox(Position,Size.X,Size.Y,Size.Z);
 
-
+            UpdatePoints();
 
             MeshGeometry = meshBuilder.ToMeshGeometry3D();
         }

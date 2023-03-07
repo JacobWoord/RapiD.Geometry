@@ -27,14 +27,14 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         int thetaDiv = 30;
 
-        public Tube3D(Vector3 start, Vector3 end, float diameter=150f)
+        public Tube3D(Vector3 start, Vector3 end, float diameter=300f)
         {
             OriginalMaterial = PhongMaterials.Black;
             this.centerPoints = new List<Vector3>();
             centerPoints.Add(start);
             centerPoints.Add(end);
             this.diameter = diameter;
-
+            Name = "Tube";
             Draw();
 
 

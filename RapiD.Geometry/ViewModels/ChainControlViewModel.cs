@@ -94,7 +94,7 @@ namespace RapiD.Geometry.ViewModels
         {
             if (TotalLength != currentLength)
             {
-                StrongReferenceMessenger.Default.Send(new patentChangedMessage(TotalLength, chain.PatentId,chain.Name));
+                WeakReferenceMessenger.Default.Send(new patentChangedMessage(TotalLength, chain.PatentId,chain.Name));
                 CurrentLength = totalLength;
             }
 

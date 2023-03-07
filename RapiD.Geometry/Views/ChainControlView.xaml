@@ -198,8 +198,13 @@
                             />
                 </Border>
                         
-
             </StackPanel>
+
+            <StackPanel Grid.ColumnSpan="2"
+                        Grid.Row="2">
+                <Button Content="Remove"/>
+            </StackPanel>
+
 
         </StackPanel>
 

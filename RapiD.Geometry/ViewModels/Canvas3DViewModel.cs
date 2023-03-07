@@ -5,10 +5,12 @@ using HelixToolkit.SharpDX.Core.Model.Scene;
 using HelixToolkit.Wpf.SharpDX;
 using Microsoft.Win32;
 using RapiD.Geometry;
+using RapiD.Geometry.Messages;
 using RapiD.Geometry.Models;
 using RapiD.Geometry.Views;
 using SharpDX;
 using SharpDX.Direct3D9;
+using SharpDX.Mathematics.Interop;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,8 +34,9 @@ using Material = HelixToolkit.Wpf.SharpDX.Material;
 namespace RapiD.Geometry.ViewModels
 {
 
-    public partial class Canvas3DViewModel : ObservableObject, IRecipient<patentChangedMessage>
+    public partial class Canvas3DViewModel : ObservableObject, IRecipient<patentChangedMessage>, IRecipient<ConnectionChangedMessage>,IRecipient<ConnectionEndPointVectorChangedMessage>
     {
+
 
         public string Doorfile;
         public string Shipfile;
@@ -43,12 +46,12 @@ namespace RapiD.Geometry.ViewModels
 
             camera = new HelixToolkit.Wpf.SharpDX.OrthographicCamera()
             {
-                LookDirection = new System.Windows.Media.Media3D.Vector3D(-786, 17, -194), //0.12, -1.1, -11
-                UpDirection = new System.Windows.Media.Media3D.Vector3D(0.24, 0.05, 0.96), /* (0, 0, -1)*/
-                Position = new System.Windows.Media.Media3D.Point3D(-2323, 5918, 12919),                       /*(4356, -2075, -1086),*/ 
+                LookDirection = new System.Windows.Media.Media3D.Vector3D(-74, -134,-61), //0.12, -1.1, -11
+                UpDirection = new System.Windows.Media.Media3D.Vector3D(-0.21, 0.26, 0.96), /* (0, 0, -1)*/
+                Position = new System.Windows.Media.Media3D.Point3D(17437, -17368, 17250),                       /*(4356, -2075, -1086),*/ 
                 FarPlaneDistance = 1000000,
                 NearPlaneDistance = -1000000,
-                Width = 314782
+                Width = 71351
             };
 
             camera.CreateViewMatrix();
@@ -64,7 +67,9 @@ namespace RapiD.Geometry.ViewModels
             diameters = new ObservableCollection<string>();
             diameters.Add("gedag");
 
-            StrongReferenceMessenger.Default.Register<patentChangedMessage>(this);
+            WeakReferenceMessenger.Default.Register<patentChangedMessage>(this);
+            WeakReferenceMessenger.Default.Register<ConnectionChangedMessage>(this);
+            WeakReferenceMessenger.Default.Register<ConnectionEndPointVectorChangedMessage>(this);
            
 
 
@@ -75,9 +80,6 @@ namespace RapiD.Geometry.ViewModels
 
         [ObservableProperty]
         float patentLength = 2000;
-
-
-
 
         [ObservableProperty]
         ObservableObject sideViewModel;
@@ -92,108 +94,86 @@ namespace RapiD.Geometry.ViewModels
             await BbDoor.OpenFile();
             await SbDoor.OpenFile();
 
-
             // Putting the  SB door in the correct postion. important to note that we Update the node list after all transformations are done!
-            await SbDoor.UpdatePositionDoor(xaxis: 80000f);
+            await SbDoor.UpdatePositionDoor(xaxis: 4000f);
             SbDoor.UpdateNodeList();
+
+            float spread = Vector3.Distance(bbDoor.Position, sbDoor.Position);
+
+            //NET
+            var net = new Squared3D(new Vector3(spread / 2, -40000, 4300), new Vector3(10000, 1000, 8000));
+            ModelCollection.Add(net);
+
+
+            // Line - Helper
+            float lineLength = 100000;
+            ////sb
+            Vector3 center = net.CenterPoint;
+            Vector3 middle = net.SbMiddlePoint;
+            Vector3 direction = middle - center;
+            Vector3 directionNormalized = Vector3.Normalize(direction);
+            Vector3 lineEnd = center + directionNormalized * lineLength;
+            ////bb
+            Vector3 middleBb = net.BbMiddlePoint;
+            Vector3 directionBb = middleBb - center;
+            Vector3 directionNormalizedBb = Vector3.Normalize(directionBb);
+            Vector3 lineEnd1 = center + directionNormalizedBb * lineLength;
+
+            ModelCollection.Add(new Tube3D(center, lineEnd1));
+            ModelCollection.Add(new Tube3D(center, lineEnd));
+
+            SharpDX.Plane bbPlane = new SharpDX.Plane(center, middle, middle + new Vector3(0, 0, 1000));
+
+
+          
 
 
             /* BABOORD BORD */
             BbDoor.Mirror(MirrorAxis.X);
             BbDoor.UpdateNodeList();
 
-            var bbDoorPatent = new DoorPatent3D(Side.PortSide);
-            bbDoorPatent.InitializeModels(modelCollection);
-            bbDoorPatent.Update(bbDoor.GetNodeList(), modelCollection);
-            DoorPatents.Add(bbDoorPatent);
+            var bbDoorTopNode = BbDoor.GetTopNode();
+            var bbDoorMiddleNode = BbDoor.GetMiddleNode();
+            var bbDoorBottomNode = BbDoor.GetBottomNode();
 
-           // List<ChainLink3D> BbChainPatent = BBpatent.Draw();
-            //if (BbChainPatent != null)
-            //{
-            //    Vector3 BbConnectionPostion = BbChainPatent[1].EndPointVector;
 
-            //    var BbConnector = new Torus3D(500, 100, new Vector3(BbConnectionPostion.X, BbConnectionPostion.Y - 500 / 2, BbConnectionPostion.Z));
-            //    ModelCollection.Add(BbConnector);
 
-            //    foreach (var item in BbChainPatent)
-            //    {
-            //        ModelCollection.Add(item);
-            //    }
-            //}
-         
+            
+            Patent3D BbDoorpatent = new Patent3D(bbDoorBottomNode, bbDoorTopNode, bbDoorMiddleNode, 4000, 4000,  bbPlane);
+
+            BbDoorpatent.lengthbottom = 6000;
+            BbDoorpatent.UpdatePatent();
+            BbDoorpatent.UpdateConnections();
+
+           
+
+
+        
+       
         
             /* STUURBOORD BORD */
 
-            var SbDoorPatent = new DoorPatent3D(Side.StarBoard);
-            SbDoorPatent.InitializeModels(modelCollection);
-            SbDoorPatent.Update(sbDoor.GetNodeList(), modelCollection);
-            DoorPatents.Add(SbDoorPatent);  
-
-
-            //if (SbChainPatent != null)
-            //{
-            //    Vector3 SbConnectionPosition = SbChainPatent[1].EndPointVector;
-            //    IModel SbConnector = new Torus3D(500, 100, new Vector3(SbConnectionPosition.X, SbConnectionPosition.Y - 500 / 2, SbConnectionPosition.Z));
-            //    ModelCollection.Add(SbConnector);
-            //    foreach (var item in SbChainPatent)
-            //    {
-            //        ModelCollection.Add(item);
-            //    }
-            //}
-
-
-            float spread = Vector3.Distance(bbDoor.Position, sbDoor.Position);
-
-
-            //NET
-            var net = new Squared3D(new Vector3(spread / 2, -40000, 4300), new Vector3(10000, 1000, 8000));
-            ModelCollection.Add(net);
-            var netPoints = net.AddNetPoints();
-            foreach (var item in netPoints)
-            {
-                ModelCollection.Add(item);
-            }
-            List<ChainLink3D> netPatentBb = net.CreateNetPatent(Side.PortSide);
-            List<ChainLink3D> netPatentSb = net.CreateNetPatent(Side.StarBoard);
-            foreach (var item in netPatentBb)
-            {
-                ModelCollection.Add(item);
-            }
-            foreach (var item in netPatentSb)
-            {
-                ModelCollection.Add(item);
-            }
-            
-            // Line - Helper
-            float lineLength = 100000;
-            //sb
-            Vector3 center = netPoints[7].Position;
-            Vector3 middle = netPoints[1].Position;
-            Vector3 direction = middle - center;
-            Vector3 directionNormalized = Vector3.Normalize(direction);
-            Vector3 lineEnd = center + directionNormalized * lineLength;
-            //bb
-            Vector3 center1 = netPoints[7].Position;
-            Vector3 middle1= netPoints[4].Position;
-            Vector3 direction1 = middle1 - center;
-            Vector3 directionNormalized1 = Vector3.Normalize(direction1);
-            Vector3 lineEnd1 = center+directionNormalized1 * lineLength;
+            //var SbDoorPatent = new DoorPatent3D(Side.StarBoard);
+            //SbDoorPatent.InitializeModels(modelCollection);
+            //SbDoorPatent.Update(sbDoor.GetNodeList(), modelCollection);
+            //DoorPatents.Add(SbDoorPatent);  
 
 
 
-            ModelCollection.Add(new Tube3D(new Vector3(center.X, center.Y, center.Z), lineEnd));
-            ModelCollection.Add(new Tube3D(new Vector3(center.X, center.Y, center.Z), lineEnd1));
-
-            var p = new SharpDX.Plane(center, middle, middle + new Vector3(0, 0, 1000));
-            var startplane = -p.Normal * p.D;
-            var endplane = -p.Normal * p.D * 1.01f;
-            float dist = Vector3.Distance(startplane, endplane);
 
 
-            ModelCollection.Add(new Tube3D(startplane, endplane, 5000) { Name = "PLane" });
 
 
-           //Cables SB
+
+
+            // var startplane = -p.Normal * p.D;
+            //var endplane = -p.Normal * p.D * 1.01f;
+            //float dist = Vector3.Distance(startplane, endplane);
+
+
+
+
+            //Cables SB
             Vector3 upperCablePositionSb = new Vector3(net.Size.X / 2, net.Size.Y / 2, net.Size.Z / 2);
             Vector3 bottomCablePositionSb = new Vector3(net.Size.X / 2, net.Size.Y / 2, -net.Size.Z / 2);
             //var cableSb1 = new Tube3D(new Vector3(SbConnectionPosition.X, SbConnectionPosition.Y, SbConnectionPosition.Z), netPatentSb[1].EndPointVector);
@@ -213,9 +193,7 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-            //Warp
-            ModelCollection.Add(sbDoor.DrawWarp());
-            ModelCollection.Add(BbDoor.DrawWarp());
+         
 
             //PEES
 
@@ -669,7 +647,7 @@ namespace RapiD.Geometry.ViewModels
             var id = message.patentId;
             var length = message.totalLength;
             var name = message.name;
-            DoorPatent3D Doorpatent =   doorPatents.Where(doorPatents=> doorPatents.id == id).FirstOrDefault();
+            DoorPatent3D Doorpatent  =doorPatents.Where(doorPatents=> doorPatents.id == id).FirstOrDefault();
             if (name == "UpperChain")
             {
                 Doorpatent.upperChainLength = length;
@@ -685,6 +663,18 @@ namespace RapiD.Geometry.ViewModels
 
             
 
+        }
+
+        public void Receive(ConnectionChangedMessage message)
+        {
+            var ConnectionModel = message.chain;
+            ModelCollection.Add(ConnectionModel);
+        }
+
+        public void Receive(ConnectionEndPointVectorChangedMessage message)
+        {
+           var connection = modelCollection.Where(modelCollection => modelCollection.ConnectionID == message.connectionId).FirstOrDefault();
+            (connection as ChainLink3D).EndPointVector = message.endpoint;
         }
     }
 

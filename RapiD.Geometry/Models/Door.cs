@@ -20,19 +20,21 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         Transform3DGroup transform3DGroup = new();
 
+
+        public Vector3 TopNode;
+      
+
+        
         [ObservableProperty]
-        float upperChainLength = 2000;
+        Vector3 middleNode;
 
         [ObservableProperty]
-        float middleChainLength = 2000 ;
-
-        [ObservableProperty]
-        float bottomChainLength = 2000;
-
-        [ObservableProperty]
-        float innerChainLength = 40;
+        Vector3 bottomNode;
 
         public Side doorSide;
+
+        [ObservableProperty]
+        List<Vector3> nodeList = new List<Vector3>();
 
 
 
@@ -42,21 +44,35 @@ namespace RapiD.Geometry.Models
             ID = Guid.NewGuid().ToString();
 
             FileName= filename;
+
+            
         }
 
         
-        public Warp3D DrawWarp()
+
+        
+        public Vector3 GetTopNode()
         {
-            var nodeList = GetNodeList();
-            List<Vector3> centerPoints= new();
-            centerPoints.Add(nodeList[3]);
-            centerPoints.Add(new Vector3(nodeList[3].X, nodeList[3].Y +100000, nodeList[3].Z));
-            var warp = new Warp3D(centerPoints);
-            return warp;
+            var nodelist = GetNodeList();
+            TopNode = nodelist[5];
+            return TopNode;
         }
-        
-        
-       
+
+        public Vector3 GetBottomNode()
+        {
+            var nodelist = GetNodeList();
+            BottomNode = nodelist[7];
+            return BottomNode;
+        }
+
+        public Vector3 GetMiddleNode()
+        {
+            var nodelist = GetNodeList();
+            MiddleNode = nodelist[2];
+            return MiddleNode;
+        }
+
+
 
 
 

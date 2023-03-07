@@ -49,9 +49,9 @@ namespace RapiD.Geometry.Models
 
         public void InitializeModels(ObservableCollection<IModel> models)
         {
-            var c1 = new ChainLink3D(20, 50, 100, Vector3.Zero, Vector3.Zero) { Name = "UpperChain", ChainType = ChainType.DoorPatent , PatentId = this.id };
-            var c2 = new ChainLink3D(20, 50, 100, Vector3.Zero, Vector3.Zero) { Name = "BottomChain", ChainType = ChainType.DoorPatent, PatentId = this.id };
-            var c3 = new ChainLink3D(20, 50, 100, Vector3.Zero, Vector3.Zero) { Name = "Middle", ChainType = ChainType.DoorPatent, PatentId = this.id};
+            var c1 = new ChainLink3D( Vector3.Zero, Vector3.Zero) { Name = "UpperChain", ChainType = ChainType.DoorPatentBb , PatentId = this.id };
+            var c2 = new ChainLink3D( Vector3.Zero, Vector3.Zero) { Name = "BottomChain", ChainType = ChainType.DoorPatentBb, PatentId = this.id };
+            var c3 = new ChainLink3D( Vector3.Zero, Vector3.Zero) { Name = "Middle", ChainType = ChainType.DoorPatentBb, PatentId = this.id};
             models.Add(c1);
             models.Add(c2);
             models.Add(c3);

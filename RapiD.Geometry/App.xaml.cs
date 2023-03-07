@@ -36,7 +36,6 @@ namespace RapiD.Geometry
             
             serviceDescriptors.AddTransient<HomeVIew>();
             serviceDescriptors.AddTransient<ChainControlViewModel>();
-            serviceDescriptors.AddTransient<DoorControlViewModel>();
             serviceDescriptors.AddTransient<CircleViewModel>();
             //serviceDescriptors.AddTransient<Circle2D>();
             //serviceDescriptors.AddTransient<Rectangle2D>();

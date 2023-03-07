@@ -55,6 +55,7 @@ namespace RapiD.Geometry.Models
         }
 
         public string ID { get ; set; }
+        public string ConnectionID { get ; set; }
         public string Name { get; set; }
 
         [ObservableProperty]

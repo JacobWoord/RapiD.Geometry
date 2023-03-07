@@ -19,9 +19,7 @@
             <local:ChainControlView/>
         </DataTemplate>
        
-        <DataTemplate DataType="{x:Type viewmodels:DoorControlViewModel}">
-            <local:DoorControlView/>
-        </DataTemplate>
+        
     </UserControl.Resources>
 
     <i:Interaction.Triggers>
@@ -306,6 +304,11 @@
                     Orientation="Vertical">
                     <Label>ZPos</Label>
                     <TextBlock Text="{Binding ZAxis, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel>
+                    <Button> add new</Button>
+                    <Button Command="{Binding RemoveCommand}"> Remove</Button>
                 </StackPanel>
 
 

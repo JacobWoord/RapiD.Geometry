@@ -7,11 +7,21 @@ using System.Threading.Tasks;
 
 namespace RapiD.Geometry
 {
+  
 
+    public enum ConnectionType
+    {
+        Chain,
+        SteelCable,
+        RubberCable,
+        Rope
+    }
    
     public enum ChainType
     {
-        DoorPatent,
+
+        DoorPatentBb,
+        DoorPatentSb,
         NetPatent,
         Regular
     }
