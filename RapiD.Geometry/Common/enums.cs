@@ -7,7 +7,16 @@ using System.Threading.Tasks;
 
 namespace RapiD.Geometry
 {
-  
+ 
+
+
+    public enum PatentSide
+    {
+        Up,
+        Down,
+        Middle,
+        None
+    }
 
     public enum ConnectionType
     {
@@ -121,8 +130,8 @@ namespace RapiD.Geometry
     }
     public enum ElementType
     {
-        Straight,
-        Parabolic
+        Chain,
+        Rope
     }
 
     public enum BillBoardMode

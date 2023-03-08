@@ -42,21 +42,7 @@ namespace RapiD.Geometry.ViewModels
         Color color;
 
 
-        [RelayCommand]
-        void DrawCircle()
-        {
-
-          Random random = new Random();
-          int randomRadius = random.Next(30,150);
-          int randomPosX = random.Next(20, 600);
-          int randomPosY = random.Next(20, 600);
-          Point randomPos= new Point(randomPosX, randomPosY);
-          int idCount = geometryCollection.Count;
-
-          geometryCollection.Add(new Circle2D(randomRadius,new Point(randomPosX,randomPosY)));
-
-        }
-
+      
         [RelayCommand]
         void DrawRectangle()
         {

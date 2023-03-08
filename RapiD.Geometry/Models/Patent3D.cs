@@ -1,13 +1,15 @@
 ﻿using SharpDX;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Emit;
 
 namespace RapiD.Geometry.Models
 {
     public partial class Patent3D : ObservableObject
     {
 
-        public List<ConnectionClass> connections = new();
+        public List<ConnectionClass> Connections = new();
 
         public Vector3 topPoint;
         public Vector3 middlePoint;
@@ -15,18 +17,19 @@ namespace RapiD.Geometry.Models
         public Vector3 targetPoint;
         public float lengthbottom;
         public float lengthtop;
-        Plane plane;
+        public Plane plane;
         private string id;
-        
+        public string Id { get; }
 
-        
+       
 
-
+      
 
         public Patent3D(Vector3 bot, Vector3 top, Vector3 mid, float lengthbot, float lengthtop, Plane plane)
         {
 
-            id = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
+
 
             this.topPoint = top;
             this.middlePoint = mid;
@@ -35,20 +38,36 @@ namespace RapiD.Geometry.Models
             this.lengthtop = lengthtop;
             this.plane = plane;
 
-            UpdatePatent(); // sets the targetPoint
-            CreateConnections(); // Uses the targetPoint to create the connections
-
-
-        }
-
-       
-
-        public void UpdatePatent()
-        {
-            //calculate third point of patent
             targetPoint = findThirdPoint(bottomPoint, topPoint, lengthbottom, lengthtop, plane);
+            CreateConnections();
+
+
+
+
         }
 
+        public Patent3D(List<ConnectionClass> connections, Plane plane)
+        {
+
+            Id = Guid.NewGuid().ToString();
+
+            ConnectionClass topconnection = connections.OrderBy(x => x.startVector.Z).ToList().Last();
+            ConnectionClass midconnection = connections.OrderBy(x => x.startVector.Z).ToList()[1];
+            ConnectionClass botconnection = connections.OrderBy(x => x.startVector.Z).ToList().First();
+
+
+            this.topPoint = topconnection.startVector;
+            this.middlePoint = midconnection.startVector;
+            this.bottomPoint = botconnection.startVector;
+            this.lengthbottom = Vector3.Distance(botconnection.startVector, botconnection.endVector);
+            this.lengthtop = Vector3.Distance(topconnection.startVector, topconnection.endVector);
+            this.plane = plane;
+
+            targetPoint = findThirdPoint(bottomPoint, topPoint, lengthbottom, lengthtop, plane);
+            UpdateConnections(connections);
+
+
+        }
 
 
 
@@ -58,29 +77,56 @@ namespace RapiD.Geometry.Models
 
             if (topPoint != Vector3.Zero)
             {
-                connections.Add(new ConnectionClass(topPoint, targetPoint) { PatentId = id });
+                Connections.Add(new ConnectionClass(topPoint, targetPoint,ConnectionType.Chain, Id) );
             }
 
             if (middlePoint != Vector3.Zero)
             {
-                connections.Add(new ConnectionClass(middlePoint, targetPoint) { PatentId = id });
+                Connections.Add(new ConnectionClass(middlePoint, targetPoint, ConnectionType.Chain, Id));
             }
 
             if (bottomPoint != Vector3.Zero)
             {
-                connections.Add(new ConnectionClass(bottomPoint, targetPoint) { PatentId = id });
+                Connections.Add(new ConnectionClass(bottomPoint, targetPoint, ConnectionType.Chain, Id) );
             }
         }
 
 
-        public void UpdateConnections()
+        public void UpdateConnections(List<ConnectionClass> connections)
         {
+            Connections.Clear();
             foreach (var connection in connections)
             {
-                connection.endVector = targetPoint;
+                Connections.Add(new ConnectionClass(topPoint, targetPoint, connection.type, Id));
             }
         }
 
+
+        public bool Check()
+        {
+
+            float distanceBetweenNodes = Vector3.Distance(topPoint, bottomPoint);
+
+            if (lengthtop + lengthbottom < distanceBetweenNodes)
+            {
+                return false;
+            }
+            else if (lengthtop > lengthtop + lengthbottom)
+            {
+                return false;
+            }
+            else if (lengthbottom > lengthtop + lengthbottom)
+            {
+
+                return false;
+            }
+            else if (lengthtop + lengthbottom < distanceBetweenNodes)
+            {
+
+                return false;
+            }
+            return true;
+        }
 
 
 
@@ -181,6 +227,13 @@ namespace RapiD.Geometry.Models
             return Math.Abs(distance) / plane.Normal.Length();
         }
 
+        public void Deselect()
+        {
+            
+        }
 
+        public void Select()
+        {
+        }
     }
 }

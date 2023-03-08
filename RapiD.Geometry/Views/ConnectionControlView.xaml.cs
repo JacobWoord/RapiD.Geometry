@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace RapiD.Geometry.Views
 {
     /// <summary>
-    /// Interaction logic for ChainControlView.xaml
+    /// Interaction logic for ConnectionControlView.xaml
     /// </summary>
-    public partial class ChainControlView : UserControl
+    public partial class ConnectionControlView : UserControl
     {
-        public ChainControlView()
+        public ConnectionControlView()
         {
             InitializeComponent();
         }

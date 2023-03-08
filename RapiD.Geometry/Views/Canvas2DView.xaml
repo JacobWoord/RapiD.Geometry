@@ -122,24 +122,7 @@
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.Resources>
-                    <DataTemplate DataType="{x:Type models:Circle2D}">
-                        <Ellipse
-                            Width="{Binding RelativeSource={RelativeSource Self}, Path=Height}"
-                            Height="{Binding Radius}"
-                            Fill="{Binding Color, Converter={StaticResource color2brush}}">
-                            <Ellipse.RenderTransform>
-                                <TranslateTransform X="{Binding Position.X}" Y="{Binding Position.Y}" />
-                            </Ellipse.RenderTransform>
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="MouseDown">
-                                    <i:InvokeCommandAction Command="{Binding SelectCommand}" />
-                                </i:EventTrigger>
-                                <!--<i:EventTrigger EventName="MouseUp">
-                                    <i:InvokeCommandAction Command="{Binding SelectCommand}"></i:InvokeCommandAction>
-                                </i:EventTrigger>-->
-                            </i:Interaction.Triggers>
-                        </Ellipse>
-                    </DataTemplate>
+                   
 
                     <DataTemplate DataType="{x:Type models:Rectangle2D}">
                         <Rectangle

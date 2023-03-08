@@ -15,8 +15,8 @@
     mc:Ignorable="d"
     >
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type viewmodels:ChainControlViewModel}">
-            <local:ChainControlView/>
+        <DataTemplate DataType="{x:Type viewmodels:ConnectionControlViewModel}">
+            <local:ConnectionControlView/>
         </DataTemplate>
        
         

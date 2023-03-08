@@ -9,14 +9,15 @@ namespace RapiD.Geometry.Messages
 {
     public record ConnectionChangedMessage
     {
+        public ConnectionType connectionType; 
 
-       public ChainLink3D chain { get; }
-       Tube3D tube;
-
-
-        public ConnectionChangedMessage(ChainLink3D chain)
+        public ConnectionChangedMessage(ConnectionType conType)
         {
-            this.chain = chain;
+
+            this.connectionType = conType;
+              
+
+
         }
     
     }

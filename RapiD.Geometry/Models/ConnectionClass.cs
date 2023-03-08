@@ -5,6 +5,7 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,57 +13,71 @@ namespace RapiD.Geometry.Models
 {
     public partial class ConnectionClass : ObservableObject
     {
-        public ChainLink3D chainConnection;
-        public CablePatent cableConnection;
-        public Tube3D tubeConnection;
-        
        
-         public Vector3 startVector;
+
+
+        public Vector3 startVector;
         public Vector3 endVector;
         public ConnectionType type;
-        
-        public string Id;
-        public string PatentId;
-        
+        public PatentSide patentSide = PatentSide.None;
+        public float Lenght;
 
-        public ConnectionClass(Vector3 startVector, Vector3 endVector)
+        //data. ToDO: make a data class that stores this data
+        public float segmentLengh=100;
+        public float dia = 10;
+        public float width = 40;
+
+
+        public string Id;
+        public string PatentId { get; set; }
+
+        public List<Element3D> Elements = new();
+
+
+        public ConnectionClass(Vector3 startVector, Vector3 endVector,ConnectionType contype, string id = "")
         {
-            type = ConnectionType.Chain;
+            this.PatentId = id;       
+            this.type= contype;
             this.startVector = startVector;
             this.endVector = endVector;
-            Id= Guid.NewGuid().ToString();
+            this.Lenght=Vector3.Distance(startVector, endVector);
+            int numOfSegments = (int)MathF.Round(this.Lenght / this.segmentLengh);
+            this.segmentLengh = Lenght / numOfSegments;
+
+            Id = Guid.NewGuid().ToString();
+           
             CreateConnection();
-     
+           
         }
 
         public void Update()
         {
-            WeakReferenceMessenger.Default.Send(new ConnectionEndPointVectorChangedMessage(endVector,Id));
+            this.Lenght = Vector3.Distance(startVector, endVector);
+            int numOfSegments = (int)MathF.Round(this.Lenght / this.segmentLengh);
+            this.segmentLengh = Lenght / numOfSegments;
+            Elements.Clear();
+            CreateConnection();
         }
 
 
         public void CreateConnection()
         {
+            int numOfSegments = (int)MathF.Round(this.Lenght / this.segmentLengh);
+            Vector3 direction = Vector3.Normalize(endVector- startVector);
+                 
+            Vector3 start = startVector;
+            for (int i = 0; i < numOfSegments; i++)
+            {
+                Vector3 end = start+ direction * segmentLengh;
+                bool rotate = false;
+                if(type == ConnectionType.Chain && i % 2 == 1)
+                    rotate = true;
 
-            if (type == ConnectionType.Chain)
-            {
-                var chain = ChainConnection();
-                WeakReferenceMessenger.Default.Send(new ConnectionChangedMessage(chain));
-                chainConnection = chain;
+                Element3D el = new Element3D(start, end, type, dia, width, rotate);
+                Elements.Add(el);
+                start =end;
             }
-            else if (type == ConnectionType.RubberCable)
-            {
-                CableConnection();
-            }
-            else if (type == ConnectionType.SteelCable)
-            {
-                SteelCableConnection();
-            }
-            else if (type == ConnectionType.Rope)
-            {
 
-            }
-            return;
         }
 
 
@@ -70,13 +85,6 @@ namespace RapiD.Geometry.Models
 
 
 
-
-        public ChainLink3D ChainConnection()
-        {
-            var chainConnection = new ChainLink3D(startVector, endVector) { ConnectionID = Id};  
-           
-            return chainConnection;
-        }
 
 
 

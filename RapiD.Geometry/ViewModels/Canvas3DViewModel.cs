@@ -1,4 +1,6 @@
 ﻿using Assimp;
+using Assimp.Configs;
+using Assimp.Unmanaged;
 using CommunityToolkit.Mvvm.Messaging;
 using HelixToolkit.SharpDX.Core;
 using HelixToolkit.SharpDX.Core.Model.Scene;
@@ -17,6 +19,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
@@ -34,21 +37,27 @@ using Material = HelixToolkit.Wpf.SharpDX.Material;
 namespace RapiD.Geometry.ViewModels
 {
 
-    public partial class Canvas3DViewModel : ObservableObject, IRecipient<patentChangedMessage>, IRecipient<ConnectionChangedMessage>,IRecipient<ConnectionEndPointVectorChangedMessage>
+    public partial class Canvas3DViewModel : ObservableObject, IRecipient<ConnectionChangedMessage>
     {
 
 
         public string Doorfile;
         public string Shipfile;
+        List<Patent3D> Patents = new();
+
+        SharpDX.Plane RefBBplane;
+        SharpDX.Plane RefSBplane;
+
+          
 
         public Canvas3DViewModel()
         {
 
             camera = new HelixToolkit.Wpf.SharpDX.OrthographicCamera()
             {
-                LookDirection = new System.Windows.Media.Media3D.Vector3D(-74, -134,-61), //0.12, -1.1, -11
+                LookDirection = new System.Windows.Media.Media3D.Vector3D(-74, -134, -61), //0.12, -1.1, -11
                 UpDirection = new System.Windows.Media.Media3D.Vector3D(-0.21, 0.26, 0.96), /* (0, 0, -1)*/
-                Position = new System.Windows.Media.Media3D.Point3D(17437, -17368, 17250),                       /*(4356, -2075, -1086),*/ 
+                Position = new System.Windows.Media.Media3D.Point3D(17437, -17368, 17250),                       /*(4356, -2075, -1086),*/
                 FarPlaneDistance = 1000000,
                 NearPlaneDistance = -1000000,
                 Width = 71351
@@ -59,24 +68,20 @@ namespace RapiD.Geometry.ViewModels
             string basefolder = Utils2D.GetAppDataFolder();
             Doorfile = basefolder + @"3DModels\FISHINGBOARD_SB.obj";
 
-            this.BbDoor = new Door(Doorfile, "bakboord") { doorSide = Side.PortSide};
-            this.SbDoor = new Door(Doorfile, "stuurboord") { doorSide = Side.StarBoard};
+            this.BbDoor = new Door(Doorfile, "bakboord") { doorSide = Side.PortSide };
+            this.SbDoor = new Door(Doorfile, "stuurboord") { doorSide = Side.StarBoard };
 
             modelCollection.Add(new Floor3D(new Vector3(0, 0, -50), new Vector3(750000, 750000, 100)));
             effectsManager = new EffectsManager();
             diameters = new ObservableCollection<string>();
             diameters.Add("gedag");
 
-            WeakReferenceMessenger.Default.Register<patentChangedMessage>(this);
             WeakReferenceMessenger.Default.Register<ConnectionChangedMessage>(this);
-            WeakReferenceMessenger.Default.Register<ConnectionEndPointVectorChangedMessage>(this);
-           
+
 
 
         }
 
-        [ObservableProperty]
-        ObservableCollection<DoorPatent3D> doorPatents = new();
 
         [ObservableProperty]
         float patentLength = 2000;
@@ -122,10 +127,10 @@ namespace RapiD.Geometry.ViewModels
             ModelCollection.Add(new Tube3D(center, lineEnd1));
             ModelCollection.Add(new Tube3D(center, lineEnd));
 
-            SharpDX.Plane bbPlane = new SharpDX.Plane(center, middle, middle + new Vector3(0, 0, 1000));
+            RefBBplane = new SharpDX.Plane(center, middle, middle + new Vector3(0, 0, 1000));
 
 
-          
+
 
 
             /* BABOORD BORD */
@@ -136,39 +141,7 @@ namespace RapiD.Geometry.ViewModels
             var bbDoorMiddleNode = BbDoor.GetMiddleNode();
             var bbDoorBottomNode = BbDoor.GetBottomNode();
 
-
-
-            
-            Patent3D BbDoorpatent = new Patent3D(bbDoorBottomNode, bbDoorTopNode, bbDoorMiddleNode, 4000, 4000,  bbPlane);
-
-            BbDoorpatent.lengthbottom = 6000;
-            BbDoorpatent.UpdatePatent();
-            BbDoorpatent.UpdateConnections();
-
-           
-
-
-        
-       
-        
-            /* STUURBOORD BORD */
-
-            //var SbDoorPatent = new DoorPatent3D(Side.StarBoard);
-            //SbDoorPatent.InitializeModels(modelCollection);
-            //SbDoorPatent.Update(sbDoor.GetNodeList(), modelCollection);
-            //DoorPatents.Add(SbDoorPatent);  
-
-
-
-
-
-
-
-
-
-            // var startplane = -p.Normal * p.D;
-            //var endplane = -p.Normal * p.D * 1.01f;
-            //float dist = Vector3.Distance(startplane, endplane);
+            Patents.Add(CreateDoorPatent(bbDoor, RefBBplane, 4000, 4000));
 
 
 
@@ -176,26 +149,20 @@ namespace RapiD.Geometry.ViewModels
             //Cables SB
             Vector3 upperCablePositionSb = new Vector3(net.Size.X / 2, net.Size.Y / 2, net.Size.Z / 2);
             Vector3 bottomCablePositionSb = new Vector3(net.Size.X / 2, net.Size.Y / 2, -net.Size.Z / 2);
-            //var cableSb1 = new Tube3D(new Vector3(SbConnectionPosition.X, SbConnectionPosition.Y, SbConnectionPosition.Z), netPatentSb[1].EndPointVector);
-
-            //ModelCollection.Add(cableSb1);
 
 
-            //Cables BB
+
 
             Vector3 upperCablePositionBB = new Vector3(-net.Size.X / 2, net.Size.Y / 2, net.Size.Z / 2);
             Vector3 bottomCablePositionBb = new Vector3(-net.Size.X / 2, net.Size.Y / 2, -net.Size.Z / 2);
-            //var cableBb1 = new Tube3D(new Vector3(BbConnectionPostion.X, BbConnectionPostion.Y, BbConnectionPostion.Z), netPatentBb[1].EndPointVector);
             var UpperPointBb = net.Position + upperCablePositionBB;
             var BottomPointBb = net.Position + upperCablePositionBB;
 
-            //ModelCollection.Add(cableBb1);
 
 
 
-         
 
-            //PEES
+
 
 
             /*AWAIT*/
@@ -211,7 +178,7 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-      
+
 
 
 
@@ -223,24 +190,12 @@ namespace RapiD.Geometry.ViewModels
 
         [ObservableProperty]
         IModel selectedModel;
-      
-       [ObservableProperty]
+
+        [ObservableProperty]
         Door bbDoor;
 
         [ObservableProperty]
         Door sbDoor;
-
-        [ObservableProperty]
-        Door trawler;
-
-        [ObservableProperty]
-        int spread;
-
-       
-
-
-
-
 
 
         [ObservableProperty]
@@ -254,12 +209,8 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         ObservableCollection<IModel> modelCollection;
 
-        ObservableCollection<Vector3> nodePositions = new();
 
 
-
-        [ObservableProperty]
-        ObservableCollection<ChainLink3D> chainsCollection = new();
         [ObservableProperty]
         Vector3 capturedPos;
 
@@ -281,63 +232,50 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         float length;
 
-        [ObservableProperty]
-        float numberOfChainCopies;
-
-        [ObservableProperty]
-        ChainLink3D chainModel;
-
-        [ObservableProperty]
-        AxisPlaneGridModel3D planeGrid;
 
 
-        public ChainSide selectedSide;
 
 
 
 
         partial void OnSelectedModelChanged(IModel value)
         {
-            switch (selectedModel)
+            if (SelectedModel != null)
             {
-                case ChainLink3D:
-                    if ((value as ChainLink3D).PatentId != null)
-                    {
-                        SideViewModel = new ChainControlViewModel(selectedModel);
-
-                    }
-                    // DoorPatent3D linkedPatent = DoorPatents.Where(x => x.id == (value as ChainLink3D).PatentId).First();
-                    SideViewModel = new ChainControlViewModel(selectedModel);
-                    // SideViewModel = new ChainControlViewModel(selectedModel);
-                    break;
-                case Squared3D:
-
-                       return;
-
-                    
-                      
-                    
 
 
+                if (selectedModel.ConnectionID != "")
+                {
+                    SideViewModel = new ConnectionControlViewModel(selectedModel.ConnectionID);
+                }
+                else
+                {
+                    SideViewModel = null;
+                }
 
             }
-
-
+            return;
 
         }
 
 
-
-        void CreatePath()
+        public Patent3D CreateDoorPatent(Door door, SharpDX.Plane plane, float lengthbot, float lengthtop)
         {
-            List<Vector3> TubePath = new();
-            TubePath.Add(new Vector3(0, 0, 0));
-            for (int i = 0; i < 50; i++)
-            {
-                TubePath.Add(new Vector3(TubePath[i].X + 150, 0, 0));
-            }
+            SharpDX.Plane planeform = plane;
+            var doormodel = door;
 
-            ModelCollection.Add(new CablePatent(TubePath, 300));
+
+            var bbDoorTopNode = BbDoor.GetTopNode();
+            var bbDoorMiddleNode = BbDoor.GetMiddleNode();
+            var bbDoorBottomNode = BbDoor.GetBottomNode();
+
+            Patent3D BbDoorpatent = new Patent3D(bbDoorBottomNode, bbDoorTopNode, bbDoorMiddleNode, lengthbot, lengthtop, planeform);
+            var connections = BbDoorpatent.Connections;
+            DrawConnections(connections);
+
+
+            return BbDoorpatent;
+
         }
 
 
@@ -345,7 +283,36 @@ namespace RapiD.Geometry.ViewModels
 
 
 
+        public void DrawConnections(List<ConnectionClass> connections)
+        {
+            foreach (var connection in connections)
+            {
+                MeshBuilder meshBuilder = new MeshBuilder();
 
+
+                foreach (var el in connection.Elements)
+                {
+                    var path = el.vectors;
+                    if (el.ConnectionType != ConnectionType.Chain)
+                    {
+                        path = new List<SharpDX.Vector3> { el.StartPoint, el.EndPoint };
+                    }
+                    meshBuilder.AddTube(path, el.diameter, 10, true);
+                }
+
+                var connectiongeometry = new GeometryBase3D(connection.Id)
+                {
+                    Name = "TEST",
+                    MeshGeometry = meshBuilder.ToMeshGeometry3D(),
+                    OriginalMaterial = PhongMaterials.Green,
+                    CurrentMaterial = PhongMaterials.Blue,
+
+                };
+
+                ModelCollection.Add(connectiongeometry);
+
+            }
+        }
 
 
 
@@ -367,8 +334,8 @@ namespace RapiD.Geometry.ViewModels
         public void CreateBBConnection(Vector3 position)
         {
             var model = new Torus3D(500, 100, new Vector3(position.X, position.Y, position.Z));
-            model.RotateAroundModelCenter(yaxis:1, degrees: 90);
-            model.RotateAroundModelCenter(zaxis:1, degrees: -20);
+            model.RotateAroundModelCenter(yaxis: 1, degrees: 90);
+            model.RotateAroundModelCenter(zaxis: 1, degrees: -20);
             ModelCollection.Add(model);
 
         }
@@ -443,6 +410,8 @@ namespace RapiD.Geometry.ViewModels
                 YAxis = NewPosition.Y;
                 ZAxis = NewPosition.Z;
 
+                string conid = selectedModel.ConnectionID;
+
 
 
                 switch (parameterString)
@@ -482,88 +451,17 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-
-        void CreateWarp()
-        {
-            var nodeList1 = SbDoor.GetNodeList();
-            var nodeList2 = BbDoor.GetNodeList();
-            /*SB*/
-            //ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList1[3], new Vector3(nodeList1[3].X + 3000 * 5, nodeList1[4].Y + 9000, nodeList1[4].Z + -3000)));
-            /*BB*/
-           // ModelCollection.Add(new ChainLink3D(60f, 160f, 120f, nodeList2[4], new Vector3(nodeList2[4].X + 3000 * 5, nodeList2[4].Y + 8000, nodeList2[4].Z + 9000)));
-        }
-
-
-        [RelayCommand]
-        public void UpdateWarpEndPosition()
-        {
-            if (selectedModel is ChainLink3D c)
-            {
-                if (SelectedModel is ChainLink3D chain)
-                {
-                    chain.SetNewEndPosition(new Vector3(XAxis, YAxis, ZAxis));
-                    chain.Draw();
-                }
-            }
-        }
-
-
-
-
-
-
-
-
-
-        void ShowButtonIfSelected(IModel geometry, ChainSide chainside)
-        {
-            int count = 0;
-            var nodeList1 = BbDoor.GetNodeList();
-            var nodeList2 = SbDoor.GetNodeList();
-
-            if (geometry is ChainLink3D c)
-            {
-
-                if (chainside == ChainSide.Right)
-                {
-                    selectedSide = ChainSide.Right;
-                    foreach (var node in nodeList1)
-                    {
-                        ModelCollection.Add(new InfoButton3D(node, count.ToString()));
-                        count++;
-                    }
-                }
-                else if (chainside == ChainSide.Left)
-                {
-                    selectedSide = ChainSide.Left;
-                    foreach (var node in nodeList2)
-                    {
-
-                        ModelCollection.Add(new InfoButton3D(node, count.ToString()));
-                        count++;
-                    }
-
-
-
-
-
-                }
-
-            }
-        }
-
-
         public void UpdateChainStartPoint(IModel Node)
         {
             if (Node is not null)
             {
                 var pos = (Node as InfoButton3D).Position;
 
-                if (SelectedModel is ChainLink3D chain)
-                {
-                    chain.SetNewStartPosition(pos);
-                    chain.Draw();
-                }
+                //if (SelectedModel is ChainLink3D chain)
+                //{
+                //    chain.SetNewStartPosition(pos);
+                //    chain.Draw();
+                //}
             }
         }
 
@@ -573,11 +471,11 @@ namespace RapiD.Geometry.ViewModels
             {
                 var pos = (Node as InfoButton3D).Position;
 
-                if (SelectedModel is ChainLink3D chain)
-                {
-                    chain.SetNewEndPosition(pos);
-                    chain.Draw();
-                }
+                //if (SelectedModel is ChainLink3D chain)
+                //{
+                //    chain.SetNewEndPosition(pos);
+                //    chain.Draw();
+                //}
             }
         }
 
@@ -599,28 +497,35 @@ namespace RapiD.Geometry.ViewModels
                 ModelCollection.ToList().ForEach(x => x.Deselect());
                 SideViewModel = null;
             }
-            
+
 
             return;
         }
 
-        public void Select(IModel geometry, ChainSide chainside)
+        public void Select(IModel geometry)
         {
-            geometry.Select();
 
 
             if (geometry.IsSelected == false)
             {
-                ModelCollection
-                    .OfType<InfoButton3D>()
-                    .ToList()
-                    .ForEach(x => ModelCollection.Remove(x));
+                geometry.Select();
+                SelectedModel = geometry;
             }
-            ShowButtonIfSelected(geometry, chainside);
+            geometry.Select();
+            SelectedModel = null;
+
+
+            //if (geometry.IsSelected == false)
+            //{
+            //    ModelCollection
+            //        .OfType<InfoButton3D>()
+            //        .ToList()
+            //        .ForEach(x => ModelCollection.Remove(x));
+            //}
+
+
+
         }
-
-    
-
 
 
 
@@ -631,56 +536,69 @@ namespace RapiD.Geometry.ViewModels
         }
 
 
-
-
-
-
         [RelayCommand]
         void GoHome()
         {
             MainViewModel.Navigate(Ioc.Default.GetService<HomeViewModel>());
         }
 
-        public void Receive(patentChangedMessage message)
-        {
 
-            var id = message.patentId;
-            var length = message.totalLength;
-            var name = message.name;
-            DoorPatent3D Doorpatent  =doorPatents.Where(doorPatents=> doorPatents.id == id).FirstOrDefault();
-            if (name == "UpperChain")
-            {
-                Doorpatent.upperChainLength = length;
-                Doorpatent.Update();
-            }
-            else if (name == "BottomChain")
-            {
-                Doorpatent.BottomChainLength = length;
-                Doorpatent.Update();
-            }
-            return;
-
-
-            
-
-        }
 
         public void Receive(ConnectionChangedMessage message)
         {
-            var ConnectionModel = message.chain;
-            ModelCollection.Add(ConnectionModel);
+            ConnectionType type = message.connectionType;
+
+            Patent3D targetPatent = null;
+            ConnectionClass targetConnection = null;
+
+            foreach (var patent in Patents)
+            {
+                bool br = false;
+                foreach (var con in patent.Connections)
+                {
+                    if (con.Id == selectedModel.ConnectionID)
+                    {
+                        targetPatent = patent;
+                        targetConnection = con;
+                        br = true;
+                        break;
+
+
+                    }
+                }
+                if (br) { break; }
+            }
+
+            if (targetConnection != null)
+            {
+                
+                targetConnection.type = message.connectionType;
+                Patent3D BbDoorpatent = new Patent3D(targetPatent.Connections, targetPatent.plane);
+
+                Patents.Add(BbDoorpatent);
+                DrawConnections(BbDoorpatent.Connections);
+
+
+            }
+
+
+
+
+
+
+
+
+
         }
 
-        public void Receive(ConnectionEndPointVectorChangedMessage message)
-        {
-           var connection = modelCollection.Where(modelCollection => modelCollection.ConnectionID == message.connectionId).FirstOrDefault();
-            (connection as ChainLink3D).EndPointVector = message.endpoint;
-        }
+
+
+
     }
 
 
-    
-    }
+
+}
 
 
 

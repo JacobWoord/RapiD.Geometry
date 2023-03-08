@@ -74,7 +74,7 @@ namespace RapiD.Geometry.Views
 
 
                     viewModel.DeselectAll();
-                    viewModel.Select(doorData, ChainSide.middle);
+                    viewModel.Select(doorData);
                     viewModel.SelectedModel = doorData;
                 }
 
@@ -88,54 +88,65 @@ namespace RapiD.Geometry.Views
 
                 if (modeldata is InfoButton3D)
                 {
-                    ChainSide side = viewModel.selectedSide;
                     viewModel.UpdateChainStartPoint(modeldata);
                     viewModel.DeselectAll();
                
 
                 }
-                else if(modeldata is ChainLink3D c)
+                //else if(modeldata is ChainLink3D c)
+                //{
+                //    viewModel.DeselectAll();
+                //    viewModel.XAxis = MathF.Round(c.EndPointVector.X,2);
+                //    viewModel.YAxis = MathF.Round(c.EndPointVector.Y, 2);
+                //    viewModel.ZAxis = MathF.Round(c.EndPointVector.Z, 2);
+                //    //Distance between start and end of a chain
+                //    var distance1 = SharpDX.Vector3.Distance(hit.PointHit, c.StartPointVector);
+                //    var distance2 = SharpDX.Vector3.Distance(hit.PointHit, c.EndPointVector);
+
+                //    //distance between startpoint chain and door to determine the door
+                //    var bbDoornodes = viewModel.BbDoor.GetNodeList();
+                //    var sbDoornodes = viewModel.SbDoor.GetNodeList();
+                //    var distanceToBb = Vector3.Distance(c.StartPointVector, bbDoornodes[3]);
+                //    var distanceToSb = Vector3.Distance(c.StartPointVector, sbDoornodes[3]);
+                   
+                //        viewModel.Select(modeldata,ChainSide.Left);
+                //        viewModel.SelectedModel = modeldata;
+
+
+                //        if (distanceToBb < distanceToSb)
+                //        {
+                //            //BB Door
+                //            viewModel.ShowNode(viewModel.BbDoor);
+                //        }
+                //    else if (distanceToSb < distanceToBb)
+                //    {
+                //        //SB Door
+                //        viewModel.ShowNode(viewModel.SbDoor);
+
+                //    }
+
+
+
+
+
+                //}
+                
+                
+                else if(modeldata is GeometryBase3D)
                 {
                     viewModel.DeselectAll();
-                    viewModel.XAxis = MathF.Round(c.EndPointVector.X,2);
-                    viewModel.YAxis = MathF.Round(c.EndPointVector.Y, 2);
-                    viewModel.ZAxis = MathF.Round(c.EndPointVector.Z, 2);
-                    //Distance between start and end of a chain
-                    var distance1 = SharpDX.Vector3.Distance(hit.PointHit, c.StartPointVector);
-                    var distance2 = SharpDX.Vector3.Distance(hit.PointHit, c.EndPointVector);
 
-                    //distance between startpoint chain and door to determine the door
-                    var bbDoornodes = viewModel.BbDoor.GetNodeList();
-                    var sbDoornodes = viewModel.SbDoor.GetNodeList();
-                    var distanceToBb = Vector3.Distance(c.StartPointVector, bbDoornodes[3]);
-                    var distanceToSb = Vector3.Distance(c.StartPointVector, sbDoornodes[3]);
+                    modeldata.Select();
+                    viewModel.SelectedModel = modeldata;
+
                    
-                        viewModel.Select(modeldata,ChainSide.Left);
-                        viewModel.SelectedModel = modeldata;
-
-
-                        if (distanceToBb < distanceToSb)
-                        {
-                            //BB Door
-                            viewModel.ShowNode(viewModel.BbDoor);
-                        }
-                    else if (distanceToSb < distanceToBb)
-                    {
-                        //SB Door
-                        viewModel.ShowNode(viewModel.SbDoor);
-
-                    }
-
-
-
-
 
                 }
                 else
                 {
                     viewModel.DeselectAll();
 
-                    viewModel.Select(modeldata,ChainSide.middle);
+                    viewModel.Select(modeldata);
                     viewModel.SelectedModel = modeldata;
                 }               
 

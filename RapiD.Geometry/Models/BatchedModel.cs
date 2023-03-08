@@ -60,7 +60,7 @@ namespace RapiD.Geometry.Models
         public string Name { get; set; }
         public string FileName { get; set; }
         public string ID { get; set; }
-        public string ConnectionID { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public string ConnectionID { get ; set; }
 
         //  public bool IsSelected { get; set; }
 
