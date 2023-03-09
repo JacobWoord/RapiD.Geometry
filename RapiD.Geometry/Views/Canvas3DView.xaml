@@ -18,9 +18,9 @@
         <DataTemplate DataType="{x:Type viewmodels:ConnectionControlViewModel}">
             <local:ConnectionControlView/>
         </DataTemplate>
+    </UserControl.Resources>
        
         
-    </UserControl.Resources>
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">

@@ -59,8 +59,9 @@ namespace RapiD.Geometry.Models
 
         public string Name { get; set; }
         public string FileName { get; set; }
-        public string ID { get; set; }
-        public string ConnectionID { get ; set; }
+        public string Id { get; set; }
+        public string ConnectionId { get ; set; }
+        public string PatentId { get; set; }
 
         //  public bool IsSelected { get; set; }
 

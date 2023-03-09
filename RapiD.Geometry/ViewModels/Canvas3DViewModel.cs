@@ -73,11 +73,10 @@ namespace RapiD.Geometry.ViewModels
 
             modelCollection.Add(new Floor3D(new Vector3(0, 0, -50), new Vector3(750000, 750000, 100)));
             effectsManager = new EffectsManager();
-            diameters = new ObservableCollection<string>();
-            diameters.Add("gedag");
 
             WeakReferenceMessenger.Default.Register<ConnectionChangedMessage>(this);
 
+            ConnectionControlViewModel connectionControl = new ConnectionControlViewModel();
 
 
         }
@@ -90,8 +89,7 @@ namespace RapiD.Geometry.ViewModels
         ObservableObject sideViewModel;
 
 
-        [ObservableProperty]
-        ObservableCollection<string> diameters;
+      
 
         [RelayCommand]
         async Task Initialize()
@@ -129,10 +127,6 @@ namespace RapiD.Geometry.ViewModels
 
             RefBBplane = new SharpDX.Plane(center, middle, middle + new Vector3(0, 0, 1000));
 
-
-
-
-
             /* BABOORD BORD */
             BbDoor.Mirror(MirrorAxis.X);
             BbDoor.UpdateNodeList();
@@ -143,27 +137,14 @@ namespace RapiD.Geometry.ViewModels
 
             Patents.Add(CreateDoorPatent(bbDoor, RefBBplane, 4000, 4000));
 
-
-
-
             //Cables SB
             Vector3 upperCablePositionSb = new Vector3(net.Size.X / 2, net.Size.Y / 2, net.Size.Z / 2);
             Vector3 bottomCablePositionSb = new Vector3(net.Size.X / 2, net.Size.Y / 2, -net.Size.Z / 2);
-
-
-
 
             Vector3 upperCablePositionBB = new Vector3(-net.Size.X / 2, net.Size.Y / 2, net.Size.Z / 2);
             Vector3 bottomCablePositionBb = new Vector3(-net.Size.X / 2, net.Size.Y / 2, -net.Size.Z / 2);
             var UpperPointBb = net.Position + upperCablePositionBB;
             var BottomPointBb = net.Position + upperCablePositionBB;
-
-
-
-
-
-
-
 
             /*AWAIT*/
             await App.Current.Dispatcher.InvokeAsync(() =>
@@ -174,6 +155,23 @@ namespace RapiD.Geometry.ViewModels
 
 
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -238,15 +236,22 @@ namespace RapiD.Geometry.ViewModels
 
 
 
+
         partial void OnSelectedModelChanged(IModel value)
         {
             if (SelectedModel != null)
             {
 
 
-                if (selectedModel.ConnectionID != "")
+                if (selectedModel.ConnectionId != "")
                 {
-                    SideViewModel = new ConnectionControlViewModel(selectedModel.ConnectionID);
+                    SideViewModel = new ConnectionControlViewModel(selectedModel.ConnectionId);
+                    var viewmodel = SideViewModel as ConnectionControlViewModel;
+                    viewmodel.PropertiesViewModel = new ChainPropertiesViewModel();
+                    viewmodel.connectionID = selectedModel.ConnectionId;
+                    viewmodel.selectedModel = SelectedModel;
+                    
+                  
                 }
                 else
                 {
@@ -278,7 +283,30 @@ namespace RapiD.Geometry.ViewModels
 
         }
 
+        void UpdateDoorPatent(string patentId, string connectionId, ConnectionType conType)
+        {
+            var connections = new List<ConnectionClass>();
 
+            foreach (var model in modelCollection.Where(m => m.PatentId == patentId).ToList())
+            {
+                modelCollection.Remove(model);
+            }
+
+            var patent = Patents.FirstOrDefault(p => p.Id == patentId);
+            if (patent != null)
+            {
+                connections = patent.Connections;
+                var connection = patent.Connections.FirstOrDefault(c => c.Id == connectionId);
+                if (connection != null)
+                {
+                    connection.Type = conType;
+                }
+
+
+            }
+
+            DrawConnections(connections);
+        }
 
 
 
@@ -295,12 +323,13 @@ namespace RapiD.Geometry.ViewModels
                     var path = el.vectors;
                     if (el.ConnectionType != ConnectionType.Chain)
                     {
-                        path = new List<SharpDX.Vector3> { el.StartPoint, el.EndPoint };
+                        meshBuilder.AddTube(path, 20, 10, true);
+                       // path = new List<SharpDX.Vector3> { el.StartPoint, el.EndPoint };
                     }
                     meshBuilder.AddTube(path, el.diameter, 10, true);
                 }
 
-                var connectiongeometry = new GeometryBase3D(connection.Id)
+                var connectiongeometry = new GeometryBase3D(connection.Id, connection.PatentId)
                 {
                     Name = "TEST",
                     MeshGeometry = meshBuilder.ToMeshGeometry3D(),
@@ -410,7 +439,7 @@ namespace RapiD.Geometry.ViewModels
                 YAxis = NewPosition.Y;
                 ZAxis = NewPosition.Z;
 
-                string conid = selectedModel.ConnectionID;
+                string conid = selectedModel.ConnectionId;
 
 
 
@@ -546,40 +575,23 @@ namespace RapiD.Geometry.ViewModels
 
         public void Receive(ConnectionChangedMessage message)
         {
-            ConnectionType type = message.connectionType;
-
-            Patent3D targetPatent = null;
-            ConnectionClass targetConnection = null;
-
-            foreach (var patent in Patents)
+            
+            string connectionId;
+            string patentId ;
+            Patent3D TargetPatent = null;
+            ConnectionType connectionType = message.connectionType;
+            if (selectedModel != null)
             {
-                bool br = false;
-                foreach (var con in patent.Connections)
+                if (SelectedModel.PatentId != null)
                 {
-                    if (con.Id == selectedModel.ConnectionID)
-                    {
-                        targetPatent = patent;
-                        targetConnection = con;
-                        br = true;
-                        break;
-
-
-                    }
+                    connectionId = SelectedModel.ConnectionId;
+                    patentId = selectedModel.PatentId;
+                    UpdateDoorPatent(patentId, connectionId, connectionType);
                 }
-                if (br) { break; }
+                return;
             }
-
-            if (targetConnection != null)
-            {
-                
-                targetConnection.type = message.connectionType;
-                Patent3D BbDoorpatent = new Patent3D(targetPatent.Connections, targetPatent.plane);
-
-                Patents.Add(BbDoorpatent);
-                DrawConnections(BbDoorpatent.Connections);
-
-
-            }
+          
+            return;
 
 
 
@@ -590,6 +602,52 @@ namespace RapiD.Geometry.ViewModels
 
 
         }
+
+
+
+
+
+        //string connectionId;
+        //string patentId= null;
+        //Patent3D patent = null;
+
+        //if (selectedModel.ConnectionID != null)
+        //{
+        //    connectionId = selectedModel.ConnectionID;
+
+        //    foreach (var Patent in Patents)
+        //    {
+        //        foreach (var connection in Patent.Connections)
+        //        {
+        //            if (connectionId == connection.Id)
+        //            {
+
+        //                patentId = connection.PatentId;
+        //                patent = Patents.FirstOrDefault(x => x.Id == patentId);
+        //            }
+
+        //        }
+
+
+        //    }
+        //    if (patentId != null)
+        //    {
+
+        //        foreach (var connection in modelCollection.ToList())
+        //        {
+        //            IModel connectionToDelete = null;
+        //            connectionToDelete = ModelCollection.FirstOrDefault(x => x.PatentID == patentId);
+        //            if (connectionToDelete != null)
+        //                ModelCollection.Remove(connectionToDelete);
+        //        }
+        //    }
+
+
+
+
+        //}
+
+
 
 
 

@@ -1,4 +1,6 @@
-﻿using Assimp;
+﻿using SharpDX;
+
+using Assimp;
 using CommunityToolkit.Mvvm.Messaging;
 using RapiD.Geometry.Messages;
 using SharpDX;
@@ -8,17 +10,20 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RapiD.Geometry.Models
 {
-    public partial class ConnectionClass : ObservableObject
+    public partial class ConnectionClass : ObservableObject,IModel
     {
        
 
 
         public Vector3 startVector;
         public Vector3 endVector;
-        public ConnectionType type;
+
+        [ObservableProperty]
+        ConnectionType type;
         public PatentSide patentSide = PatentSide.None;
         public float Lenght;
 
@@ -28,8 +33,14 @@ namespace RapiD.Geometry.Models
         public float width = 40;
 
 
-        public string Id;
+        public string Id { get; set; }
         public string PatentId { get; set; }
+        public string Name { get; set; }
+        public bool IsSelected { get; set; }
+        public string ConnectionId { get; set; }
+
+       public ConnectionClass connectionMessage;
+
 
         public List<Element3D> Elements = new();
 
@@ -45,16 +56,37 @@ namespace RapiD.Geometry.Models
             this.segmentLengh = Lenght / numOfSegments;
 
             Id = Guid.NewGuid().ToString();
-           
+
             CreateConnection();
-           
+            
+            
+            connectionMessage = this;
+
+
+           SendMessage();
+            
+
         }
+
+
+        public async Task SendMessage()
+        {
+            WeakReferenceMessenger.Default.Send(new ConnectionListUpdateMessage(connectionMessage));
+
+        }
+        partial void OnTypeChanged(ConnectionType value)
+        {
+            Update();
+        }
+
+
+
+
+
 
         public void Update()
         {
             this.Lenght = Vector3.Distance(startVector, endVector);
-            int numOfSegments = (int)MathF.Round(this.Lenght / this.segmentLengh);
-            this.segmentLengh = Lenght / numOfSegments;
             Elements.Clear();
             CreateConnection();
         }
@@ -62,20 +94,30 @@ namespace RapiD.Geometry.Models
 
         public void CreateConnection()
         {
-            int numOfSegments = (int)MathF.Round(this.Lenght / this.segmentLengh);
-            Vector3 direction = Vector3.Normalize(endVector- startVector);
-                 
-            Vector3 start = startVector;
-            for (int i = 0; i < numOfSegments; i++)
-            {
-                Vector3 end = start+ direction * segmentLengh;
-                bool rotate = false;
-                if(type == ConnectionType.Chain && i % 2 == 1)
-                    rotate = true;
 
-                Element3D el = new Element3D(start, end, type, dia, width, rotate);
-                Elements.Add(el);
-                start =end;
+            if (type  == ConnectionType.Chain)
+            {
+                
+                int numOfSegments = (int)MathF.Round(this.Lenght / this.segmentLengh);
+                Vector3 direction = Vector3.Normalize(endVector - startVector);
+
+                Vector3 start = startVector;
+                for (int i = 0; i < numOfSegments; i++)
+                {
+                    Vector3 end = start + direction * segmentLengh;
+                    bool rotate = false;
+                    if (Type == ConnectionType.Chain && i % 2 == 1)
+                        rotate = true;
+
+                    Element3D el = new Element3D(start, end, type, dia, width, rotate);
+                    Elements.Add(el);
+                    start = end;
+                }
+            }
+            else if (Type == ConnectionType.Rope) 
+            {
+                Element3D element = new Element3D(startVector, endVector, type);
+                Elements.Add(element);
             }
 
         }
@@ -102,6 +144,16 @@ namespace RapiD.Geometry.Models
         public void RopeConnection()
         {
 
+        }
+
+        public void Deselect()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Select()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

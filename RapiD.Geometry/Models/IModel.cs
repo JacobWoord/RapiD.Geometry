@@ -9,8 +9,9 @@ namespace RapiD.Geometry.Models
 {
     public interface IModel
     {
-        public string ID { get; set; }  
-        public string ConnectionID { get; set; }  
+        public string Id { get; set; }  
+        public string ConnectionId{ get; set; }  
+        public string PatentId { get; set; }  
         public string Name { get; set; }
         public void Deselect();
         public void Select();

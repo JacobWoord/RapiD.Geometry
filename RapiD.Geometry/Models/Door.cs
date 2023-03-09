@@ -41,7 +41,7 @@ namespace RapiD.Geometry.Models
         public Door(string filename, string name = "bord")
         {
             Name = name + "Bord";
-            ID = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
 
             FileName= filename;
 

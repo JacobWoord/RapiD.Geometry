@@ -1,5 +1,6 @@
 ﻿using HelixToolkit.SharpDX.Core;
 using SharpDX;
+using SharpDX.Direct2D1;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,7 +35,7 @@ namespace RapiD.Geometry.Models
 
         public Element3D(Vector3 startPoint, Vector3 endPoint, ConnectionType type, float dia, float width, bool rotateElement)
         {
-            ID = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
             this.startPoint = startPoint;
             this.endPoint = endPoint;
             this.diameter = dia;
@@ -45,6 +46,18 @@ namespace RapiD.Geometry.Models
 
             if (ConnectionType == ConnectionType.Chain)
                 calcChainelement();
+
+        }
+
+        public Element3D(Vector3 start, Vector3 end, ConnectionType type)
+        {
+            Id = Guid.NewGuid().ToString();
+
+            this.ConnectionType= type;
+            this.startPoint = start;
+            this.endPoint = end;
+            vectors.Add(start);
+            vectors.Add(end);
 
         }
 

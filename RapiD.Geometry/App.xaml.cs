@@ -33,9 +33,12 @@ namespace RapiD.Geometry
             serviceDescriptors.AddSingleton<HomeViewModel>();
             serviceDescriptors.AddSingleton<Canvas2DViewModel>();
             serviceDescriptors.AddSingleton<Canvas3DViewModel>();
-            
+            serviceDescriptors.AddSingleton<ChainPropertiesViewModel>();
+
+
             serviceDescriptors.AddTransient<HomeVIew>();
             serviceDescriptors.AddTransient<ConnectionControlViewModel>();
+            serviceDescriptors.AddTransient<RopePropertiesViewModel>();
             serviceDescriptors.AddTransient<CircleViewModel>();
             //serviceDescriptors.AddTransient<Circle2D>();
             //serviceDescriptors.AddTransient<Rectangle2D>();

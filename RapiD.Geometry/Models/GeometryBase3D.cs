@@ -30,21 +30,13 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         HelixToolkit.Wpf.SharpDX.Material currentMaterial = PhongMaterials.Red;
 
-        [ObservableProperty]
-        bool isOpenMenu = false;
 
         private HelixToolkit.Wpf.SharpDX.Material originalMaterial;
 
-        public bool linkedButton = false;
         public string ConnectionId { get; set; }
-
-
-        
-
-        public bool GetMenuState() { return isOpenMenu; }
-
-    
-
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string PatentId { get; set; }
 
         public Material OriginalMaterial
         {
@@ -55,9 +47,7 @@ namespace RapiD.Geometry.Models
             }
         }
 
-        public string ID { get ; set; }
-        public string ConnectionID { get ; set; }
-        public string Name { get; set; }
+     
 
         [ObservableProperty]
         Vector3 position;
@@ -71,11 +61,12 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         CullMode cullMode = CullMode.Back;
 
-        public GeometryBase3D(string connectionId = "")
+        public GeometryBase3D(string connectionId = "", string patentId = "")
         {
-            ID= Guid.NewGuid().ToString();  
+            Id= Guid.NewGuid().ToString();  
             transform = new Transform3DGroup();
-            this.ConnectionID = connectionId;   
+            this.ConnectionId = connectionId;   
+            this.PatentId = patentId;
             
 
         }
@@ -129,7 +120,7 @@ namespace RapiD.Geometry.Models
             IsSelected = !isSelected;
             if (isSelected)
             {
-                CurrentMaterial = PhongMaterials.Yellow;
+                CurrentMaterial = CurrentMaterial;
             }
             else
                 CurrentMaterial = originalMaterial;

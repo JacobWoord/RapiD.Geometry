@@ -33,8 +33,9 @@ namespace RapiD.Geometry.Models
 
         public Squared3D(Vector3 position, Vector3 size)
         {
-            ID = Guid.NewGuid().ToString();
-            OriginalMaterial = PhongMaterials.Blue;
+            Id = Guid.NewGuid().ToString();
+            OriginalMaterial = PhongMaterials.Bisque;
+            CurrentMaterial= PhongMaterials.Bisque;
             Position = position;
             Size = size;
             Name = "Squared Box";

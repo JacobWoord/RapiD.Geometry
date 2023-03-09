@@ -51,6 +51,7 @@ namespace RapiD.Geometry.Views
             var vp = sender as Viewport3DX;
             var hits = vp.FindHits(args.Position);
             Canvas3DViewModel? viewModel = (this.DataContext as Canvas3DViewModel);
+            ConnectionControlViewModel? connectionViewModel = (this.DataContext as ConnectionControlViewModel);
 
 
             if (hits.Count == 0)
@@ -93,52 +94,17 @@ namespace RapiD.Geometry.Views
                
 
                 }
-                //else if(modeldata is ChainLink3D c)
-                //{
-                //    viewModel.DeselectAll();
-                //    viewModel.XAxis = MathF.Round(c.EndPointVector.X,2);
-                //    viewModel.YAxis = MathF.Round(c.EndPointVector.Y, 2);
-                //    viewModel.ZAxis = MathF.Round(c.EndPointVector.Z, 2);
-                //    //Distance between start and end of a chain
-                //    var distance1 = SharpDX.Vector3.Distance(hit.PointHit, c.StartPointVector);
-                //    var distance2 = SharpDX.Vector3.Distance(hit.PointHit, c.EndPointVector);
-
-                //    //distance between startpoint chain and door to determine the door
-                //    var bbDoornodes = viewModel.BbDoor.GetNodeList();
-                //    var sbDoornodes = viewModel.SbDoor.GetNodeList();
-                //    var distanceToBb = Vector3.Distance(c.StartPointVector, bbDoornodes[3]);
-                //    var distanceToSb = Vector3.Distance(c.StartPointVector, sbDoornodes[3]);
-                   
-                //        viewModel.Select(modeldata,ChainSide.Left);
-                //        viewModel.SelectedModel = modeldata;
-
-
-                //        if (distanceToBb < distanceToSb)
-                //        {
-                //            //BB Door
-                //            viewModel.ShowNode(viewModel.BbDoor);
-                //        }
-                //    else if (distanceToSb < distanceToBb)
-                //    {
-                //        //SB Door
-                //        viewModel.ShowNode(viewModel.SbDoor);
-
-                //    }
-
-
-
-
-
-                //}
-                
+           
                 
                 else if(modeldata is GeometryBase3D)
                 {
+                   
                     viewModel.DeselectAll();
 
                     modeldata.Select();
                     viewModel.SelectedModel = modeldata;
 
+                   // connectionViewModel.selectedModel = modeldata;
                    
 
                 }

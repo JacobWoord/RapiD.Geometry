@@ -5,16 +5,24 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RapiD.Geometry.Views"
              xmlns:viewmodels="clr-namespace:RapiD.Geometry.ViewModels"
-             
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=viewmodels:ConnectionControlViewModel}"
-
              d:DesignHeight="450" d:DesignWidth="800">
-             
+
+    <UserControl.Resources>
+            <DataTemplate DataType="{x:Type viewmodels:ChainPropertiesViewModel}">
+                <local:ChainPropertiesView/>
+            </DataTemplate>
+        <DataTemplate DataType="{x:Type viewmodels:RopePropertiesViewModel}">
+            <local:RopePropertiesView/>
+        </DataTemplate>
+    </UserControl.Resources>
+    
+    
+    
     <Grid x:Name="myGrid">
-        
-        
-        <Grid.Background>
+
+            <Grid.Background>
             <ImageBrush>
                 <ImageBrush.ImageSource>
                     <BitmapImage UriSource="pack://application:,,,/Assets/Images/chainbackground.png" />
@@ -22,6 +30,7 @@
             </ImageBrush>
         </Grid.Background>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -159,6 +168,17 @@
 
         </StackPanel>
 
+        <StackPanel Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="13">
+
+            <TextBlock Text="Total Length:"
+                       Margin="0 10"
+                       FontWeight="SemiBold"/>
+            <TextBox Text="{Binding ConnectionLength}"></TextBox>
+
+        </StackPanel>
+
         
 
         <StackPanel
@@ -167,6 +187,8 @@
             Margin="13">
 
             <StackPanel Grid.Row="2"
+                        
+                        
                         Margin="0 10">
                 <TextBlock Text="Material:"
                        FontWeight="SemiBold"/>
@@ -267,6 +289,14 @@
             </StackPanel>
 
         </StackPanel>
+
+        <StackPanel Grid.Row="3"
+                    Grid.ColumnSpan="2"
+                    Margin="5">
+            <ContentControl Content="{Binding PropertiesViewModel}"/>
+
+        </StackPanel>
+        
 
 
 

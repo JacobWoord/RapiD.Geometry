@@ -24,7 +24,7 @@ namespace RapiD.Geometry.Models
         int nodeNumber;
         public Sphere3D(Vector3 position)
         {
-            ID = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
             Position = position;
            
             // Assing model material

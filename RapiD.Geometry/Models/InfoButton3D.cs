@@ -21,7 +21,7 @@ namespace RapiD.Geometry.Models
         public InfoButton3D(Vector3 position, string linkedGuid)
         {
             Name = "InfoButton";
-            ID = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
             this.idNumber = linkedGuid.ToString();
             this.Position = position;
             OriginalMaterial = PhongMaterials.Red;

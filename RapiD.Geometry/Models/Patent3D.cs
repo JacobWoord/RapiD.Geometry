@@ -18,8 +18,10 @@ namespace RapiD.Geometry.Models
         public float lengthbottom;
         public float lengthtop;
         public Plane plane;
-        private string id;
-        public string Id { get; }
+
+        ConnectionType Type = ConnectionType.Chain;
+        
+        public string Id { get; set; }
 
        
 
@@ -40,14 +42,20 @@ namespace RapiD.Geometry.Models
 
             targetPoint = findThirdPoint(bottomPoint, topPoint, lengthbottom, lengthtop, plane);
             CreateConnections();
-
-
-
-
         }
 
-        public Patent3D(List<ConnectionClass> connections, Plane plane)
+
+
+     
+
+    
+
+
+
+        public Patent3D(List<ConnectionClass> connections,  Plane plane)
         {
+
+           
 
             Id = Guid.NewGuid().ToString();
 
@@ -75,19 +83,22 @@ namespace RapiD.Geometry.Models
         public void CreateConnections()
         {
 
+            targetPoint = findThirdPoint(bottomPoint, topPoint, lengthbottom, lengthtop, plane);
+
+
             if (topPoint != Vector3.Zero)
             {
-                Connections.Add(new ConnectionClass(topPoint, targetPoint,ConnectionType.Chain, Id) );
+                Connections.Add(new ConnectionClass(topPoint, targetPoint,Type, Id) );
             }
 
             if (middlePoint != Vector3.Zero)
             {
-                Connections.Add(new ConnectionClass(middlePoint, targetPoint, ConnectionType.Chain, Id));
+                Connections.Add(new ConnectionClass(middlePoint, targetPoint, Type, Id));
             }
 
             if (bottomPoint != Vector3.Zero)
             {
-                Connections.Add(new ConnectionClass(bottomPoint, targetPoint, ConnectionType.Chain, Id) );
+                Connections.Add(new ConnectionClass(bottomPoint, targetPoint, Type, Id) );
             }
         }
 
@@ -97,7 +108,7 @@ namespace RapiD.Geometry.Models
             Connections.Clear();
             foreach (var connection in connections)
             {
-                Connections.Add(new ConnectionClass(topPoint, targetPoint, connection.type, Id));
+                Connections.Add(new ConnectionClass(topPoint, targetPoint,Type, Id));
             }
         }
 
