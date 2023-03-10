@@ -177,6 +177,9 @@
                        FontWeight="SemiBold"/>
             <TextBox Text="{Binding ConnectionLength}"></TextBox>
 
+            <Button Margin="10"
+                    Command="{Binding UpdateLengthCommand}">UPDATE</Button>
+
         </StackPanel>
 
         

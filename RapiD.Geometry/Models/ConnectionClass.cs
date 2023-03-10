@@ -24,6 +24,8 @@ namespace RapiD.Geometry.Models
 
         [ObservableProperty]
         ConnectionType type;
+
+
         public PatentSide patentSide = PatentSide.None;
         public float Lenght;
 
@@ -32,14 +34,15 @@ namespace RapiD.Geometry.Models
         public float dia = 10;
         public float width = 40;
 
-
+        
         public string Id { get; set; }
+        public string ConnectionId { get; set; }
         public string PatentId { get; set; }
         public string Name { get; set; }
         public bool IsSelected { get; set; }
-        public string ConnectionId { get; set; }
+        public float ConnectionLength { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-       public ConnectionClass connectionMessage;
+        public ConnectionClass connectionMessage;
 
 
         public List<Element3D> Elements = new();
@@ -63,17 +66,11 @@ namespace RapiD.Geometry.Models
             connectionMessage = this;
 
 
-           SendMessage();
-            
 
         }
 
 
-        public async Task SendMessage()
-        {
-            WeakReferenceMessenger.Default.Send(new ConnectionListUpdateMessage(connectionMessage));
-
-        }
+        
         partial void OnTypeChanged(ConnectionType value)
         {
             Update();
@@ -106,7 +103,7 @@ namespace RapiD.Geometry.Models
                 {
                     Vector3 end = start + direction * segmentLengh;
                     bool rotate = false;
-                    if (Type == ConnectionType.Chain && i % 2 == 1)
+                    if (type == ConnectionType.Chain && i % 2 == 1)
                         rotate = true;
 
                     Element3D el = new Element3D(start, end, type, dia, width, rotate);
@@ -114,7 +111,7 @@ namespace RapiD.Geometry.Models
                     start = end;
                 }
             }
-            else if (Type == ConnectionType.Rope) 
+            else if (type == ConnectionType.Rope) 
             {
                 Element3D element = new Element3D(startVector, endVector, type);
                 Elements.Add(element);
@@ -155,5 +152,7 @@ namespace RapiD.Geometry.Models
         {
             throw new System.NotImplementedException();
         }
+
+        
     }
 }

@@ -38,6 +38,12 @@ namespace RapiD.Geometry.Models
         public string Name { get; set; }
         public string PatentId { get; set; }
 
+        [ObservableProperty]
+        float connectionLength;
+
+
+
+
         public Material OriginalMaterial
         {
             get { return originalMaterial; }
@@ -47,7 +53,6 @@ namespace RapiD.Geometry.Models
             }
         }
 
-     
 
         [ObservableProperty]
         Vector3 position;
@@ -67,7 +72,17 @@ namespace RapiD.Geometry.Models
             transform = new Transform3DGroup();
             this.ConnectionId = connectionId;   
             this.PatentId = patentId;
-            
+
+        }
+
+        public GeometryBase3D(float connectionlength, string connectionId = "", string patentId = "")
+        {
+            Id = Guid.NewGuid().ToString();
+            transform = new Transform3DGroup();
+            this.ConnectionId = connectionId;
+            this.PatentId = patentId;
+            this.connectionLength = connectionlength;
+
 
         }
         public void UpdatePosition()

@@ -69,59 +69,6 @@ namespace RapiD.Geometry.Models
 
 
 
-       
-
-
-        //public List<ChainLink3D> CreateNetPatent(Side defineSide)
-        //{
-
-          
-        //    Vector3 topNode;
-        //    Vector3 center = ListPoints[7].Position;
-        //    Vector3 middle;
-        //    Vector3 bottomNode;
-       
-
-
-
-        //    if (defineSide == Side.StarBoard)
-        //    {
-        //        topNode = ListPoints[0].Position;
-        //        middle = ListPoints[1].Position;
-        //        bottomNode = ListPoints[2].Position;
-
-        //    }
-        //    else
-        //    {
-        //        topNode = ListPoints[3].Position;
-        //        middle = ListPoints[4].Position;
-        //        bottomNode = ListPoints[5].Position;
-        //    }
-           
-
-        //    float topLength = 5000;
-        //    float bottomLength = 5000;
-
-        
-
-        //    //define plane trough seamline
-        //    Plane p1 = new Plane(center, middle, middle+new Vector3(0,0,1000));
-        //    Patent3D patent = new Patent3D(bottomNode, topNode, middle, bottomLength, topLength, p1);
- 
-
-        //    List<ChainLink3D> NetPatent = new();
-        //    NetPatent.Add(new ChainLink3D( patent.topPoint, patent.targetPoint));
-        //    NetPatent.Add(new ChainLink3D( patent.bottomPoint, patent.targetPoint));
-
-        //    patent.lengthbottom= 10000;
-        //    patent.UpdatePatent();
-
-
-
-
-        //    return NetPatent;
-
-        //}
 
         public static float AngleBetween(Plane firstPlane, Plane secondPlane)
         {

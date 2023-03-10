@@ -10,16 +10,25 @@ namespace RapiD.Geometry.Messages
     public record ConnectionChangedMessage
     {
         public ConnectionType connectionType; 
+        public float ConnectionLength; 
 
         public ConnectionChangedMessage(ConnectionType conType)
         {
-
             this.connectionType = conType;
-              
-
-
         }
-    
+
+        public ConnectionChangedMessage(float length)
+        {
+            this.ConnectionLength = length;
+        }
+
+
+
+
+
+
+
+
     }
 
 

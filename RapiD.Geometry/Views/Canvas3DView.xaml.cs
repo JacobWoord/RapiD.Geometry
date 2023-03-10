@@ -94,27 +94,34 @@ namespace RapiD.Geometry.Views
                
 
                 }
-           
+                
                 
                 else if(modeldata is GeometryBase3D)
                 {
                    
                     viewModel.DeselectAll();
-
+                    viewModel.ShowNode(viewModel.BbDoor);
                     modeldata.Select();
                     viewModel.SelectedModel = modeldata;
 
-                   // connectionViewModel.selectedModel = modeldata;
                    
 
                 }
+               
+
                 else
                 {
                     viewModel.DeselectAll();
 
                     viewModel.Select(modeldata);
                     viewModel.SelectedModel = modeldata;
-                }               
+                }
+
+                if (modeldata is Squared3D)
+                {
+                    viewModel.SelectedModel = null;
+                    viewModel.DeselectAll();
+                }
 
 
             }

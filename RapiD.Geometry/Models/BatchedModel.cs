@@ -62,6 +62,8 @@ namespace RapiD.Geometry.Models
         public string Id { get; set; }
         public string ConnectionId { get ; set; }
         public string PatentId { get; set; }
+        public float ConnectionLength { get; set; }
+
 
         //  public bool IsSelected { get; set; }
 
@@ -160,6 +162,12 @@ namespace RapiD.Geometry.Models
             {
                 nodeList.Add(item.Location);
             }
+
+            var groups = nodeList.GroupBy(x => x.Z).ToList();
+            var top = groups.OrderBy(x => x.First().Y).ToList().First();          
+            var bot = groups.OrderBy(x => x.First().Y).ToList().First();
+
+           
         }
 
 
@@ -189,8 +197,12 @@ namespace RapiD.Geometry.Models
 
         }
 
+        public void Refresh()
+        {
+            throw new System.NotImplementedException();
+        }
 
-
+     
     }
 
 }

@@ -1,8 +1,10 @@
 ﻿using SharpDX;
+using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Windows;
 
 namespace RapiD.Geometry.Models
 {
@@ -10,14 +12,15 @@ namespace RapiD.Geometry.Models
     {
 
         public List<ConnectionClass> Connections = new();
+        public List<Vector3> nodelist = new();
 
-        public Vector3 topPoint;
-        public Vector3 middlePoint;
-        public Vector3 bottomPoint;
-        public Vector3 targetPoint;
-        public float lengthbottom;
-        public float lengthtop;
-        public Plane plane;
+        public Vector3 topPoint { get; set; }
+        public Vector3 middlePoint { get; set; }
+        public Vector3 bottomPoint { get; set; }
+        public Vector3 targetPoint { get; set; }
+        public float lengthbottom { get; set; }
+        public float lengthtop { get; set; }
+        public Plane plane { get; set; }
 
         ConnectionType Type = ConnectionType.Chain;
         
@@ -27,21 +30,36 @@ namespace RapiD.Geometry.Models
 
       
 
-        public Patent3D(Vector3 bot, Vector3 top, Vector3 mid, float lengthbot, float lengthtop, Plane plane)
+        public Patent3D(Vector3 bot, Vector3 top, Vector3 mid, float lengthbot, float lengthtop, Plane plane, List<Vector3> nodeList)
         {
 
             Id = Guid.NewGuid().ToString();
 
-
+            this.nodelist = nodeList;
             this.topPoint = top;
             this.middlePoint = mid;
             this.bottomPoint = bot;
             this.lengthbottom = lengthbot;
             this.lengthtop = lengthtop;
             this.plane = plane;
-
-            targetPoint = findThirdPoint(bottomPoint, topPoint, lengthbottom, lengthtop, plane);
+            
             CreateConnections();
+            SetstartPoints();
+        }
+
+        
+        
+        
+        public void SetstartPoints()
+        {
+
+            List<Vector3> sortedList = nodelist.OrderByDescending(v => v.Z).ToList();
+
+            topPoint= sortedList[0];    
+            middlePoint= sortedList[4];    
+            middlePoint= sortedList[7];    
+
+
         }
 
 
@@ -52,28 +70,93 @@ namespace RapiD.Geometry.Models
 
 
 
-        public Patent3D(List<ConnectionClass> connections,  Plane plane)
-        {
+        //public Patent3D(List<ConnectionClass> connections,  Plane plane)
+        //{
 
            
 
-            Id = Guid.NewGuid().ToString();
+        //    Id = Guid.NewGuid().ToString();
 
-            ConnectionClass topconnection = connections.OrderBy(x => x.startVector.Z).ToList().Last();
-            ConnectionClass midconnection = connections.OrderBy(x => x.startVector.Z).ToList()[1];
-            ConnectionClass botconnection = connections.OrderBy(x => x.startVector.Z).ToList().First();
+        //    ConnectionClass topconnection = connections.OrderBy(x => x.startVector.Z).ToList().Last();
+        //    ConnectionClass midconnection = connections.OrderBy(x => x.startVector.Z).ToList()[1];
+        //    ConnectionClass botconnection = connections.OrderBy(x => x.startVector.Z).ToList().First();
 
 
-            this.topPoint = topconnection.startVector;
-            this.middlePoint = midconnection.startVector;
-            this.bottomPoint = botconnection.startVector;
-            this.lengthbottom = Vector3.Distance(botconnection.startVector, botconnection.endVector);
-            this.lengthtop = Vector3.Distance(topconnection.startVector, topconnection.endVector);
-            this.plane = plane;
+        //    this.topPoint = topconnection.startVector;
+        //    this.middlePoint = midconnection.startVector;
+        //    this.bottomPoint = botconnection.startVector;
+        //    this.lengthbottom = Vector3.Distance(botconnection.startVector, botconnection.endVector);
+        //    this.lengthtop = Vector3.Distance(topconnection.startVector, topconnection.endVector);
+        //    this.plane = plane;
 
-            targetPoint = findThirdPoint(bottomPoint, topPoint, lengthbottom, lengthtop, plane);
-            UpdateConnections(connections);
+        //    UpdateConnections(connections);
+        //}
 
+
+
+
+        public bool UpdateTargetCalculation(string connectionId,float connectionLength = 0,Vector3 newstartposition = new Vector3())
+        {
+
+            float newLength = connectionLength;
+
+         
+            
+            Vector3 newStartPosition = newstartposition;
+
+            if (newStartPosition != Vector3.Zero)
+            {
+                var connection = Connections.FirstOrDefault(x => x.Id == connectionId);
+                switch (connection.patentSide)
+                {
+                    case PatentSide.Up:
+                        topPoint = newStartPosition; 
+                        break;
+                    case PatentSide.Middle:
+                        middlePoint = newStartPosition;
+                        break;
+                    case PatentSide.Down:
+                        bottomPoint = newStartPosition;
+                        break;
+                    default:
+                        break;
+                }
+            }
+           //This newTarget Below is just for checking the validation of the length
+            SharpDX.Vector3 newTarget = findThirdPoint(bottomPoint, topPoint, lengthbottom, connectionLength, plane);
+
+            if (Check(newTarget, connectionLength))
+            {
+                string id = connectionId;
+                ConnectionClass connection = Connections.FirstOrDefault(c => c.Id == id);
+                switch (connection.patentSide)
+                {
+                    case PatentSide.Up:
+                        Connections.Clear();
+                        lengthtop = newLength;
+                        targetPoint = findThirdPoint(bottomPoint, topPoint, lengthbottom, lengthtop, plane);
+                        CreateConnections();
+                        return true;
+
+
+                        break;
+                    case PatentSide.Down:
+                        Connections.Clear();
+                        lengthbottom = newLength;
+                        targetPoint = findThirdPoint(bottomPoint, topPoint, lengthbottom, lengthtop, plane);
+                        CreateConnections();
+                        return true;
+                        break;
+                    default:
+                        return false;
+                }
+
+                
+
+            }
+
+            return false;
+             
 
         }
 
@@ -88,56 +171,37 @@ namespace RapiD.Geometry.Models
 
             if (topPoint != Vector3.Zero)
             {
-                Connections.Add(new ConnectionClass(topPoint, targetPoint,Type, Id) );
+                Connections.Add(new ConnectionClass(topPoint, targetPoint,Type, Id) { patentSide = PatentSide.Up} );
             }
 
             if (middlePoint != Vector3.Zero)
             {
-                Connections.Add(new ConnectionClass(middlePoint, targetPoint, Type, Id));
+                Connections.Add(new ConnectionClass(middlePoint, targetPoint, Type, Id) { patentSide= PatentSide.Middle});
             }
 
             if (bottomPoint != Vector3.Zero)
             {
-                Connections.Add(new ConnectionClass(bottomPoint, targetPoint, Type, Id) );
+                Connections.Add(new ConnectionClass(bottomPoint, targetPoint, Type, Id) { patentSide = PatentSide.Down} );
             }
         }
 
 
-        public void UpdateConnections(List<ConnectionClass> connections)
+       
+
+
+        public bool Check(Vector3 newTarget, float newlength)
         {
-            Connections.Clear();
-            foreach (var connection in connections)
+            if (float.IsNaN(newTarget.X))
             {
-                Connections.Add(new ConnectionClass(topPoint, targetPoint,Type, Id));
-            }
-        }
-
-
-        public bool Check()
-        {
-
-            float distanceBetweenNodes = Vector3.Distance(topPoint, bottomPoint);
-
-            if (lengthtop + lengthbottom < distanceBetweenNodes)
-            {
-                return false;
-            }
-            else if (lengthtop > lengthtop + lengthbottom)
-            {
-                return false;
-            }
-            else if (lengthbottom > lengthtop + lengthbottom)
-            {
-
-                return false;
-            }
-            else if (lengthtop + lengthbottom < distanceBetweenNodes)
-            {
-
                 return false;
             }
             return true;
+          
         }
+
+
+
+
 
 
 
