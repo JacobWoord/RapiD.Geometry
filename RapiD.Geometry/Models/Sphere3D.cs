@@ -26,8 +26,9 @@ namespace RapiD.Geometry.Models
         {
             Id = Guid.NewGuid().ToString();
             Position = position;
-           
+
             // Assing model material
+            OriginalMaterial = PhongMaterials.Yellow;
             
             Draw();
  

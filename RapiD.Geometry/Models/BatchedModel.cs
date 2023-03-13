@@ -107,11 +107,30 @@ namespace RapiD.Geometry.Models
             Transform.Children.Add(matrixTransform);
 
         }
-            
+
+        public async Task UpdatePositionDoor(Vector3 direction, float length, Vector3 start )
+        {
+
+            Vector3 translate = direction * length;
+      
+            Matrix3D matrix = new Matrix3D();
+            matrix.Translate(new Vector3D(start.X, start.Y, start.Z) + new Vector3D(translate.X, translate.Y, translate.Z));
+            MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
+
+            Transform.Children.Add(matrixTransform);
+
+          
+
+        }
 
 
 
-            
+
+
+
+
+
+
 
 
 
@@ -163,9 +182,9 @@ namespace RapiD.Geometry.Models
                 nodeList.Add(item.Location);
             }
 
-            var groups = nodeList.GroupBy(x => x.Z).ToList();
-            var top = groups.OrderBy(x => x.First().Y).ToList().First();          
-            var bot = groups.OrderBy(x => x.First().Y).ToList().First();
+            //var groups = nodeList.GroupBy(x => x.Z).ToList();
+            //var top = groups.OrderBy(x => x.First().Y).ToList().First();          
+            //var bot = groups.OrderBy(x => x.First().Y).ToList().First();
 
            
         }

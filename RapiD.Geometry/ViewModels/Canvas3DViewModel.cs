@@ -97,11 +97,16 @@ namespace RapiD.Geometry.ViewModels
             await SbDoor.OpenFile();
 
             // Putting the  SB door in the correct postion. important to note that we Update the node list after all transformations are done!
-            await SbDoor.UpdatePositionDoor(xaxis: 10000f);
-            SbDoor.UpdateNodeList();
+           // await SbDoor.UpdatePositionDoor(xaxis: 10000f);
+            //SbDoor.UpdateNodeList();
 
             float spread = Vector3.Distance(bbDoor.Position, sbDoor.Position);
 
+
+
+        
+            
+            
             //NET
             var net = new Squared3D(new Vector3(spread / 2, -40000, 4300), new Vector3(10000, 1000, 8000));
             ModelCollection.Add(net);
@@ -124,20 +129,60 @@ namespace RapiD.Geometry.ViewModels
             ModelCollection.Add(new Tube3D(center, lineEnd1));
             ModelCollection.Add(new Tube3D(center, lineEnd));
 
-            RefBBplane = new SharpDX.Plane(center, middle, middle + new Vector3(0, 0, 1000));
+
+          
+
+            var Bbplane = CreatePlaneFromTwoPoints(center, middleBb);
+            var SbPlane = CreatePlaneFromTwoPoints(center, middle);
+
+            DefinePlane3D newPlaneBb = new DefinePlane3D(Bbplane,200000,100000);
+            DefinePlane3D newPlaneSb = new DefinePlane3D(SbPlane, 200000, 100000);          
+           // modelCollection.Add(newPlaneBb);
+            modelCollection.Add(newPlaneSb);
+
+            sbDoor.UpdateNodeList();
+            var SbBottomNode = sbDoor.GetBottomNode();
+
+            SbDoor.UpdatePositionDoor(SbPlane.Normal, SbPlane.D, SbBottomNode);
+
+
+            //spheres
+            var centerpointsphere = new Sphere3D(center) { Name = "centersphere"};
+            var middlePointSPhere = new Sphere3D(middleBb) { Name = "middlesphere"};
+            modelCollection.Add(centerpointsphere);
+            modelCollection.Add(middlePointSPhere);
+            var oorsprong = new Sphere3D(Vector3.Zero);
+            modelCollection.Add(oorsprong);
+
+          
+
 
             /* BABOORD BORD */
             BbDoor.Mirror(MirrorAxis.X);
-            BbDoor.UpdateNodeList();
+          
 
-            var bbDoorTopNode = BbDoor.GetTopNode();
-            var bbDoorMiddleNode = BbDoor.GetMiddleNode();
+            //Vector3 doorpoint = bbDoorBottomNode + refplane.Normal * refplane.D;
+
+            //var dp = new Sphere3D(doorpoint);
+            //modelCollection.Add(dp);
+
+
+            /* BABOORD BORD TO PLANE*/
             var bbDoorBottomNode = BbDoor.GetBottomNode();
 
-            Patents.Add(CreateDoorPatent(bbDoor, RefBBplane, 8000, 8000));
+            bbDoor.UpdatePositionDoor(Bbplane.Normal, Bbplane.D, bbDoorBottomNode);
 
-            /* BABOORD BORD */
-            Patents.Add(CreateDoorPatent(SbDoor, RefSBplane, 8000, 8000));
+
+            BbDoor.UpdateNodeList();
+            SbDoor.UpdateNodeList();
+            //var bbDoorTopNode = BbDoor.GetTopNode();
+            //var bbDoorMiddleNode = BbDoor.GetMiddleNode();
+            //var bbDoorBottomNode = BbDoor.GetBottomNode();
+
+
+
+            Patents.Add(CreateDoorPatent(bbDoor, Bbplane, 8000, 8000,center));
+            Patents.Add(CreateDoorPatent(SbDoor, SbPlane, 8000, 8000,center));
 
 
             /*AWAIT*/
@@ -150,30 +195,30 @@ namespace RapiD.Geometry.ViewModels
 
         }
 
+        public SharpDX.Plane CreatePlaneFromTwoPoints(Vector3 p1, Vector3 p2)
+        {
+            // Calculate the plane normal by taking the cross product of the two positions
+            Vector3 planeNormal = Vector3.Cross(p2 - p1, new Vector3(0, 0, 1));
 
+            // Normalize the plane normal
+            planeNormal.Normalize();
 
+            // Calculate the distance from the origin to the plane
+            float planeDistance = Vector3.Dot(planeNormal, p1);
 
+            return new SharpDX.Plane(planeNormal, planeDistance);
+        }
 
+        public static float DistancePointToPlane(Vector3 point, SharpDX.Plane plane)
+        {
+            // Calculate the distance from the point to the plane using the plane equation:
+            // ax + by + cz + d = 0
+            // Where a, b, and c are the components of the plane's normal vector, and d is the distance from the origin to the plane.
+            float distance = Vector3.Dot(plane.Normal, point) + plane.D;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            // Return the absolute value of the distance, since the sign indicates which side of the plane the point is on.
+            return Math.Abs(distance) / plane.Normal.Length();
+        }
         public ElementType SelectedElementType { get; set; }
         public IEnumerable<ElementType> ElementTypes => Enum.GetValues(typeof(ElementType)).Cast<ElementType>();
 
@@ -224,59 +269,83 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         float length;
 
-
-
-
-
-
-
-
         partial void OnSelectedModelChanged(IModel value)
         {
             if (SelectedModel != null)
             {
-
-
                 if (selectedModel.ConnectionId != null)
                 {
                     var viewmodel = new ConnectionControlViewModel(SelectedModel);
                     SideViewModel = viewmodel;
-                    
                     viewmodel.PropertiesViewModel = new ChainPropertiesViewModel();
                     viewmodel.connectionID = selectedModel.ConnectionId;
                     viewmodel.SelectedModel = SelectedModel;
-
-
                 }
                 else
                 {
                     SideViewModel = null;
                 }
-
             }
             else
             {
                 SideViewModel = null;
-
             }
-
             return;
-
         }
 
 
-        public Patent3D CreateDoorPatent(Door door, SharpDX.Plane plane, float lengthbot, float lengthtop)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    
+
+
+
+
+
+
+
+
+        public Patent3D CreateDoorPatent(Door door, SharpDX.Plane plane, float lengthbot, float lengthtop,Vector3 center)
         {
             SharpDX.Plane planeform = plane;
             var doormodel = door;
-
+            var centerpoint = center;
 
             var DoorTopNode = door.GetTopNode();
             var DoorMiddleNode = door.GetMiddleNode();
             var DoorBottomNode = door.GetBottomNode();
             var nodelist = door.GetNodeList();
 
-            Patent3D BbDoorpatent = new Patent3D(DoorBottomNode, DoorTopNode, DoorMiddleNode, lengthbot, lengthtop, planeform,nodelist);
+            Patent3D BbDoorpatent = new Patent3D(DoorBottomNode, DoorTopNode, DoorMiddleNode, lengthbot, lengthtop, planeform,nodelist,center);
             var connections = BbDoorpatent.Connections;
             DrawConnections(connections);
 

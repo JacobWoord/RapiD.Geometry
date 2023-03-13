@@ -18,6 +18,8 @@ namespace RapiD.Geometry.Models
 
         [ObservableProperty]
         List<Vector3> centerPoints;
+
+        public Vector3[] path { get; set; }
         
 
 
@@ -29,16 +31,30 @@ namespace RapiD.Geometry.Models
 
         public Tube3D(Vector3 start, Vector3 end, float diameter=300f)
         {
-            OriginalMaterial = PhongMaterials.Black;
+            OriginalMaterial = PhongMaterials.Red;
             this.centerPoints = new List<Vector3>();
             centerPoints.Add(start);
             centerPoints.Add(end);
             this.diameter = diameter;
             Name = "Tube";
             Draw();
-
-
         }
+
+        public Tube3D(Vector3[] path)
+        {
+            OriginalMaterial = PhongMaterials.Red;
+            this.centerPoints = new List<Vector3>();
+            this.path= path;
+            this.diameter = diameter;
+            Name = "Tube";
+
+            MeshBuilder meshBuilder = new MeshBuilder();
+            MeshGeometry = meshBuilder.ToMeshGeometry3D();
+            meshBuilder.AddTube(path, Diameter, 40, true);
+            MeshGeometry = meshBuilder.ToMeshGeometry3D();
+        }
+
+
 
 
         private void rotate(Vector3[] vectors)
@@ -55,10 +71,11 @@ namespace RapiD.Geometry.Models
         {
             MeshBuilder meshBuilder = new MeshBuilder();
             MeshGeometry = meshBuilder.ToMeshGeometry3D();
-            meshBuilder.AddTube(CenterPoints, Diameter, 40, false);
+            meshBuilder.AddTube(CenterPoints, Diameter, 40, true);
             MeshGeometry = meshBuilder.ToMeshGeometry3D();
-           
         }
+    
+
 
 
 
