@@ -17,12 +17,8 @@ namespace RapiD.Geometry.Models
     public partial class Door : BatchedModel
     {
 
-        [ObservableProperty]
-        Transform3DGroup transform3DGroup = new();
-
-
+       
         public Vector3 TopNode;
-      
 
         
         [ObservableProperty]
@@ -35,6 +31,7 @@ namespace RapiD.Geometry.Models
 
         [ObservableProperty]
         List<Vector3> nodeList = new List<Vector3>();
+      
 
 
 

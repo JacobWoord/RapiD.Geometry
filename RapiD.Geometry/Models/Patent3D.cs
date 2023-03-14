@@ -249,40 +249,84 @@ namespace RapiD.Geometry.Models
 
 
 
+        public Vector3 findThirdPoint(Vector3 p1, Vector3 p2, float l1, float l2, Plane plane)
+        {
+            //get length of third rib
+            float l3 = Vector3.Distance(p1, p2);
+
+            //calculate angel between first rib and third rib
+            //float angle = MathF.Acos((l1 * l1 + l3 * l3 - l2 * l2) / (2 * l1 * l3));
+            float angle = MathF.Acos((l1 * l1 + l3 * l3 - l2 * l2) / (2 * l1 * l3));
+
+
+            //define direction between two known points
+            Vector3 direction = Vector3.Normalize(p2 - p1);
+            //set rotationaxis to the crossproduct of these two point
+            Vector3 rotationaxis = Vector3.Normalize(Vector3.Cross(p1, p2));
+
+            Matrix rotation = Matrix.RotationAxis(rotationaxis, angle);
+
+            //define the direction of the first rib and calculate the location of the third point 
+            Vector3 rib1Direction = Vector3.TransformNormal(direction, rotation);
+
+            Vector3 p3 = p1 + rib1Direction * l1;
+
+            //float anglewithplane = AngleBetween(plane, new Plane(p2, p1, p3));
+
+            //loop from 0 to 360 degree to find the value that is the most close to the known plane
+            float maxdif = float.MaxValue;
+            float disttozero = float.MaxValue;
+
+            float angletorotate = 0f;
+
+            for (float i =  0; i <= 2*MathF.PI; i += 0.1f)
+            {
+                Vector3 newvec = rotateVectorAboutAxis(p1, p2, new Vector3(p3.X, p3.Y, p3.Z), i);
+                float dist = DistancePointToPlane(newvec, plane);
+                float distorigin = Vector3.Distance(newvec, Vector3.Zero);
+
+
+                if (dist < maxdif &&distorigin<disttozero)
+                {
+                    maxdif = dist;
+                    angletorotate = i;
+                    disttozero = distorigin;
+                }
+
+            }
+            angletorotate = 0f;
+
+            var dist2 = Vector3.Distance(p3, Vector3.Zero);
+
+
+            return rotateVectorAboutAxis(p1, p2, p3, angletorotate);
+        }
+
+
         //public Vector3 findThirdPoint(Vector3 p1, Vector3 p2, float l1, float l2, Plane plane)
         //{
-        //    //get length of third rib
         //    float l3 = Vector3.Distance(p1, p2);
-
-        //    //calculate angel between first rib and third rib
-        //    //float angle = MathF.Acos((l1 * l1 + l3 * l3 - l2 * l2) / (2 * l1 * l3));
         //    float angle = MathF.Acos((l1 * l1 + l3 * l3 - l2 * l2) / (2 * l1 * l3));
 
-
-        //    //define direction between two known points
         //    Vector3 direction = Vector3.Normalize(p2 - p1);
-        //    //set rotationaxis to the crossproduct of these two point
         //    Vector3 rotationaxis = Vector3.Normalize(Vector3.Cross(p1, p2));
 
-
-        //    //define the direction of the first rib and calculate the location of the third point 
         //    Matrix rotation = Matrix.RotationAxis(rotationaxis, angle);
         //    Vector3 rib1Direction = Vector3.TransformNormal(direction, rotation);
 
         //    Vector3 p3 = p1 + rib1Direction * l1;
 
-        //    //float anglewithplane = AngleBetween(plane, new Plane(p2, p1, p3));
+        //    Vector3 planeNormal = Vector3.Normalize(Vector3.Cross(p2 - p1, p3 - p1));
 
-        //    //loop from 0 to 360 degree to find the value that is the most close to the known plane
         //    float maxdif = float.MaxValue;
-           
         //    float angletorotate = 0f;
 
-        //    for (float i = MathF.PI / 2; i <= 2 * MathF.PI; i += 0.0001f)
+        //    for (float i = MathF.PI / 2; i <= 2 * MathF.PI; i += 0.01f)
         //    {
-        //        Vector3 newvec = rotateVectorAboutAxis(p1, p2, p3, i);
-        //        float dist = DistancePointToPlane(newvec, plane);
-
+        //        Vector3 rotatedP3 = rotateVectorAboutAxis(p1, p2, p3, i);
+                
+        //        Vector3 newPlaneNormal = Vector3.Normalize(Vector3.Cross(p2 - p1, rotatedP3 - p1));
+        //        float dist = Vector3.Dot(planeNormal, rotatedP3 - p1);
 
         //        if (dist < maxdif)
         //        {
@@ -291,47 +335,8 @@ namespace RapiD.Geometry.Models
         //        }
         //    }
 
-        //    var dist2 = Vector3.Distance(p3,Vector3.Zero);
-
-           
         //    return rotateVectorAboutAxis(p1, p2, p3, angletorotate);
         //}
-
-
-        public Vector3 findThirdPoint(Vector3 p1, Vector3 p2, float l1, float l2, Plane plane)
-        {
-            float l3 = Vector3.Distance(p1, p2);
-            float angle = MathF.Acos((l1 * l1 + l3 * l3 - l2 * l2) / (2 * l1 * l3));
-
-            Vector3 direction = Vector3.Normalize(p2 - p1);
-            Vector3 rotationaxis = Vector3.Normalize(Vector3.Cross(p1, p2));
-
-            Matrix rotation = Matrix.RotationAxis(rotationaxis, angle);
-            Vector3 rib1Direction = Vector3.TransformNormal(direction, rotation);
-
-            Vector3 p3 = p1 + rib1Direction * l1;
-
-            Vector3 planeNormal = Vector3.Normalize(Vector3.Cross(p2 - p1, p3 - p1));
-
-            float maxdif = float.MaxValue;
-            float angletorotate = 0f;
-
-            for (float i = MathF.PI / 2; i <= 2 * MathF.PI; i += 0.0001f)
-            {
-                Vector3 rotatedP3 = rotateVectorAboutAxis(p1, p2, p3, i);
-                
-                Vector3 newPlaneNormal = Vector3.Normalize(Vector3.Cross(p2 - p1, rotatedP3 - p1));
-                float dist = Vector3.Dot(planeNormal, rotatedP3 - p1);
-
-                if (dist < maxdif)
-                {
-                    maxdif = dist;
-                    angletorotate = i;
-                }
-            }
-
-            return rotateVectorAboutAxis(p1, p2, p3, angletorotate);
-        }
 
 
 
@@ -372,10 +377,24 @@ namespace RapiD.Geometry.Models
             // Calculate the distance from the point to the plane using the plane equation:
             // ax + by + cz + d = 0
             // Where a, b, and c are the components of the plane's normal vector, and d is the distance from the origin to the plane.
-            float distance = Vector3.Dot(plane.Normal, point) + plane.D;
 
+
+            //Vector3 pointOnPlane = -plane.Normal * plane.D;
+            //Vector3 difference = point - pointOnPlane;
+
+            //float distance = Vector3.Dot(difference, plane.Normal) / plane.Normal.Length();
+            //return Math.Abs(distance);
+
+
+
+            /*ORGINEEL */
+            float distance = Vector3.Dot(plane.Normal, point);
+            distance -= plane.D;
             // Return the absolute value of the distance, since the sign indicates which side of the plane the point is on.
             return Math.Abs(distance) / plane.Normal.Length();
+
+
+
         }
 
         public void Deselect()

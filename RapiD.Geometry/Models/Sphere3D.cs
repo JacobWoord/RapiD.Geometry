@@ -15,7 +15,7 @@ namespace RapiD.Geometry.Models
     {
 
         [ObservableProperty]
-        float radius=500;
+        float radius=1000;
 
         
 

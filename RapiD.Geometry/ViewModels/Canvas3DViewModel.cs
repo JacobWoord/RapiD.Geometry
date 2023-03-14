@@ -93,22 +93,17 @@ namespace RapiD.Geometry.ViewModels
         [RelayCommand]
         async Task Initialize()
         {
-            await BbDoor.OpenFile();
+            //await BbDoor.OpenFile();
             await SbDoor.OpenFile();
 
             // Putting the  SB door in the correct postion. important to note that we Update the node list after all transformations are done!
            // await SbDoor.UpdatePositionDoor(xaxis: 10000f);
             //SbDoor.UpdateNodeList();
 
-            float spread = Vector3.Distance(bbDoor.Position, sbDoor.Position);
-
-
-
-        
-            
+           // float spread = Vector3.Distance(bbDoor.Position, sbDoor.Position);
             
             //NET
-            var net = new Squared3D(new Vector3(spread / 2, -40000, 4300), new Vector3(10000, 1000, 8000));
+            var net = new Squared3D(Vector3.Zero, new Vector3(10000, 1000, 8000));
             ModelCollection.Add(net);
 
 
@@ -130,70 +125,113 @@ namespace RapiD.Geometry.ViewModels
             ModelCollection.Add(new Tube3D(center, lineEnd));
 
 
+            
+           // var BbPlane = CreatePlaneFromTwoPoints(center, middleBb);
+           SharpDX.Plane SbPlane = CreatePlaneFromTwoPoints(center, middle);
+           DefinePlane3D newPlaneSb = new DefinePlane3D(SbPlane, 200000, 100000);
+
+            //BbPlane = new SharpDX.Plane(center, middleBb , middleBb+ new Vector3(0,0,1000));
+            //SbPlane = new SharpDX.Plane(center, middle, middle + new Vector3(0, 0, 1000));
+
+            //BbPlane.D *= -1;
+            //SbPlane.D *= -1;
+
+
+            //  DefinePlane3D newPlaneBb = new DefinePlane3D(BbPlane,200000,100000);
+            //  modelCollection.Add(newPlaneBb);
+            
+            ModelCollection.Add(newPlaneSb);
+
+            //sbDoor.UpdateNodeList();
+            Vector3 replacementLength = new Vector3(0, 100000, 0);
+            //  SbDoor.UpdatePositionDoor(new Vector3(0,50000,0));
+           
+            SbDoor.UpdatePositionDoor(replacementLength);
+
+
+
+
+            //SbDoor.UpdatePositionDoor(replacementLength);
+
+            //SbDoor.UpdateNodeList();
+            
+            var nodeTest = sbDoor.GetNodeList();
+
+            // await sbDoor.UpdatePositionDoor(SbPlane, nodeTest[7], Vector3.Zero);
+            SbDoor.UpdatePositionDoor(SbPlane, nodeTest[5], Vector3.Zero);
+
+            nodeTest =  SbDoor.GetNodeList();
+            // nodeTest = sbDoor.GetNodeList();
+            modelCollection.Add(new Sphere3D(nodeTest[5]));
+
+
           
-
-            var Bbplane = CreatePlaneFromTwoPoints(center, middleBb);
-            var SbPlane = CreatePlaneFromTwoPoints(center, middle);
-
-            DefinePlane3D newPlaneBb = new DefinePlane3D(Bbplane,200000,100000);
-            DefinePlane3D newPlaneSb = new DefinePlane3D(SbPlane, 200000, 100000);          
-           // modelCollection.Add(newPlaneBb);
-            modelCollection.Add(newPlaneSb);
-
-            sbDoor.UpdateNodeList();
-            var SbBottomNode = sbDoor.GetBottomNode();
-
-            SbDoor.UpdatePositionDoor(SbPlane.Normal, SbPlane.D, SbBottomNode);
+            
 
 
             //spheres
-            var centerpointsphere = new Sphere3D(center) { Name = "centersphere"};
-            var middlePointSPhere = new Sphere3D(middleBb) { Name = "middlesphere"};
-            modelCollection.Add(centerpointsphere);
-            modelCollection.Add(middlePointSPhere);
-            var oorsprong = new Sphere3D(Vector3.Zero);
-            modelCollection.Add(oorsprong);
-
-          
+            //  var centerpointsphere = new Sphere3D(center) { Name = "centersphere"};
+            // var middlePointSPhere = new Sphere3D(middleBb) { Name = "middlesphere"};
+            //  modelCollection.Add(centerpointsphere);
+            // modelCollection.Add(middlePointSPhere);
+            // var oorsprong = new Sphere3D(Vector3.Zero);
+            //modelCollection.Add(oorsprong);
 
 
             /* BABOORD BORD */
-            BbDoor.Mirror(MirrorAxis.X);
-          
-
-            //Vector3 doorpoint = bbDoorBottomNode + refplane.Normal * refplane.D;
-
-            //var dp = new Sphere3D(doorpoint);
-            //modelCollection.Add(dp);
+            // BbDoor.Mirror(MirrorAxis.X);
 
 
             /* BABOORD BORD TO PLANE*/
-            var bbDoorBottomNode = BbDoor.GetBottomNode();
-
-            bbDoor.UpdatePositionDoor(Bbplane.Normal, Bbplane.D, bbDoorBottomNode);
+            // var bbDoorBottomNode = BbDoor.GetBottomNode();
 
 
-            BbDoor.UpdateNodeList();
-            SbDoor.UpdateNodeList();
+
+            // BbDoor.UpdateNodeList();
+            // SbDoor.UpdateNodeList();
             //var bbDoorTopNode = BbDoor.GetTopNode();
-            //var bbDoorMiddleNode = BbDoor.GetMiddleNode();
-            //var bbDoorBottomNode = BbDoor.GetBottomNode();
 
+            //SbDoor.UpdatePositionDoor(replacementLength);
+            //SbBottomNode = SbDoor.GetMiddleNode();
 
+            // Patent3D bbDoorPatent = CreateDoorPatent(BbDoor, BbPlane, 8000, 8000, center);
+            Patent3D sbDoorPatent = CreateDoorPatent(SbDoor, SbPlane, 8000, 8000, center);
 
-            Patents.Add(CreateDoorPatent(bbDoor, Bbplane, 8000, 8000,center));
-            Patents.Add(CreateDoorPatent(SbDoor, SbPlane, 8000, 8000,center));
+            //Patents.Add(bbDoorPatent);
+            Patents.Add(sbDoorPatent);
 
 
             /*AWAIT*/
             await App.Current.Dispatcher.InvokeAsync(() =>
             {
                 ModelCollection.Add(SbDoor);
-                ModelCollection.Add(BbDoor);
+                //ModelCollection.Add(BbDoor);
+
             });
 
 
+
+
+
+
+
+
+
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public SharpDX.Plane CreatePlaneFromTwoPoints(Vector3 p1, Vector3 p2)
         {
@@ -234,6 +272,9 @@ namespace RapiD.Geometry.ViewModels
         [ObservableProperty]
         Door sbDoor;
 
+        [ObservableProperty]
+        IModel lastSelectedModel;
+
 
         [ObservableProperty]
         Material material = PhongMaterials.Red;
@@ -273,13 +314,17 @@ namespace RapiD.Geometry.ViewModels
         {
             if (SelectedModel != null)
             {
-                if (selectedModel.ConnectionId != null)
+                if (SelectedModel.ConnectionId != null)
                 {
                     var viewmodel = new ConnectionControlViewModel(SelectedModel);
                     SideViewModel = viewmodel;
                     viewmodel.PropertiesViewModel = new ChainPropertiesViewModel();
                     viewmodel.connectionID = selectedModel.ConnectionId;
                     viewmodel.SelectedModel = SelectedModel;
+                    if (SelectedModel.PatentId != null)
+                    {
+                        LastSelectedModel = selectedModel;
+                    }
                 }
                 else
                 {
@@ -293,6 +338,26 @@ namespace RapiD.Geometry.ViewModels
             return;
         }
 
+
+        public Patent3D CreateDoorPatent(Door door, SharpDX.Plane plane, float lengthbot, float lengthtop,Vector3 center)
+        {
+            SharpDX.Plane planeform = plane;
+            var doormodel = door;
+            var centerpoint = center;
+
+            var DoorTopNode = doormodel.GetTopNode();
+            var DoorMiddleNode = doormodel.GetMiddleNode();
+            var DoorBottomNode = doormodel.GetBottomNode();
+            var nodelist = doormodel.GetNodeList();
+
+            Patent3D Doorpatent = new Patent3D(DoorBottomNode, DoorTopNode, DoorMiddleNode, lengthbot, lengthtop, planeform,nodelist,center);
+            var connections = Doorpatent.Connections;
+            DrawConnections(connections);
+
+
+            return Doorpatent;
+
+        }
 
 
 
@@ -334,35 +399,15 @@ namespace RapiD.Geometry.ViewModels
 
 
 
-        public Patent3D CreateDoorPatent(Door door, SharpDX.Plane plane, float lengthbot, float lengthtop,Vector3 center)
-        {
-            SharpDX.Plane planeform = plane;
-            var doormodel = door;
-            var centerpoint = center;
-
-            var DoorTopNode = door.GetTopNode();
-            var DoorMiddleNode = door.GetMiddleNode();
-            var DoorBottomNode = door.GetBottomNode();
-            var nodelist = door.GetNodeList();
-
-            Patent3D BbDoorpatent = new Patent3D(DoorBottomNode, DoorTopNode, DoorMiddleNode, lengthbot, lengthtop, planeform,nodelist,center);
-            var connections = BbDoorpatent.Connections;
-            DrawConnections(connections);
-
-
-            return BbDoorpatent;
-
-        }
-
         public void UpdateChainStartPoint(IModel Node)
         {
             if (Node is not null)
             {
                 var pos = (Node as InfoButton3D).Position;
 
-                if(SelectedModel.PatentId != null)
+                if(LastSelectedModel.PatentId != null)
                 {
-                    UpdateDoorPatent(SelectedModel.PatentId, SelectedModel.ConnectionId, startposition: pos);
+                    UpdateDoorPatent(LastSelectedModel.PatentId, LastSelectedModel.ConnectionId, startposition:pos);
 
                 }
 

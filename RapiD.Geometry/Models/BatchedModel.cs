@@ -3,13 +3,15 @@
 using HelixToolkit.Wpf.SharpDX;
 using SharpDX;
 using System.Windows.Media.Media3D;
-
+using SharpDX.Toolkit.Graphics;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Material = HelixToolkit.Wpf.SharpDX.Material;
 using SharpDX.Direct3D11;
+using System.Collections;
+using SharpDX.Direct2D1;
 
 namespace RapiD.Geometry.Models
 {
@@ -33,6 +35,8 @@ namespace RapiD.Geometry.Models
         [ObservableProperty]
         List<Vector3> nodeList = new();
 
+
+
         [ObservableProperty]
         List<Vector3> allNodes = new();
 
@@ -51,7 +55,7 @@ namespace RapiD.Geometry.Models
         public List<Vector3> GetNodeList()
         {
 
-            return nodeList;
+            return NodeList;
         }
 
 
@@ -90,38 +94,99 @@ namespace RapiD.Geometry.Models
         public void UpdateNodeList()
         {
 
-            for (int i = 0; i < nodeList.Count; i++)
+            for (int i = 0; i < NodeList.Count; i++)
             {
                 NodeList[i] = (Vector3)Vector3.Transform(NodeList[i], Transform.Value.ToMatrix());
+                
             }
         }
 
+        //public static List<Vector3> ApplyToVector3List(List<Vector3> vectorList, Matrix3D transformMatrix)
+        //{
+        //    List<Vector3> transformedVectorList = new List<Vector3>();
+        //    foreach (Vector3 vector in vectorList)
+        //    {
+        //        Vector3D vector3D = new Vector3D(vector.X, vector.Y, vector.Z);
+        //        vector3D = Vector3D.Multiply(vector3D, transformMatrix);
+        //        transformedVectorList.Add(new Vector3((float)vector3D.X, (float)vector3D.Y, (float)vector3D.Z));
+        //    }
+        //    return transformedVectorList;
+        //}
 
-        public async Task UpdatePositionDoor(float xaxis = 0 , float yaxis = 0, float zaxis = 0)
+        public async Task UpdatePositionDoor(Vector3 replacement)
         {
+
+            Vector3 replace = replacement;
             Matrix3D matrix = new Matrix3D();
-            matrix.Translate(new System.Windows.Media.Media3D.Vector3D(xaxis, yaxis, zaxis));
+            matrix.Translate(new System.Windows.Media.Media3D.Vector3D(replace.X, replace.Y, replace.Z));
+            if (Transform.Children.Count() > 0)
+            {
+                Transform3DGroup currentTransform = Transform.Clone();
+                matrix.Append(currentTransform.Value);
+            }
             MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
+           // NodeList = ApplyToVector3List(nodeList, matrixTransform.Value);
 
-
+            Transform.Children.Clear();
             Transform.Children.Add(matrixTransform);
+            UpdateNodeList();
 
         }
 
-        public async Task UpdatePositionDoor(Vector3 direction, float length, Vector3 start )
+
+        public async Task UpdatePositionDoor(Plane plane, Vector3 start, Vector3 replacement)
         {
 
-            Vector3 translate = direction * length;
-      
+
+            float dist = Patent3D.DistancePointToPlane(start, plane);
+            Vector3 extraLength = Vector3.Zero;
+
+            Vector3 translate = plane.Normal * dist;
+
             Matrix3D matrix = new Matrix3D();
-            matrix.Translate(new Vector3D(start.X, start.Y, start.Z) + new Vector3D(translate.X, translate.Y, translate.Z));
+            matrix.Translate(new System.Windows.Media.Media3D.Vector3D(translate.X, translate.Y, translate.Z));
+
+            if (Transform.Children.Count() > 0)
+            {
+                Transform3DGroup currentTransform = Transform.Clone();
+                matrix.Append(currentTransform.Value);
+            }
+
             MatrixTransform3D matrixTransform = new MatrixTransform3D(matrix);
+           // NodeList = ApplyToVector3List(nodeList, matrixTransform.Value);
 
+            Transform.Children.Clear();
             Transform.Children.Add(matrixTransform);
-
-          
+            UpdateNodeList();
 
         }
+
+
+        public Vector3 DirectionToPlane(Plane plane, Vector3 start)
+        {
+            Vector3 planeNormal = plane.Normal;
+            float distanceToPlane = Vector3.Dot(start, planeNormal) - plane.D;
+            Vector3 projectionOnPlane = start - planeNormal * distanceToPlane;
+
+            Vector3 directionToPlane = Vector3.Normalize(projectionOnPlane - start);
+
+            return directionToPlane;
+        }
+
+
+
+       
+
+
+
+
+
+
+
+
+
+
+
 
 
 
